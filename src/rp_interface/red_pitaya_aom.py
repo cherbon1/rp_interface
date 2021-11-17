@@ -1,5 +1,6 @@
 from rp_interface import red_pitaya_comms
 
+
 class RedPitayaAOM(red_pitaya_comms.RedPitaya):
     bitfile = 'aom_control.bit'
     fs = 125e6 / 4.
