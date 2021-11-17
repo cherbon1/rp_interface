@@ -1,1 +1,1 @@
-include rp_interface/bitfiles/*.bit
+include src/rp_interface/bitfiles/*.bit
