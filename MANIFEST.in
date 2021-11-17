@@ -1,1 +1,1 @@
-include src/bitfiles/*.bit
+include redpitaya-interface/bitfiles/*.bit

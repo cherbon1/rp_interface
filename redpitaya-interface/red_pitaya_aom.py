@@ -1,5 +1,4 @@
-from labrat.instruments import red_pitaya_comms
-
+import red_pitaya_comms
 
 class RedPitayaAOM(red_pitaya_comms.RedPitaya):
     bitfile = 'aom_control.bit'
@@ -131,6 +130,6 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
 if __name__ == "__main__":
     red = RedPitayaAOM(apply_defaults=True)
-    red.load_bitfile()
+    # red.load_bitfile()
     red.defaults()
     red.trigger_now()
