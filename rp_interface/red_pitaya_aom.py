@@ -1,4 +1,4 @@
-import red_pitaya_comms
+from rp_interface import red_pitaya_comms
 
 class RedPitayaAOM(red_pitaya_comms.RedPitaya):
     bitfile = 'aom_control.bit'
