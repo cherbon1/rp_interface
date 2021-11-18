@@ -129,11 +129,11 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @n_cycles_trigger.setter
     def n_cycles_trigger(self, value):
-        self.write_register_decimal(self.n_cycles_trigger_address, value)
+        self.write_register_decimal(self.n_cycles_trigger_address, value, n_bits=16)
 
     @property
     def trap_enable(self):
-        return bool(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=4))
+        return bool(int(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=4)))
 
     @trap_enable.setter
     def trap_enable(self, value):
@@ -141,7 +141,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @property
     def feedback_enable(self):
-        return bool(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=3))
+        return bool(int(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=3)))
 
     @feedback_enable.setter
     def feedback_enable(self, value):
@@ -175,6 +175,6 @@ if __name__ == "__main__":
     red = RedPitayaAOM(apply_defaults=True)
     # red.load_bitfile()
     red.defaults()
-    print(red.n_cycles_trap)
+
     red.trigger_now()
     print(red)

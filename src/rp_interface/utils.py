@@ -3,9 +3,7 @@ def bin2hex(bin_value):
     takes a binary value (e.g. '0b10011010' or '10011010')
     and converts it to hex (e.g. '0x9a')
     '''
-    if bin_value.starswith('0b'):
-        return int(bin_value, 2)
-    return hex(int('0b{}'.format(bin_value), 2))
+    return hex(int(bin_value, 2))
 
 
 def hex2bits(hex_value, n_bits=None):

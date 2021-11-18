@@ -91,8 +91,8 @@ class RedPitaya(ABC):
             raise ValueError(f'n_bits {n_bits} too large for lsb_location {lsb_location}')
 
         hex_value = self.read_register(address)
-        bin_value = utils.hex2bits(hex_value, n_bits)
-        return bin_value[32 - n_bits:32 - lsb_location]
+        bin_value = utils.hex2bits(hex_value, 32)
+        return bin_value[32 - n_bits - lsb_location:32 - lsb_location]
 
     def read_register_decimal(self, address, n_bits=32, lsb_location=0):
         '''
@@ -142,8 +142,8 @@ class RedPitaya(ABC):
 
         # If writing to a sub-section of register, assemble the output based on current values
         full_reg = self.read_register_bits(address)
-        new_reg = '0b' + full_reg[:32 - n_bits - lsb_location] + bits + full_reg[32 - lsb_location:]
-        self.write_register(address, new_reg)
+        new_reg = full_reg[:32 - n_bits - lsb_location] + bits + full_reg[32 - lsb_location:]
+        self.write_register(address, int(new_reg, 2))
 
     def write_register_decimal(self, address, value, n_bits=32, lsb_location=0):
         '''
