@@ -10,14 +10,15 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
     trigger_address = '0x41210000'  # 1-bit value
     squarer_gain_address = '0x41210008'  # 32-bit value
     n_cycles_trigger_address = '0x41220000'  # 16-bit value
-    misc_switches_address = '0x41220008'  # 4-bit value
+    misc_switches_address = '0x41220008'  # 5-bit value
 
     def defaults(self):
         self.trap_toggle_time = 1e-6
         self.feedback_toggle_time = 1e-3
         self.trigger_pulse_time = 500e-9
         self.feedback_amplitude = 0.05
-        self.feedback_disable = 0
+        self.trap_enable = 0
+        self.feedback_enable = 0
         self.output_select = 0
 
     @property
@@ -70,13 +71,16 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
     def trigger_pulse_time(self, value):
         self.n_cycles_trigger = int(value * self.fs)
 
+    # =======================================
+    # ========  LOW LEVEL INTERFACE  ========
+    # =======================================
     @property
     def n_cycles_trap(self):
         return self.read_register_decimal(self.n_cycles_trap_address, n_bits=32)
 
     @n_cycles_trap.setter
     def n_cycles_trap(self, value):
-        self.write_register(self.n_cycles_trap_address, value)
+        self.write_register_decimal(self.n_cycles_trap_address, value)
 
     @property
     def n_cycles_feedback(self):
@@ -84,7 +88,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @n_cycles_feedback.setter
     def n_cycles_feedback(self, value):
-        self.write_register(self.n_cycles_feedback_address, value)
+        self.write_register_decimal(self.n_cycles_feedback_address, value)
 
     @property
     def trigger_register(self):
@@ -92,7 +96,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @trigger_register.setter
     def trigger_register(self, value):
-        self.write_register_bits(self.trigger_address, bin(value), lsb_location=0)
+        self.write_register_bits(self.trigger_address, bin(value), n_bits=1)
 
     @property
     def squarer_gain(self):
@@ -100,7 +104,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @squarer_gain.setter
     def squarer_gain(self, value):
-        self.write_register(self.squarer_gain_address, value)
+        self.write_register_decimal(self.squarer_gain_address, value)
 
     @property
     def n_cycles_trigger(self):
@@ -108,25 +112,33 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @n_cycles_trigger.setter
     def n_cycles_trigger(self, value):
-        self.write_register(self.n_cycles_trigger_address, value)
+        self.write_register_decimal(self.n_cycles_trigger_address, value)
 
     @property
-    def feedback_disable(self):
-        return self.read_register_bits(self.misc_switches_address, n_bits=4)[0]
+    def trap_enable(self):
+        return self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=4)
 
-    @feedback_disable.setter
-    def feedback_disable(self, value):
-        self.write_register_bits(self.misc_switches_address, bits=bin(value), lsb_location=3)
+    @trap_enable.setter
+    def trap_enable(self, value):
+        self.write_register_bits(self.misc_switches_address, bits=bin(value), n_bits=1, lsb_location=4)
+
+    @property
+    def feedback_enable(self):
+        return self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=3)
+
+    @feedback_enable.setter
+    def feedback_enable(self, value):
+        self.write_register_bits(self.misc_switches_address, bits=bin(value), n_bits=1, lsb_location=3)
 
     @property
     def output_select(self):
-        return int(self.read_register_bits(self.misc_switches_address, n_bits=3), 2)
+        return int(self.read_register_bits(self.misc_switches_address, n_bits=3, lsb_location=0), 2)
 
     @output_select.setter
     def output_select(self, value):
         if not 0 <= value <= 7:
             raise ValueError(f'Invalid input {value}. output_select must be in range 0 to 7')
-        self.write_register_bits(self.misc_switches_address, bits=bin(value), lsb_location=0)
+        self.write_register_bits(self.misc_switches_address, bits=bin(value), n_bits=3, lsb_location=0)
 
 
 if __name__ == "__main__":
