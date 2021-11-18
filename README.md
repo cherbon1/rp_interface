@@ -6,7 +6,13 @@ List of bitfiles and interfaces:
 - [AOM Controller](src/rp_interface/bitfiles/aom_control.md)
 
 ### Installation
-Install repository with `pip install git+https://gitlab.ethz.ch/ebonvin/rp_interface.git` (append `--force-reinstall` option for update)
+Install repository with
+```shell
+pip install git+https://gitlab.ethz.ch/ebonvin/rp_interface.git
+```
+
+For upgrading, use the following options `--force-reinstall --no-deps`. Simply using `--upgrade` won't work because this option only compares the version number
+
 
 ### Adding a new interface
 Create a new class that inherits from `red_pitaya_comss.RedPitaya`. This new class *must* define the following:
@@ -19,7 +25,11 @@ Create a new class that inherits from `red_pitaya_comss.RedPitaya`. This new cla
 ```python3
 from rp_interface import red_pitaya_aom
 
-aom_control = red_pitaya_aom.RedPitayaAOM(host='red-pitaya-01.ee.ethz.ch', apply_defaults=True)
+aom_control = red_pitaya_aom.RedPitayaAOM(
+    host='red-pitaya-01.ee.ethz.ch',
+    load_bitfile=True,
+    apply_defaults=True
+)
 
 aom_control.trap_toggle_time = 15e-6
 aom_control.trigger_now()
