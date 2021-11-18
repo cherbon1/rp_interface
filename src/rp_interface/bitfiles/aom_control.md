@@ -21,8 +21,6 @@ The class for controlling this red pitaya bitfile is called `RedPitayaAOM`. The 
 - `output_select`:  default `0`
 - `trigger_now()`: Launches a trigger pulse when called
 
-
-
 ### Implementation details
 
 #### Launch pulses
