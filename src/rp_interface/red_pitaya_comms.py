@@ -102,7 +102,6 @@ class RedPitaya(ABC):
         returned value, defaults to 32 (full width of register)
         '''
         reg_val = self.read_register_bits(address, n_bits, lsb_location)
-        print(reg_val)
         return int(reg_val, 2)
 
     def write_register(self, address, value):

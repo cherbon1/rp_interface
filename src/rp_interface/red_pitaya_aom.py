@@ -21,6 +21,23 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
         self.feedback_enable = 0
         self.output_select = 0
 
+    def __str__(self):
+        return (
+            'AOM trap control: at {host}\n'
+            '  trap {trap_on}, feedback {feedback_on}, amplitude: {feedback_amplitude:.3f},\n'
+            '  trap toggle time: {trap_time:.2f}us ({trap_cycles} cycles),\n'
+            '  feedback toggle time: {feedback_time:.2f}us ({feedback_cycles} cycles)'
+        ).format(
+            host=self.host,
+            trap_on='ON' if self.trap_enable else 'OFF',
+            feedback_on='ON' if self.feedback_enable else 'OFF',
+            feedback_amplitude=self.feedback_amplitude,
+            trap_time=self.trap_toggle_time * 1e6,
+            trap_cycles=self.n_cycles_trap,
+            feedback_time=self.feedback_toggle_time * 1e6,
+            feedback_cycles=self.n_cycles_feedback,
+        )
+
     @property
     def trap_toggle_time(self):
         return self.n_cycles_trap / self.fs
@@ -116,7 +133,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @property
     def trap_enable(self):
-        return self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=4)
+        return bool(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=4))
 
     @trap_enable.setter
     def trap_enable(self, value):
@@ -124,7 +141,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     @property
     def feedback_enable(self):
-        return self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=3)
+        return bool(self.read_register_bits(self.misc_switches_address, n_bits=1, lsb_location=3))
 
     @feedback_enable.setter
     def feedback_enable(self, value):
@@ -158,5 +175,6 @@ if __name__ == "__main__":
     red = RedPitayaAOM(apply_defaults=True)
     # red.load_bitfile()
     red.defaults()
-    red.n_cycles_trap
+    print(red.n_cycles_trap)
     red.trigger_now()
+    print(red)
