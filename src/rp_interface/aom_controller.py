@@ -1,8 +1,8 @@
 from rp_interface import red_pitaya_comms
 
 
-class RedPitayaAOM(red_pitaya_comms.RedPitaya):
-    bitfile = 'aom_control.bit'
+class AOMController(red_pitaya_comms.RedPitaya):
+    bitfile = 'aom_controller.bit'
     fs = 125e6 / 4.
 
     n_cycles_trap_address = '0x41200000'  # 32-bit value
@@ -23,7 +23,7 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
     def __str__(self):
         return (
-            'AOM trap control: at {host}\n'
+            'AOM Controller at {host}\n'
             '  trap {trap_on}, feedback {feedback_on}, amplitude: {feedback_amplitude:.3f},\n'
             '  trap toggle time: {trap_time:.2f}us ({trap_cycles} cycles),\n'
             '  feedback toggle time: {feedback_time:.2f}us ({feedback_cycles} cycles)'
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     # handler.setFormatter(formatter)
     # root.addHandler(handler)
 
-    red = RedPitayaAOM(apply_defaults=True)
+    red = AOMController(apply_defaults=True)
     # red.load_bitfile()
     red.feedback_enable = True
     red.trap_enable = True

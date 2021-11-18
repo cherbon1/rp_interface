@@ -12,7 +12,7 @@ The signal on `DAC 2` can either be set to replicate `DAC 1` or the GPIO trigger
 See below for a basic functional diagram and the more detailed block diagram from vivado.
 
 ### Python interface
-The class for controlling this red pitaya bitfile is called `RedPitayaAOM`. The relevant methods and properties are:
+The class for controlling this red pitaya bitfile is called `AOMController`. The relevant methods and properties are:
 - `trap_toggle_time`: Time that trap should be off in seconds, in seconds (default `1e-6`)
 - `feedback_toggle_time`: Time that feedback should be off, in seconds (default `1e-3`)
 - `feedback_amplitude`: Gain factor for feedback signal (default `0.05`)
@@ -42,8 +42,8 @@ The same applies to the width of the trigger pulse
 
 #### Diagrams
 
-![functional diagram](aom_control_1.png)
-![block diagram](aom_control_2.png)
+![functional diagram](aom_controller_1.png)
+![block diagram](aom_controller_2.png)
 
 #### Addresses
 - `0x41200000`: 32-bit value, n_cycles trap
