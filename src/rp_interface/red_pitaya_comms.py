@@ -15,7 +15,8 @@ class RedPitaya(ABC):
     and provide an interface for communicating with the relevant registers
     '''
 
-    def __init__(self, host='red-pitaya-18.ee.ethz.ch', username='root', password='root', apply_defaults=False):
+    def __init__(self, host='red-pitaya-18.ee.ethz.ch', username='root', password='root',
+                 load_bitfile=False, apply_defaults=False):
 
         self.username = username
         self.host = host
@@ -29,6 +30,10 @@ class RedPitaya(ABC):
         log.info('Connecting to {}@{}'.format(self.username, self.host))
 
         self.bitfiles_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
+
+        if load_bitfile:
+            self.load_bitfile()
+
         if apply_defaults:
             self.defaults()
 
