@@ -142,7 +142,21 @@ class RedPitayaAOM(red_pitaya_comms.RedPitaya):
 
 
 if __name__ == "__main__":
+    # # Setup logging to stdout
+    # import logging
+    # import sys
+    #
+    # root = logging.getLogger()
+    # root.setLevel(logging.DEBUG)
+    #
+    # handler = logging.StreamHandler(sys.stdout)
+    # handler.setLevel(logging.DEBUG)
+    # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # handler.setFormatter(formatter)
+    # root.addHandler(handler)
+
     red = RedPitayaAOM(apply_defaults=True)
     # red.load_bitfile()
     red.defaults()
+    red.n_cycles_trap
     red.trigger_now()

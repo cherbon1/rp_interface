@@ -65,7 +65,9 @@ class RedPitaya(ABC):
         std_err = std_err.read()
         if std_err:
             log.error(std_err)
-        return std_out.read().decode().strip()
+        output = std_out.read().decode().strip()
+        log.debug(f'ran command {command}, return value {output}')
+        return output
 
     def read_register(self, address):
         '''
@@ -90,7 +92,7 @@ class RedPitaya(ABC):
 
         hex_value = self.read_register(address)
         bin_value = utils.hex2bits(hex_value, n_bits)
-        return bin_value[32 - n_bits:lsb_location]
+        return bin_value[32 - n_bits:32 - lsb_location]
 
     def read_register_decimal(self, address, n_bits=32, lsb_location=0):
         '''
@@ -99,7 +101,9 @@ class RedPitaya(ABC):
         n_bits specifies how many bits (starting from lsb_location) should be considered in the
         returned value, defaults to 32 (full width of register)
         '''
-        return int(self.read_register_bits(address, n_bits, lsb_location), 2)
+        reg_val = self.read_register_bits(address, n_bits, lsb_location)
+        print(reg_val)
+        return int(reg_val, 2)
 
     def write_register(self, address, value):
         '''
