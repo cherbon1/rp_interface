@@ -19,7 +19,7 @@ Create a new class that inherits from `red_pitaya_comss.RedPitaya`. This new cla
 ```python3
 from rp_interface import red_pitaya_aom
 
-aom_control = red_pitaya_aom.RedPitayaAOM(apply_defaults=True)
+aom_control = red_pitaya_aom.RedPitayaAOM(host='red-pitaya-01.ee.ethz.ch', apply_defaults=True)
 
 aom_control.trap_toggle_time = 15e-6
 aom_control.trigger_now()
