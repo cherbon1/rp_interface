@@ -133,7 +133,11 @@ class RedPitaya(ABC):
         return self.hex2bits(hex_value, n_bits)
 
     def write_register(self, address, value):
-        '''address should be a string, e.g. 0x41200000'''
+        '''
+        Writes to a register of the red pitaya. This will fully replace the contents of the register.
+        If you'd like to only write to a subset of the register, use write_register_bits instead
+        address should be a string, e.g. 0x41200000
+        '''
         _ = self.exec_command('/opt/redpitaya/bin/monitor {} {}'.format(address, value))
 
     def write_register_bits(self, address, bits, lsb_location=0):
