@@ -17,7 +17,8 @@ The class for controlling this red pitaya bitfile is called `RedPitayaAOM`. The 
 - `feedback_toggle_time`: Time that feedback should be off, in seconds (default `1e-3`)
 - `feedback_amplitude`: Gain factor for feedback signal (default `0.05`)
 - `trigger_pulse_time`: Pulse width for trigger (default `500e-9`)
-- `feedback_disable`: default `0`
+- `trap_enable`: default `0`
+- `feedback_enable`: default `0`
 - `output_select`:  default `0`
 - `trigger_now()`: Launches a trigger pulse when called
 
