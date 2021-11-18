@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
     red = RedPitayaAOM(apply_defaults=True)
     # red.load_bitfile()
-    red.defaults()
-
+    red.feedback_enable = True
+    red.trap_enable = True
+    red.output_select = 1
     red.trigger_now()
-    print(red)

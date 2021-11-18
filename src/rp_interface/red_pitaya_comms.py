@@ -134,6 +134,8 @@ class RedPitaya(ABC):
         if len(bits) > n_bits:
             log.warning(f'Value {bits} is larger than {n_bits} and will be trimmed')
             bits = bits[-n_bits:]
+        if len(bits) < n_bits:
+            bits = bits.zfill(n_bits)
 
         # If writing to a entire register
         if n_bits == 32 and lsb_location == 0:
