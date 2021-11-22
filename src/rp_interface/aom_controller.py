@@ -16,7 +16,7 @@ class AOMController(red_pitaya_comms.RedPitaya):
         self.trap_toggle_time = 1e-6
         self.feedback_toggle_time = 1e-3
         self.trigger_pulse_time = 500e-9
-        self.feedback_amplitude = 0.05
+        self.feedback_gain = 0.05
         self.trap_enable = 0
         self.feedback_enable = 0
         self.output_select = 0
@@ -24,14 +24,14 @@ class AOMController(red_pitaya_comms.RedPitaya):
     def __str__(self):
         return (
             'AOM Controller at {host}\n'
-            '  trap {trap_on}, feedback {feedback_on}, amplitude: {feedback_amplitude:.3f},\n'
+            '  trap {trap_on}, feedback {feedback_on}, amplitude: {feedback_gain:.3f},\n'
             '  trap toggle time: {trap_time:.2f}us ({trap_cycles} cycles),\n'
             '  feedback toggle time: {feedback_time:.2f}us ({feedback_cycles} cycles)'
         ).format(
             host=self.host,
             trap_on='ON' if self.trap_enable else 'OFF',
             feedback_on='ON' if self.feedback_enable else 'OFF',
-            feedback_amplitude=self.feedback_amplitude,
+            feedback_amplitude=self.feedback_gain,
             trap_time=self.trap_toggle_time * 1e6,
             trap_cycles=self.n_cycles_trap,
             feedback_time=self.feedback_toggle_time * 1e6,
@@ -55,21 +55,21 @@ class AOMController(red_pitaya_comms.RedPitaya):
         self.n_cycles_feedback = int(value * self.fs)
 
     @property
-    def feedback_amplitude(self):
+    def feedback_gain(self):
         '''
-        The feedback amplitude states how large the feedback signal will be for 1V at the input.
+        The feedback gain states how large the feedback signal will be for 1V at the input.
         It can range from 0 to 0.5
         '''
         return self.squarer_gain / (2 ** 32 - 1) / 2
 
-    @feedback_amplitude.setter
-    def feedback_amplitude(self, value):
+    @feedback_gain.setter
+    def feedback_gain(self, value):
         '''
-        The feedback amplitude states how large the feedback signal will be for 1V at the input.
+        The feedback gain states how large the feedback signal will be for 1V at the input.
         It can range from 0 to 0.5
         '''
         if not 0 <= value <= 0.5:
-            raise ValueError(f'Invalid value {value}. feedback_amplitude must be in range 0 to 0.5')
+            raise ValueError(f'Invalid value {value}. feedback_gain must be in range 0 to 0.5')
         self.squarer_gain = int(2 * value * (2 ** 32 - 1))
 
     def trigger_now(self):

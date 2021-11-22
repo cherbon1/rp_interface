@@ -15,7 +15,7 @@ See below for a basic functional diagram and the more detailed block diagram fro
 The class for controlling this red pitaya bitfile is called `AOMController`. The relevant methods and properties are:
 - `trap_toggle_time`: Time that trap should be off in seconds, in seconds (default `1e-6`)
 - `feedback_toggle_time`: Time that feedback should be off, in seconds (default `1e-3`)
-- `feedback_amplitude`: Gain factor for feedback signal (default `0.05`)
+- `feedback_gain`: Gain factor for feedback signal (default `0.05`)
 - `trigger_pulse_time`: Pulse width for trigger (default `500e-9`)
 - `trap_enable`: default `0`
 - `feedback_enable`: default `0`
