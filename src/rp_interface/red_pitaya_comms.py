@@ -22,7 +22,8 @@ class MuxedRegister:
         # Build write string: write_enable, address bits, data_bits
         write_bit = '1' if write else '0'
         address_bits = utils.unsigned_int2bits(self.register_address, n_bits=5)
-        data_bits = utils.signed_int2bits(data, 26) if self.signed_data else utils.unsigned_int2bits(data, 26)
+        data_bits = utils.signed_int2bits(data, n_bits=26) if self.signed_data \
+                    else utils.unsigned_int2bits(data, n_bits=26)
         return write_bit + address_bits + data_bits
 
     def interpret_data(self, gpio_bits):

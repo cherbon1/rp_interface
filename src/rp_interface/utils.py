@@ -50,7 +50,7 @@ def unsigned_int2bits(value, n_bits=32):
     if value < 0 or value > 2 ** n_bits - 1:
         raise ValueError('Value {} doesnt fit in an unsigned {}-bit number'.format(value, n_bits))
 
-    return bin((1 << n_bits) + value).split('b')[-1].zfill(n_bits)
+    return bin(value).split('b')[-1].zfill(n_bits)
 
 
 def bits2signed_int(bits):
