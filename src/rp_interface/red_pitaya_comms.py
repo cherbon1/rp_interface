@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
 from rp_interface import utils
 
 import paramiko
@@ -8,11 +10,34 @@ import logging
 
 log = logging.getLogger(__name__)
 
+@dataclass
+class MuxedRegister:
+    gpio_write_address: str
+    gpio_read_address: str
+    register_address: int
+    n_bits: int
+    signed_data: bool
+
+    def build_query(self, write=False, data=0):
+        # Build write string: write_enable, address bits, data_bits
+        write_bit = '1' if self.write else '0'
+        address_bits = utils.unsigned_int2bits(self.register_address, n_bits=5)
+        data_bits = utils.signed_int2bits(data, 26) if self.signed_data else utils.unsigned_int2bits(data, 26)
+        return write_bit + address_bits + data_bits
+
+    def interpret_data(self, gpio_bits):
+        data_bits = gpio_bits[-self.n_bits:]
+
+        if self.signed_data:
+            return utils.bits2signed_int(data_bits)
+        return int(data_bits, 2)
+
+
 
 class RedPitaya(ABC):
     '''
     Connects to a Red Pitaya using paramiko.
-    Subclasses should provide a bitfile in the bitfiles directory,
+    Subclasses must provide a bitfile in the bitfiles directory,
     and provide an interface for communicating with the relevant registers
     '''
 
@@ -154,6 +179,33 @@ class RedPitaya(ABC):
         written in register
         '''
         self.write_register_bits(address, bin(value), n_bits, lsb_location)
+
+    def write_muxed_register_decimal(self, register: MuxedRegister, data: int):
+        '''
+        Write to a multiplexed GPIO register (via GPIO_mux and GPIO_super_mux instances)
+        This build the appropriate 32-bit word from address and data.
+        GPIO_address: address of gpio, e.g. 0x41200000
+        register_address: address of the sub-register in decimal, can be between 0 and 31
+        data: the data to write (in decimal). Must fit in 26 bits
+        signed_data: whether the data is signed or not
+        '''
+        # Build write string
+        bits = register.build_query(write=True, data=data)
+
+        # Write to GPIO_address
+        self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
+
+    def read_muxed_register_decimal(self, register: MuxedRegister):
+        '''
+        Read from a multiplexed GPIO register (via GPIO_mux and GPIO_super_mux instances)
+        '''
+        # Build write string and write to write_gpio
+        bits = register.build_query(write=False)
+        self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
+
+        # read result from read_gpio
+        bits = self.read_register_bits(register.gpio_read_address, n_bits=32, lsb_location=0)
+        return register.interpret_data(bits)
 
     def load_bitfile(self):
         with self.client.open_sftp() as ftp_client:
