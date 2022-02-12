@@ -31,7 +31,7 @@ class AOMController(red_pitaya_comms.RedPitaya):
             host=self.host,
             trap_on='ON' if self.trap_enable else 'OFF',
             feedback_on='ON' if self.feedback_enable else 'OFF',
-            feedback_amplitude=self.feedback_gain,
+            feedback_gain=self.feedback_gain,
             trap_time=self.trap_toggle_time * 1e6,
             trap_cycles=self.n_cycles_trap,
             feedback_time=self.feedback_toggle_time * 1e6,
