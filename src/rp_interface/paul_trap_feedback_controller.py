@@ -86,27 +86,27 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
         pass
 
     # muxed registers address definitions
-    output_mux_0_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000',
-                                                          gpio_read_address='0x41200008',
+    output_mux_0_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                          gpio_read_address='0x42000008',
                                                           register_address=0, n_bits=3, signed_data=False)
 
-    output_mux_1_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000',
-                                                          gpio_read_address='0x41200008',
+    output_mux_1_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                          gpio_read_address='0x42000008',
                                                           register_address=1, n_bits=3, signed_data=False)
 
-    delay_input_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000',
-                                                             gpio_read_address='0x41200008',
+    delay_input_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                             gpio_read_address='0x42000008',
                                                              register_address=2, n_bits=1, signed_data=False)
 
-    delay_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000', gpio_read_address='0x41200008',
+    delay_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                                    register_address=3, n_bits=15, signed_data=False)
 
-    delay_output_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000',
-                                                              gpio_read_address='0x41200008',
+    delay_output_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                              gpio_read_address='0x42000008',
                                                               register_address=24, n_bits=3, signed_data=False)
 
-    aom_enable_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x41200000',
-                                                             gpio_read_address='0x41200008',
+    aom_enable_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                             gpio_read_address='0x42000008',
                                                              register_address=25, n_bits=1, signed_data=False)
 
     # biquad0 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
@@ -115,16 +115,16 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
     # biquad3 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
 
     # Biquad addresses
-    biquad0_address = BiquadFilterAddresses(gpio_write_address='0x41200000', gpio_read_address='0x41200008',
+    biquad0_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                        a1_address=4, a2_address=5, b0_address=6, b1_address=7, b2_address=8)
 
-    biquad1_address = BiquadFilterAddresses(gpio_write_address='0x41200000', gpio_read_address='0x41200008',
+    biquad1_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                        a1_address=9, a2_address=10, b0_address=11, b1_address=12, b2_address=13)
 
-    biquad2_address = BiquadFilterAddresses(gpio_write_address='0x41200000', gpio_read_address='0x41200008',
+    biquad2_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                        a1_address=14, a2_address=15, b0_address=16, b1_address=17, b2_address=18)
 
-    biquad3_address = BiquadFilterAddresses(gpio_write_address='0x41200000', gpio_read_address='0x41200008',
+    biquad3_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                        a1_address=19, a2_address=20, b0_address=21, b1_address=22, b2_address=23)
 
     def apply_biquad_filter_settings(self, biquad_number, center_frequency, q_factor, gain):
