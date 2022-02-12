@@ -109,6 +109,10 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
                                                              gpio_read_address='0x42000008',
                                                              register_address=25, n_bits=1, signed_data=False)
 
+    fir_bypass_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
+                                                             gpio_read_address='0x42000008',
+                                                             register_address=26, n_bits=1, signed_data=False)
+
     # biquad0 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
     # biquad1 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
     # biquad2 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
@@ -188,6 +192,14 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
     def aom_enable(self, value):
         self.write_muxed_register_decimal(self.aom_enable_mux_address, int(bool(value)))
 
+    @property
+    def fir_bypass(self):
+        return bool(self.read_muxed_register_decimal(self.fir_bypass_address))
+
+    @fir_bypass.setter
+    def fir_bypass(self, value):
+        self.write_muxed_register_decimal(self.fir_bypass_address, int(bool(value)))
+
     def __str__(self):
         return ('Output mux 0: {output_mux_0}\n'
                 'Output mux 1: {output_mux_1}\n'
@@ -195,13 +207,15 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
                 'Delay: {delay_us:.2f}us\n'
                 '  (frequency: {delay_freq:.2f}kHz)\n'
                 'Delay ouput mux: {delay_output_mux}\n'
+                'FIR bypass: {fir_bypass}\n'
                 'AOM enable: {aom_enable}').format(
             output_mux_0=self.output_mux_0,
             output_mux_1=self.output_mux_1,
             delay_input_mux=self.delay_input_mux,
             delay_us=self.delay*1e6,
-            delay_freq=1/self.delay/4 * 1e-3,
+            delay_freq=0 if self.delay==0 else 1/self.delay/4 * 1e-3,
             delay_output_mux=self.delay_output_mux,
+            fir_bypass=self.fir_bypass,
             aom_enable=self.aom_enable
         )
 
