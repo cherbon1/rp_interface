@@ -188,6 +188,23 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
     def aom_enable(self, value):
         self.write_muxed_register_decimal(self.aom_enable_mux_address, int(bool(value)))
 
+    def __str__(self):
+        return ('Output mux 0: {output_mux_0}\n'
+                'Output mux 1: {output_mux_1}\n'
+                'Delay input mux: {delay_input_mux}\n'
+                'Delay: {delay_us:.2f}us\n'
+                '  (frequency: {delay_freq:.2f}kHz)\n'
+                'Delay ouput mux: {delay_output_mux}\n'
+                'AOM enable: {aom_enable}').format(
+            output_mux_0=self.output_mux_0,
+            output_mux_1=self.output_mux_1,
+            delay_input_mux=self.delay_input_mux,
+            delay_us=self.delay*1e6,
+            delay_freq=1/self.delay/4 * 1e-3,
+            delay_output_mux=self.delay_output_mux,
+            aom_enable=self.aom_enable
+        )
+
     # =======================================
     # ========  LOW LEVEL INTERFACE  ========
     # =======================================
