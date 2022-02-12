@@ -20,7 +20,7 @@ class MuxedRegister:
 
     def build_query(self, write=False, data=0):
         # Build write string: write_enable, address bits, data_bits
-        write_bit = '1' if self.write else '0'
+        write_bit = '1' if write else '0'
         address_bits = utils.unsigned_int2bits(self.register_address, n_bits=5)
         data_bits = utils.signed_int2bits(data, 26) if self.signed_data else utils.unsigned_int2bits(data, 26)
         return write_bit + address_bits + data_bits
