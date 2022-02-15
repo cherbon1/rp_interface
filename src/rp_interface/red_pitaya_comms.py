@@ -196,6 +196,11 @@ class RedPitaya(ABC):
         # Write to GPIO_address
         self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
 
+        # Build and write same query with read bit low to avoid potential errors
+        # (It's a good idea to keep write_enable low if it's not immediately being used)
+        bits = register.build_query(write=False, data=data)
+        self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
+
     def read_muxed_register_decimal(self, register: MuxedRegister):
         '''
         Read from a multiplexed GPIO register (via GPIO_mux and GPIO_super_mux instances)
