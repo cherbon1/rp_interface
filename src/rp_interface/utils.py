@@ -32,6 +32,7 @@ def hex2bin(hex_value, n_bits=None):
     '''
     return '0b' + hex2bits(hex_value, n_bits)
 
+
 def signed_int2bits(value, n_bits=32):
     '''
     Convert a signed int to a two's complement representation signed bit-string

@@ -206,7 +206,7 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
                 'Delay input mux: {delay_input_mux}\n'
                 'Delay: {delay_us:.2f}us\n'
                 '  (frequency: {delay_freq:.2f}kHz)\n'
-                'Delay ouput mux: {delay_output_mux}\n'
+                'Delay output mux: {delay_output_mux}\n'
                 'FIR bypass: {fir_bypass}\n'
                 'AOM enable: {aom_enable}').format(
             output_mux_0=self.output_mux_0,
@@ -226,10 +226,10 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
         biquad_address = [self.biquad0_address, self.biquad1_address,
                           self.biquad2_address, self.biquad3_address][biquad_number]
         self.write_muxed_register_decimal(biquad_address.a1, int(a1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.a2, int(a1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b0, int(a1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b1, int(a1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b2, int(a1 * 2**biquad_address.bitshift))
+        self.write_muxed_register_decimal(biquad_address.a2, int(a2 * 2**biquad_address.bitshift))
+        self.write_muxed_register_decimal(biquad_address.b0, int(b0 * 2**biquad_address.bitshift))
+        self.write_muxed_register_decimal(biquad_address.b1, int(b1 * 2**biquad_address.bitshift))
+        self.write_muxed_register_decimal(biquad_address.b2, int(b2 * 2**biquad_address.bitshift))
 
     @property
     def delay_cycles(self):
