@@ -131,7 +131,7 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
     biquad3_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
                                        a1_address=19, a2_address=20, b0_address=21, b1_address=22, b2_address=23)
 
-    def apply_biquad_filter_settings(self, biquad_number, center_frequency, q_factor, gain):
+    def apply_biquad_filter_notch_settings(self, biquad_number, center_frequency, q_factor, gain):
         # compute params for a notch filter
         K = np.tan(np.pi * center_frequency / self.fs)
         norm = 1 / (1 + K / q_factor + K * K)
@@ -139,6 +139,18 @@ class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
         b1 = 2 * (K * K - 1) * norm
         b2 = b0
         a1 = b1
+        a2 = (1 - K / q_factor + K * K) * norm
+
+        # apply settings
+        self.write_biquad(biquad_number, a1, a2, b0, b1, b2)
+
+    def apply_biquad_filter_bandpass_settings(self, biquad_number, center_frequency, q_factor, gain):
+        K = np.tan(np.pi * center_frequency / self.fs)
+        norm = 1 / (1 + K / q_factor + K * K)
+        b0 = K / q_factor * norm
+        b1 = 0
+        b2 = -b0
+        a1 = 2 * (K * K - 1) * norm
         a2 = (1 - K / q_factor + K * K) * norm
 
         # apply settings
