@@ -81,6 +81,9 @@ class AOMModule(red_pitaya_module.RedPitayaModule):
             register=self.feedback_gain_register
         )
 
+    def defaults(self):
+        pass
+
     @property
     def input_mux(self):
         return self.input_mux_module.select
