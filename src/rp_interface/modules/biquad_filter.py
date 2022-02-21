@@ -198,11 +198,11 @@ class BiquadFilter(red_pitaya_module.RedPitayaModule):
         Coefficients should not be rescaled yet
         '''
         scaled_coeffs = coefficients.get_bitshifted_coefficients(self.bitshift)
+        self.rp.write_muxed_register_decimal(self.registers.a1, scaled_coeffs.a1)
+        self.rp.write_muxed_register_decimal(self.registers.a2, scaled_coeffs.a2)
         self.rp.write_muxed_register_decimal(self.registers.b0, scaled_coeffs.b0)
         self.rp.write_muxed_register_decimal(self.registers.b1, scaled_coeffs.b1)
         self.rp.write_muxed_register_decimal(self.registers.b2, scaled_coeffs.b2)
-        self.rp.write_muxed_register_decimal(self.registers.a1, scaled_coeffs.a1)
-        self.rp.write_muxed_register_decimal(self.registers.a2, scaled_coeffs.a2)
 
     def calculate_biquad_coefficients(self, filter_type: Filter, center_frequency: float, q_factor: float):
         '''
