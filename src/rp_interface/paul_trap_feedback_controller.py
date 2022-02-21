@@ -3,7 +3,8 @@ from typing import Union
 
 import numpy as np
 from rp_interface import red_pitaya_controller, red_pitaya_comms
-from rp_interface.modules import biquad_filter, filter_block, aom_block, multiplexer, conditional_adder, coarse_gain
+from rp_interface.modules import biquad_filter, filter_block, aom_block, multiplexer, conditional_adder, coarse_gain, \
+    trigger
 
 
 class PaulTrapFeedbackController(red_pitaya_controller.RedPitayaController):
@@ -176,6 +177,12 @@ class PaulTrapFeedbackController(red_pitaya_controller.RedPitayaController):
             fs=125e6
         )
 
+        self.trigger_detector_module = trigger.Trigger(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.trigger_detector_register
+        )
+
         self.simple_aom_module = multiplexer.BooleanMux(
             red_pitaya=self.rp,
             apply_defaults=False,
@@ -217,6 +224,9 @@ class PaulTrapFeedbackController(red_pitaya_controller.RedPitayaController):
             apply_defaults=False,
             register=self.output_mux1_register
         )
+
+    def trigger_now(self):
+        self.trigger_detector_module.trigger_now()
 
     @property
     def simple_aom_enable(self):
