@@ -284,7 +284,7 @@ class FilterModule(red_pitaya_module.RedPitayaModule):
 
     @property
     def output_gain(self):
-        return self.output_fine_gain_module.gain * self.output_coarse_gain_module
+        return self.output_fine_gain_module.gain * self.output_coarse_gain_module.gain
 
     @output_gain.setter
     def output_gain(self, value):
