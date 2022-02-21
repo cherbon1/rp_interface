@@ -189,16 +189,15 @@ class RedPitaya:
         data: the data to write (in decimal). Must fit in 26 bits
         signed_data: whether the data is signed or not
         '''
-        # Build write string
-        bits = register.build_query(write=True, data=data)
+        # The timing can go wrong with these muxed registers. To avoid that,
+        # Write a buffer with same data but write bit low before and after writing
+        buffer_bits = register.build_query(write=False, data=data)
+        write_bits = register.build_query(write=True, data=data)
 
         # Write to GPIO_address
-        self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
-
-        # Build and write same query with read bit low to avoid potential errors
-        # (It's a good idea to keep write_enable low if it's not immediately being used)
-        bits = register.build_query(write=False, data=data)
-        self.write_register_bits(register.gpio_write_address, bits, n_bits=32, lsb_location=0)
+        self.write_register_bits(register.gpio_write_address, buffer_bits, n_bits=32, lsb_location=0)
+        self.write_register_bits(register.gpio_write_address, write_bits, n_bits=32, lsb_location=0)
+        self.write_register_bits(register.gpio_write_address, buffer_bits, n_bits=32, lsb_location=0)
 
     def read_muxed_register_decimal(self, register: MuxedRegister):
         '''
