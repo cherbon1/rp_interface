@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from rp_interface import utils
@@ -9,6 +8,7 @@ import time
 import logging
 
 log = logging.getLogger(__name__)
+
 
 @dataclass
 class MuxedRegister:
@@ -34,16 +34,14 @@ class MuxedRegister:
         return int(data_bits, 2)
 
 
-
-class RedPitaya(ABC):
+class RedPitaya:
     '''
-    Connects to a Red Pitaya using paramiko.
-    Subclasses must provide a bitfile in the bitfiles directory,
-    and provide an interface for communicating with the relevant registers
-    '''
+    Connects to a Red Pitaya using paramiko
+    e.g. RedPitaya(host='red-pitaya-18.ee.ethz.ch')
 
-    def __init__(self, host='red-pitaya-18.ee.ethz.ch', username='root', password='root',
-                 load_bitfile=False, apply_defaults=False):
+    Handles communication with the red pitaya via ssh and reading and writing to registers
+    '''
+    def __init__(self, host: str = 'red-pitaya-18.ee.ethz.ch', username: str = 'root', password:str = 'root'):
 
         self.username = username
         self.host = host
@@ -56,36 +54,28 @@ class RedPitaya(ABC):
         self.client.connect(self.host, username=self.username, password=self.password)
         log.info('Connecting to {}@{}'.format(self.username, self.host))
 
-        self.bitfiles_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
-
-        if load_bitfile:
-            self.load_bitfile()
-
-        if apply_defaults:
-            self.defaults()
-
     def __del__(self):
         self.client.close()
         log.info('Closing SSH client for {}@{}'.format(self.username, self.host))
 
-    @property
-    @abstractmethod
-    def bitfile(self):
-        ...
+    # =======================================
+    # ==========  BITFILE RELATED  ==========
+    # =======================================
 
-    @property
-    @abstractmethod
-    def fs(self):
-        ...
+    def load_bitfile(self, bitfile_path):
+        bitfile = os.path.basename(bitfile_path)
+        with self.client.open_sftp() as ftp_client:
+            # copy bitfile to /root directory of red pitaya
+            ftp_client.put(bitfile_path, '/{}/{}'.format(self.username, bitfile))
 
-    @abstractmethod
-    def defaults(self):
-        ...
+        time.sleep(0.5)
+        _ = self.exec_command('cat ./{} > /dev/xdevcfg'.format(bitfile))
+        time.sleep(0.2)
+        log.info('Bitfile loaded')
 
-    @property
-    def bitfile_path(self):
-        return os.path.join(self.bitfiles_directory, self.bitfile)
-
+    # =======================================
+    # ==========  LOW LEVEL COMMS  ==========
+    # =======================================
     def exec_command(self, command):
         std_in, std_out, std_err = self.client.exec_command(command)
         std_err = std_err.read()
@@ -95,6 +85,9 @@ class RedPitaya(ABC):
         log.debug(f'ran command {command}, return value {output}')
         return output
 
+    # =======================================
+    # ========  READ FROM REGISTERS  ========
+    # =======================================
     def read_register(self, address):
         '''
         Reads from a register of the red pitaya
@@ -130,6 +123,9 @@ class RedPitaya(ABC):
         reg_val = self.read_register_bits(address, n_bits, lsb_location)
         return int(reg_val, 2)
 
+    # =======================================
+    # ========  WRITE TO REGISTERS ==========
+    # =======================================
     def write_register(self, address, value):
         '''
         Writes to a register of the red pitaya. This will fully replace the contents of the register.
@@ -181,6 +177,9 @@ class RedPitaya(ABC):
         '''
         self.write_register_bits(address, bin(value), n_bits, lsb_location)
 
+    # =======================================
+    # ==== READ/WRITE TO MUXED REGISTERS ====
+    # =======================================
     def write_muxed_register_decimal(self, register: MuxedRegister, data: int):
         '''
         Write to a multiplexed GPIO register (via GPIO_mux and GPIO_super_mux instances)
@@ -212,13 +211,3 @@ class RedPitaya(ABC):
         # read result from read_gpio
         bits = self.read_register_bits(register.gpio_read_address, n_bits=32, lsb_location=0)
         return register.interpret_data(bits)
-
-    def load_bitfile(self):
-        with self.client.open_sftp() as ftp_client:
-            # copy bitfile to /root directory of red pitaya
-            ftp_client.put(self.bitfile_path, '/{}/{}'.format(self.username, self.bitfile))
-
-        time.sleep(0.5)
-        _ = self.exec_command('cat ./{} > /dev/xdevcfg'.format(self.bitfile))
-        time.sleep(0.2)
-        log.info('Bitfile loaded')

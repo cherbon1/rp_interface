@@ -1,252 +1,259 @@
 from dataclasses import dataclass
+from typing import Union
+
 import numpy as np
-from rp_interface import red_pitaya_comms
-
-@dataclass
-class BiquadFilterAddresses:
-    a1: red_pitaya_comms.MuxedRegister
-    a2: red_pitaya_comms.MuxedRegister
-    b0: red_pitaya_comms.MuxedRegister
-    b1: red_pitaya_comms.MuxedRegister
-    b2: red_pitaya_comms.MuxedRegister
-    bitshift: int
-
-    def __init__(self, gpio_write_address, gpio_read_address, a1_address,
-                 a2_address, b0_address, b1_address, b2_address, n_bits=24):
-        self.bitshift = n_bits-2
-
-        self.a1 = red_pitaya_comms.MuxedRegister(
-            gpio_write_address=gpio_write_address,
-            gpio_read_address=gpio_read_address,
-            register_address=a1_address,
-            n_bits=n_bits,
-            signed_data=True
-        )
-
-        self.a2 = red_pitaya_comms.MuxedRegister(
-            gpio_write_address=gpio_write_address,
-            gpio_read_address=gpio_read_address,
-            register_address=a2_address,
-            n_bits=n_bits,
-            signed_data=True
-        )
-
-        self.b0 = red_pitaya_comms.MuxedRegister(
-            gpio_write_address=gpio_write_address,
-            gpio_read_address=gpio_read_address,
-            register_address=b0_address,
-            n_bits=n_bits,
-            signed_data=True
-        )
-
-        self.b1 = red_pitaya_comms.MuxedRegister(
-            gpio_write_address=gpio_write_address,
-            gpio_read_address=gpio_read_address,
-            register_address=b1_address,
-            n_bits=n_bits,
-            signed_data=True
-        )
-
-        self.b2 = red_pitaya_comms.MuxedRegister(
-            gpio_write_address=gpio_write_address,
-            gpio_read_address=gpio_read_address,
-            register_address=b2_address,
-            n_bits=n_bits,
-            signed_data=True
-        )
-
-# @dataclass
-# class BiquadFilterSettings:
-#     '''
-#     A collection of values and functions for controlling a biquad notch filter
-#     '''
-#     sample_frequency: float
-#     center_frequency: float = 1e3
-#     q_factor: float = 10
-#     gain: float = 1
-#     filter_type: str = 'notch'
-#
-#     def get_params(self):
-#         K = np.tan(np.pi * self.center_frequency / self.sample_frequency)
-#         norm = 1 / (1 + K / self.q_factor + K * K)
-#         b0 = (1 + K * K) * norm
-#         b1 = 2 * (K * K - 1) * norm
-#         b2 = b0
-#         a1 = b1
-#         a2 = (1 - K / self.q_factor + K * K) * norm
-#
-#         return a1, a2, b0, b1, b2
+from rp_interface import red_pitaya_controller, red_pitaya_comms
+from rp_interface.modules import biquad_filter, filter_block, aom_block, multiplexer, conditional_adder, coarse_gain
 
 
-class PaulTrapFeedbackController(red_pitaya_comms.RedPitaya):
+class PaulTrapFeedbackController(red_pitaya_controller.RedPitayaController):
     bitfile = 'paul_trap_feedback_controller.bit'
-    fs = 125e6
 
     def defaults(self):
         pass
 
-    # muxed registers address definitions
-    output_mux_0_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                          gpio_read_address='0x42000008',
-                                                          register_address=0, n_bits=3, signed_data=False)
+    def __init__(self,
+                 red_pitaya: Union[red_pitaya_comms.RedPitaya, str],
+                 load_bitfile: bool = False,
+                 apply_defaults: bool = False):
+        super().__init__(red_pitaya=red_pitaya, load_bitfile=load_bitfile, apply_defaults=apply_defaults)
 
-    output_mux_1_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                          gpio_read_address='0x42000008',
-                                                          register_address=1, n_bits=3, signed_data=False)
 
-    delay_input_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                             gpio_read_address='0x42000008',
-                                                             register_address=2, n_bits=1, signed_data=False)
-
-    delay_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
-                                                   register_address=3, n_bits=15, signed_data=False)
-
-    delay_output_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                              gpio_read_address='0x42000008',
-                                                              register_address=24, n_bits=3, signed_data=False)
-
-    aom_enable_mux_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                             gpio_read_address='0x42000008',
-                                                             register_address=25, n_bits=1, signed_data=False)
-
-    fir_bypass_address = red_pitaya_comms.MuxedRegister(gpio_write_address='0x42000000',
-                                                             gpio_read_address='0x42000008',
-                                                             register_address=26, n_bits=1, signed_data=False)
-
-    # biquad0 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
-    # biquad1 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
-    # biquad2 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
-    # biquad3 = BiquadFilterSettings(sample_frequency=125e6 / 2**10)
-
-    # Biquad addresses
-    biquad0_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
-                                       a1_address=4, a2_address=5, b0_address=6, b1_address=7, b2_address=8)
-
-    biquad1_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
-                                       a1_address=9, a2_address=10, b0_address=11, b1_address=12, b2_address=13)
-
-    biquad2_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
-                                       a1_address=14, a2_address=15, b0_address=16, b1_address=17, b2_address=18)
-
-    biquad3_address = BiquadFilterAddresses(gpio_write_address='0x42000000', gpio_read_address='0x42000008',
-                                       a1_address=19, a2_address=20, b0_address=21, b1_address=22, b2_address=23)
-
-    def apply_biquad_filter_notch_settings(self, biquad_number, center_frequency, q_factor, gain):
-        # compute params for a notch filter
-        K = np.tan(np.pi * center_frequency / self.fs)
-        norm = 1 / (1 + K / q_factor + K * K)
-        b0 = (1 + K * K) * norm
-        b1 = 2 * (K * K - 1) * norm
-        b2 = b0
-        a1 = b1
-        a2 = (1 - K / q_factor + K * K) * norm
-
-        # apply settings
-        self.write_biquad(biquad_number, a1, a2, b0, b1, b2)
-
-    def apply_biquad_filter_bandpass_settings(self, biquad_number, center_frequency, q_factor, gain):
-        K = np.tan(np.pi * center_frequency / self.fs)
-        norm = 1 / (1 + K / q_factor + K * K)
-        b0 = K / q_factor * norm
-        b1 = 0
-        b2 = -b0
-        a1 = 2 * (K * K - 1) * norm
-        a2 = (1 - K / q_factor + K * K) * norm
-
-        # apply settings
-        self.write_biquad(biquad_number, a1, a2, b0, b1, b2)
-
-    @property
-    def delay(self):
-        return self.delay_cycles / self.fs
-
-    @delay.setter
-    def delay(self, value):
-        self.delay_cycles = int(value * self.fs)
-
-    @property
-    def output_mux_0(self):
-        return self.read_muxed_register_decimal(self.output_mux_0_address)
-
-    @output_mux_0.setter
-    def output_mux_0(self, value):
-        self.write_muxed_register_decimal(self.output_mux_0_address, value)
-
-    @property
-    def output_mux_1(self):
-        return self.read_muxed_register_decimal(self.output_mux_1_address)
-
-    @output_mux_1.setter
-    def output_mux_1(self, value):
-        self.write_muxed_register_decimal(self.output_mux_1_address, value)
-
-    @property
-    def delay_input_mux(self):
-        return self.read_muxed_register_decimal(self.delay_input_mux_address)
-
-    @delay_input_mux.setter
-    def delay_input_mux(self, value):
-        self.write_muxed_register_decimal(self.delay_input_mux_address, value)
-
-    @property
-    def delay_output_mux(self):
-        return self.read_muxed_register_decimal(self.delay_output_mux_address)
-
-    @delay_output_mux.setter
-    def delay_output_mux(self, value):
-        self.write_muxed_register_decimal(self.delay_output_mux_address, value)
-
-    @property
-    def aom_enable(self):
-        return bool(self.read_muxed_register_decimal(self.aom_enable_mux_address))
-
-    @aom_enable.setter
-    def aom_enable(self, value):
-        self.write_muxed_register_decimal(self.aom_enable_mux_address, int(bool(value)))
-
-    @property
-    def fir_bypass(self):
-        return bool(self.read_muxed_register_decimal(self.fir_bypass_address))
-
-    @fir_bypass.setter
-    def fir_bypass(self, value):
-        self.write_muxed_register_decimal(self.fir_bypass_address, int(bool(value)))
-
-    def __str__(self):
-        return ('Output mux 0: {output_mux_0}\n'
-                'Output mux 1: {output_mux_1}\n'
-                'Delay input mux: {delay_input_mux}\n'
-                'Delay: {delay_us:.2f}us\n'
-                '  (frequency: {delay_freq:.2f}kHz)\n'
-                'Delay output mux: {delay_output_mux}\n'
-                'FIR bypass: {fir_bypass}\n'
-                'AOM enable: {aom_enable}').format(
-            output_mux_0=self.output_mux_0,
-            output_mux_1=self.output_mux_1,
-            delay_input_mux=self.delay_input_mux,
-            delay_us=self.delay*1e6,
-            delay_freq=0 if self.delay==0 else 1/self.delay/4 * 1e-3,
-            delay_output_mux=self.delay_output_mux,
-            fir_bypass=self.fir_bypass,
-            aom_enable=self.aom_enable
+        # =======================================
+        # ====== DEFINE REGISTER LOCATIONS ======
+        # =======================================
+        self.trigger_detector_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=0,
+            n_bits=1,
+            signed_data=False
         )
 
-    # =======================================
-    # ========  LOW LEVEL INTERFACE  ========
-    # =======================================
-    def write_biquad(self, biquad_number, a1, a2, b0, b1, b2):
-        biquad_address = [self.biquad0_address, self.biquad1_address,
-                          self.biquad2_address, self.biquad3_address][biquad_number]
-        self.write_muxed_register_decimal(biquad_address.a1, int(a1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.a2, int(a2 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b0, int(b0 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b1, int(b1 * 2**biquad_address.bitshift))
-        self.write_muxed_register_decimal(biquad_address.b2, int(b2 * 2**biquad_address.bitshift))
+        self.input_mux_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=1,
+            n_bits=1,
+            signed_data=False
+        )
+
+        self.trap_enable_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=2,
+            n_bits=1,
+            signed_data=False
+        )
+
+        self.trap_delay_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=3,
+            n_bits=26,
+            signed_data=False
+        )
+
+        self.trap_toggle_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=4,
+            n_bits=26,
+            signed_data=False
+        )
+
+        self.feedback_enable_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=5,
+            n_bits=1,
+            signed_data=False
+        )
+
+        self.feedback_delay_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=6,
+            n_bits=26,
+            signed_data=False
+        )
+
+        self.feedback_toggle_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=7,
+            n_bits=26,
+            signed_data=False
+        )
+
+        self.feedback_gain_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=8,
+            n_bits=17,
+            signed_data=True
+        )
+
+        self.simple_aom_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=12,
+            n_bits=1,
+            signed_data=False
+        )
+
+        self.conditional_adder0_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=13,
+            n_bits=4,
+            signed_data=False
+        )
+
+        self.conditional_adder1_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=14,
+            n_bits=4,
+            signed_data=False
+        )
+
+        self.post_adder0_gain_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=15,
+            n_bits=2,
+            signed_data=False
+        )
+
+        self.post_adder1_gain_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=16,
+            n_bits=2,
+            signed_data=False
+        )
+
+        self.output_mux0_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=17,
+            n_bits=3,
+            signed_data=False
+        )
+
+        self.output_mux1_register = red_pitaya_comms.MuxedRegister(
+            gpio_write_address='0x41200000',
+            gpio_read_address='0x41200008',
+            register_address=18,
+            n_bits=3,
+            signed_data=False
+        )
+
+        # =======================================
+        # ====== DEFINE HIGH LEVEL MODULES ======
+        # =======================================
+        self.filter0 = filter_block.FilterModule(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            gpio_write_address='0x41210000',
+            gpio_read_address='0x41210008',
+            fs=125e6,
+            decimation_factor=2**10
+        )
+
+        self.aom = aom_block.AOMModule(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            input_mux_register=self.input_mux_register,
+            trap_enable_register=self.trap_enable_register,
+            trap_delay_register=self.trap_delay_register,
+            trap_toggle_register=self.trap_toggle_register,
+            feedback_enable_register=self.feedback_enable_register,
+            feedback_delay_register=self.feedback_delay_register,
+            feedback_toggle_register=self.feedback_toggle_register,
+            feedback_gain_register=self.feedback_gain_register,
+            fs=125e6
+        )
+
+        self.simple_aom_module = multiplexer.BooleanMux(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.simple_aom_register
+        )
+
+        self.adder0 = conditional_adder.ConditionalAdder(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.conditional_adder0_register
+        )
+
+        self.adder1 = conditional_adder.ConditionalAdder(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.conditional_adder1_register
+        )
+
+        self.adder0_gain_module = coarse_gain.CoarseGain(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.post_adder0_gain_register
+        )
+
+        self.adder1_gain_module = coarse_gain.CoarseGain(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.post_adder1_gain_register
+        )
+
+        self.output_mux0_module = multiplexer.Mux(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.output_mux0_register
+        )
+
+        self.output_mux1_module = multiplexer.Mux(
+            red_pitaya=self.rp,
+            apply_defaults=False,
+            register=self.output_mux1_register
+        )
 
     @property
-    def delay_cycles(self):
-        return self.read_muxed_register_decimal(self.delay_address)
+    def simple_aom_enable(self):
+        return self.simple_aom_module.select
 
-    @delay_cycles.setter
-    def delay_cycles(self, value):
-        self.write_muxed_register_decimal(self.delay_address, value)
+    @simple_aom_enable.setter
+    def simple_aom_enable(self, value):
+        self.simple_aom_module.select = value
+
+    @property
+    def adder0_gain(self):
+        return self.adder0_gain_module.gain
+
+    @adder0_gain.setter
+    def adder0_gain(self, value):
+        self.adder0_gain_module.gain = value
+
+    @property
+    def adder1_gain(self):
+        return self.adder1_gain_module.gain
+
+    @adder1_gain.setter
+    def adder1_gain(self, value):
+        self.adder1_gain_module.gain = value
+
+    @property
+    def output0_mux(self):
+        return self.output_mux0_module.select
+
+    @output0_mux.setter
+    def output0_mux(self, value):
+        self.output_mux0_module.select = value
+
+    @property
+    def output1_mux(self):
+        return self.output_mux1_module.select
+
+    @output1_mux.setter
+    def output1_mux(self, value):
+        self.output_mux1_module.select = value
