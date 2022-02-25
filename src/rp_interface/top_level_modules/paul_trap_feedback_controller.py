@@ -37,7 +37,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         - 6 -> GPIO trigger pulse
         - 7 -> constant
     '''
-    bitfile = Bitfile('paul_trap_controller.bit')
+    bitfile = Bitfile('paul_trap_feedback_controller.bit')
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
