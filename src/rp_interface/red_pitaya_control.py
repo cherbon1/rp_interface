@@ -27,7 +27,6 @@ class RedPitayaControl:
                  read_data: Callable = None,
                  default_value: Any = None,
                  apply_default: bool = False):
-
         if isinstance(red_pitaya, str):
             red_pitaya = RedPitaya(host=red_pitaya)
         if not isinstance(red_pitaya, RedPitaya):

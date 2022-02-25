@@ -24,6 +24,8 @@ class RedPitayaModule(ABC):
                  default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
+        if isinstance(red_pitaya, str):
+            red_pitaya = RedPitaya(host=red_pitaya)
         if not isinstance(red_pitaya, RedPitaya):
             raise ValueError('Invalid red_pitaya parameter {}'.format(red_pitaya))
         self.rp = red_pitaya

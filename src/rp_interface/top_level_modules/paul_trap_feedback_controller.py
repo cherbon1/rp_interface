@@ -253,3 +253,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self.trigger_control.value = False
         self.trigger_control.value = True
         self.trigger_control.value = False
+
+if __name__ == "__main__":
+    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch')

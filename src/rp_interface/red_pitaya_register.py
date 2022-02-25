@@ -6,8 +6,8 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@dataclass
-class Register(frozenset=True):
+@dataclass(frozen=True)
+class Register:
     '''
     Describes the contents of a regular register of an AXI-GPIO block.
     '''
@@ -57,8 +57,8 @@ class Register(frozenset=True):
         return utils.bits2any(bits, dtype)
 
 
-@dataclass
-class MuxedRegister(frozenset=True):
+@dataclass(frozen=True)
+class MuxedRegister:
     '''
     Describes the contents of a multiplexed register where a single GPIO block
     can be used to write many parameters to the configuration
