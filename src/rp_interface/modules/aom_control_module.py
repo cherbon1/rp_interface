@@ -40,8 +40,8 @@ class AOMControlModule(RedPitayaModule):
                 'feedback_enable': False
             })
 
-        self.gpio_write_address = gpio_write_address
-        self.gpio_read_address = gpio_read_address
+        self._gpio_write_address = gpio_write_address
+        self._gpio_read_address = gpio_read_address
 
         self.fs = 125e6
 
@@ -49,14 +49,14 @@ class AOMControlModule(RedPitayaModule):
         self._define_controls()
 
         property_definitions = {
-            'input_mux': (self.input_mux_control, 'value'),
-            'trap_enable': (self.trap_enable_control, 'value'),
-            'trap_toggle_delay': (self.trap_toggle_delay_control, 'value'),
-            'trap_toggle_time': (self.trap_toggle_time_control, 'value'),
-            'feedback_enable': (self.feedback_enable_control, 'value'),
-            'feedback_toggle_delay': (self.feedback_toggle_delay_control, 'value'),
-            'feedback_toggle_time': (self.feedback_toggle_time_control, 'value'),
-            'feedback_gain': (self.feedback_gain_control, 'value'),
+            'input_mux': ('_input_mux_control', 'value'),
+            'trap_enable': ('_trap_enable_control', 'value'),
+            'trap_toggle_delay': ('_trap_toggle_delay_control', 'value'),
+            'trap_toggle_time': ('_trap_toggle_time_control', 'value'),
+            'feedback_enable': ('_feedback_enable_control', 'value'),
+            'feedback_toggle_delay': ('_feedback_toggle_delay_control', 'value'),
+            'feedback_toggle_time': ('_feedback_toggle_time_control', 'value'),
+            'feedback_gain': ('_feedback_gain_control', 'value'),
         }
         self._define_properties(property_definitions)
 
@@ -72,57 +72,57 @@ class AOMControlModule(RedPitayaModule):
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
         self._input_mux_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=1,
             n_bits=1
         )
 
         self._trap_enable_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=2,
             n_bits=1
         )
 
         self._trap_toggle_delay_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=3,
             n_bits=26
         )
 
         self._trap_toggle_time_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=4,
             n_bits=26
         )
 
         self._feedback_enable_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=5,
             n_bits=1
         )
 
         self._feedback_toggle_delay_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=6,
             n_bits=26
         )
 
         self._feedback_toggle_time_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=7,
             n_bits=26
         )
 
         self._feedback_gain_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=8,
             n_bits=17
         )
@@ -132,7 +132,7 @@ class AOMControlModule(RedPitayaModule):
         A method that defines all controls of an aom block
         Called in __init__, but separated out for readability
         '''
-        self.input_mux_control = RedPitayaControl(
+        self._input_mux_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._input_mux_register,
             name='Input mux',
@@ -140,14 +140,14 @@ class AOMControlModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 1),
         )
 
-        self.trap_enable_control = RedPitayaControl(
+        self._trap_enable_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._trap_enable_register,
             name='Trap enable',
             dtype=DataType.BOOL,
         )
 
-        self.trap_toggle_delay_control = RedPitayaControl(
+        self._trap_toggle_delay_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._trap_toggle_delay_register,
             name='Trap toggle delay',
@@ -157,7 +157,7 @@ class AOMControlModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self.trap_toggle_time_control = RedPitayaControl(
+        self._trap_toggle_time_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._trap_toggle_time_register,
             name='Trap toggle time',
@@ -167,14 +167,14 @@ class AOMControlModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self.feedback_enable_control = RedPitayaControl(
+        self._feedback_enable_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._feedback_enable_register,
             name='Feedback enable',
             dtype=DataType.BOOL,
         )
 
-        self.feedback_toggle_delay_control = RedPitayaControl(
+        self._feedback_toggle_delay_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._feedback_toggle_delay_register,
             name='Feedback toggle delay',
@@ -184,7 +184,7 @@ class AOMControlModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self.feedback_toggle_time_control = RedPitayaControl(
+        self._feedback_toggle_time_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._feedback_toggle_time_register,
             name='Feedback toggle time',
@@ -194,7 +194,7 @@ class AOMControlModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self.feedback_gain_control = RedPitayaControl(
+        self._feedback_gain_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._feedback_gain_register,
             name='Feedback gain',

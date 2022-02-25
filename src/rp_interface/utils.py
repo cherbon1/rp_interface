@@ -29,7 +29,9 @@ class DataType(Enum):
             DataType.SIGNED_INT == DataType.SIGNED_INT --> True
             'signed int' == DataType.SIGNED_INT --> True
         '''
-        return self.value == other or self == other
+        if isinstance(other, str):
+            return self.value == other
+        return super().__eq__(other)
 
 
 def bin2hex(bin_value):
@@ -104,13 +106,13 @@ def any2bits(data, dtype, n_bits):
     assumes that input data is in the proper format, may fail if that's not the case
     '''
     if dtype == DataType.UNSIGNED_INT:
-        bits = unsigned_int2bits(data, n_bits=n_bits)
+        return unsigned_int2bits(data, n_bits=n_bits)
     elif dtype == DataType.SIGNED_INT:
-        bits = signed_int2bits(data, n_bits=n_bits)
+        return signed_int2bits(data, n_bits=n_bits)
     elif dtype == DataType.HEX:
-        bits = hex2bits(data, n_bits=n_bits)
+        return hex2bits(data, n_bits=n_bits)
     elif dtype == DataType.BOOL:
-        bits = '1' if data else '0'
+        return '1' if data else '0'
     elif dtype == DataType.BIN or dtype == DataType.BITS:
         if isinstance(data, int):
             bits = str(data)
@@ -122,6 +124,7 @@ def any2bits(data, dtype, n_bits):
             bits = bits[-n_bits:]
         if len(bits) < n_bits:
             bits = bits.zfill(n_bits)
+        return bits
     else:
         raise ValueError(f'Unknown data type {dtype}')
 

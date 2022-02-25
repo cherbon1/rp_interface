@@ -50,24 +50,24 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         if default_values is None:
             default_values = {}
         default_values.update({
-                'feedback_gain': 0.1,
-                'trap_enable': False,
-                'feedback_enable': False
-            })
+            'feedback_gain': 0.1,
+            'trap_enable': False,
+            'feedback_enable': False
+        })
 
         # gpio addresses
-        self.top_module_gpio_write_address = '0x41200000'
-        self.top_module_gpio_read_address = '0x41200008'
-        self.aom_control_gpio_write_address = '0x41200000'
-        self.aom_control_gpio_read_address = '0x41200008'
-        self.delay_filter0_gpio_write_address = '0x41210000'
-        self.delay_filter0_gpio_read_address = '0x41210008'
-        self.delay_filter1_gpio_write_address = '0x41220000'
-        self.delay_filter1_gpio_read_address = '0x41220008'
-        self.delay_filter2_gpio_write_address = '0x41230000'
-        self.delay_filter2_gpio_read_address = '0x41230008'
-        self.delay_filter3_gpio_write_address = '0x41240000'
-        self.delay_filter3_gpio_read_address = '0x41240008'
+        self._top_module_gpio_write_address = '0x41200000'
+        self._top_module_gpio_read_address = '0x41200008'
+        self._aom_control_gpio_write_address = '0x41200000'
+        self._aom_control_gpio_read_address = '0x41200008'
+        self._delay_filter0_gpio_write_address = '0x41210000'
+        self._delay_filter0_gpio_read_address = '0x41210008'
+        self._delay_filter1_gpio_write_address = '0x41220000'
+        self._delay_filter1_gpio_read_address = '0x41220008'
+        self._delay_filter2_gpio_write_address = '0x41230000'
+        self._delay_filter2_gpio_read_address = '0x41230008'
+        self._delay_filter3_gpio_write_address = '0x41240000'
+        self._delay_filter3_gpio_read_address = '0x41240008'
 
         self.fs = 125e6
 
@@ -76,10 +76,10 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
         # define top level properties
         property_definitions = {
-            'trigger_delay': (self.trigger_delay_control, 'value'),
-            'output0_mux': (self.output0_mux_control, 'value'),
-            'output1_mux': (self.output1_mux_control, 'value'),
-            'constant': (self.constant_control, 'value'),
+            'trigger_delay': ('_trigger_delay_control', 'value'),
+            'output0_mux': ('_output0_mux_control', 'value'),
+            'output1_mux': ('_output1_mux_control', 'value'),
+            'constant': ('_constant_control', 'value'),
         }
         self._define_properties(property_definitions)
 
@@ -87,28 +87,28 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._define_sum_modules()
         self.aom_control = AOMControlModule(
             red_pitaya=self.rp,
-            gpio_write_address=self.aom_control_gpio_write_address,
-            gpio_read_address=self.aom_control_gpio_read_address,
+            gpio_write_address=self._aom_control_gpio_write_address,
+            gpio_read_address=self._aom_control_gpio_read_address,
         )
         self.delay_filter0 = DelayFilterModule(
             red_pitaya=self.rp,
-            gpio_write_address=self.delay_filter0_gpio_write_address,
-            gpio_read_address=self.delay_filter0_gpio_read_address,
+            gpio_write_address=self._delay_filter0_gpio_write_address,
+            gpio_read_address=self._delay_filter0_gpio_read_address,
         )
         self.delay_filter1 = DelayFilterModule(
             red_pitaya=self.rp,
-            gpio_write_address=self.delay_filter1_gpio_write_address,
-            gpio_read_address=self.delay_filter1_gpio_read_address,
+            gpio_write_address=self._delay_filter1_gpio_write_address,
+            gpio_read_address=self._delay_filter1_gpio_read_address,
         )
         self.delay_filter2 = DelayFilterModule(
             red_pitaya=self.rp,
-            gpio_write_address=self.delay_filter2_gpio_write_address,
-            gpio_read_address=self.delay_filter2_gpio_read_address,
+            gpio_write_address=self._delay_filter2_gpio_write_address,
+            gpio_read_address=self._delay_filter2_gpio_read_address,
         )
         self.delay_filter3 = DelayFilterModule(
             red_pitaya=self.rp,
-            gpio_write_address=self.delay_filter3_gpio_write_address,
-            gpio_read_address=self.delay_filter3_gpio_read_address,
+            gpio_write_address=self._delay_filter3_gpio_write_address,
+            gpio_read_address=self._delay_filter3_gpio_read_address,
         )
 
         if load_bitfile:
@@ -126,64 +126,64 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
         self._trigger_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=20,
             n_bits=1
         )
 
         self._trigger_delay_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=19,
             n_bits=26
         )
 
         self._output0_mux_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=17,
             n_bits=3
         )
 
         self._output1_mux_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=18,
             n_bits=3
         )
 
         self._constant_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=12,
             n_bits=14
         )
 
         self._sum0_add_select_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=13,
             n_bits=4
         )
 
         self._sum1_add_select_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=14,
             n_bits=4
         )
 
         self._sum0_divide_by_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=15,
             n_bits=2
         )
 
         self._sum1_divide_by_register = MuxedRegister(
-            gpio_write_address=self.top_module_gpio_write_address,
-            gpio_read_address=self.top_module_gpio_read_address,
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
             register_address=16,
             n_bits=2
         )
@@ -193,14 +193,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         A method that defines all controls required here
         Called in __init__, but separated out for readability
         '''
-        self.trigger_control = RedPitayaControl(
+        self._trigger_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._trigger_register,
             name='Trigger control',
             dtype=DataType.BOOL,
         )
 
-        self.trigger_delay_control = RedPitayaControl(
+        self._trigger_delay_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._trigger_delay_register,
             name='Trigger delay',
@@ -210,7 +210,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self.output0_mux_control = RedPitayaControl(
+        self._output0_mux_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._output0_mux_register,
             name='Output 0 select',
@@ -218,7 +218,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             in_range=lambda val: (0 <= val <= 7)
         )
 
-        self.output1_mux_control = RedPitayaControl(
+        self._output1_mux_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._output1_mux_register,
             name='Output 1 select',
@@ -226,14 +226,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             in_range=lambda val: (0 <= val <= 7)
         )
 
-        self.constant_control = RedPitayaControl(
+        self._constant_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._constant_register,
             name='Constant',
             dtype=DataType.SIGNED_INT,
             in_range=lambda val: (-1 <= val < 1),
-            write_data=lambda val: int(val * 2**(self._constant_register.n_bits-1)),
-            read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
+            write_data=lambda val: int(val * 2 ** (self._constant_register.n_bits - 1)),
+            read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
     def _define_sum_modules(self):
@@ -250,9 +250,17 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         )
 
     def trigger_now(self):
-        self.trigger_control.value = False
-        self.trigger_control.value = True
-        self.trigger_control.value = False
+        self._trigger_control.value = False
+        self._trigger_control.value = True
+        self._trigger_control.value = False
+
 
 if __name__ == "__main__":
     ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch')
+    ptfb.output0_mux = 1
+    ptfb.output1_mux = 1
+    # ptfb._output0_mux_control.value
+    print(ptfb._output0_mux_control.value)
+    print(ptfb.output0_mux)
+
+

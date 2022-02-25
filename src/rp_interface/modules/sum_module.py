@@ -39,7 +39,7 @@ class SumModule(RedPitayaModule):
         width_adder = int(np.log2(self._add_select_register.n_bits))
         max_divide_by = 2**width_adder
 
-        self.divide_by_control = RedPitayaControl(
+        self._divide_by_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._divide_by_register,
             name='Divide by',
@@ -50,13 +50,13 @@ class SumModule(RedPitayaModule):
         )
 
         property_definitions = {
-            'divide_by': (self.divide_by_control, 'value')
+            'divide_by': ('_divide_by_control', 'value')
         }
         # add elements of the form {'add0': (self.add0_control, 'value')} to property_definitions
         for i in range(self._add_select_register.n_bits):
             prop_name = 'add{}'.format(i)
-            control_attr_name = 'add{}_control'.format(i)
-            property_definitions[prop_name] = (getattr(self, control_attr_name), 'value')
+            control_attr_name = '_add{}_control'.format(i)
+            property_definitions[prop_name] = (control_attr_name, 'value')
         self._define_properties(property_definitions)
 
         if apply_defaults:
@@ -82,7 +82,7 @@ class SumModule(RedPitayaModule):
         Defines controls
         '''
         for i in range(self._add_select_register.n_bits):
-            control_attr_name = 'add{}_control'.format(i)
+            control_attr_name = '_add{}_control'.format(i)
             register_attr_name = '_add{}_register'.format(i)
             register = getattr(self, register_attr_name)
             control = RedPitayaControl(

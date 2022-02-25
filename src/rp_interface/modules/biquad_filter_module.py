@@ -132,7 +132,9 @@ class FilterType(enum.Enum):
             FilterType.SINGLE_POLE_LOWPASS == FilterType.SINGLE_POLE_LOWPASS --> True
             'lowpass' == FilterType.SINGLE_POLE_LOWPASS --> True
         '''
-        return self.value == other or self == other
+        if isinstance(other, str):
+            return self.value == other
+        return super().__eq__(other)
 
 
 class BiquadFilterModule(RedPitayaModule):

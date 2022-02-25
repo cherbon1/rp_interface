@@ -44,28 +44,28 @@ class RedPitayaModule(ABC):
 
     def _define_properties(self, property_definitions: Dict) -> None:
         '''
-        property_definitions is a dict of the for {'prop_name': (object, 'obj_prop_name')}
-            e.g. {'input_mux': (self.input_mux_control, 'value')}.
+        property_definitions is a dict of the form {'prop_name': ('object_name', 'obj_prop_name')}
+            e.g. {'input_mux': ('input_mux_control', 'value')}.
         This will make Module.input_mux = 4 behave the same as Module.input_mux_control.value = 4
         '''
-        def make_property(obj: object, key: str):
+        def make_property(obj_name: str, key: str):
             '''
-            Returns a property object
-            e.g. make_property(self.input_mux_control, value)
-            returns a property instance that can get and set value.
+            This function returns a property for accessing self.obj_name.key (since obj_name is a string, it's
+            referred to as getattr(self, obj_name) in code.
 
-            Use this property instance to define an attribute of self, e.g.
-            setattr(self, 'input_mux', make_property(self.input_mux_control, 'value'))
-            will allow self.input_mux to read/write directly to input_mux_control.value
+            In practice, use this to make RedPitayaControls into top level properties:
+            e.g. make_property('input_mux_control', 'value') is a property instance for getting and setting
+            self.input_mux_control.value.
             '''
             # Watch out for closures... https://stackoverflow.com/questions/9551082/create-properties-with-loop
-            get_func = lambda: getattr(obj, key)
-            set_func = lambda value: setattr(obj, key, value)
-            return property(lambda _, f=get_func: f(),
-                            lambda _, value, f=set_func: f(value))
+            # Also, read this: https://stackoverflow.com/questions/1325673/how-to-add-property-to-a-class-dynamically
+            get_func = lambda self: getattr(getattr(self, obj_name), key)
+            set_func = lambda self, value: setattr(getattr(self, obj_name), key, value)
+            return property(lambda self, f=get_func: f(self),
+                            lambda self, value, f=set_func: f(self, value))
 
         for prop_name, prop_definition in property_definitions.items():
-            setattr(self, prop_name, make_property(*prop_definition))
+            setattr(self.__class__, prop_name, make_property(*prop_definition))
 
 
 class RedPitayaTopLevelModule(RedPitayaModule, ABC):

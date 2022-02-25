@@ -56,8 +56,8 @@ class DelayFilterModule(RedPitayaModule):
             'toggle_time': 0
         })
 
-        self.gpio_write_address = gpio_write_address
-        self.gpio_read_address = gpio_read_address
+        self._gpio_write_address = gpio_write_address
+        self._gpio_read_address = gpio_read_address
 
         self.fs_delay = 125e6
         self.fs_biquad = 125e6 / 2**3
@@ -68,14 +68,14 @@ class DelayFilterModule(RedPitayaModule):
         self._define_biquads()
 
         property_definitions = {
-            'input_mux': (self.input_mux_control, 'value'),
-            'ac_coupling': (self.ac_coupling_control, 'value'),
-            'delay': (self.delay_control, 'value'),
-            'output_mux': (self.output_mux_control, 'value'),
-            'gain': (self.gain_module, 'gain'),
-            'toggle_delay': (self.toggle_delay_control, 'value'),
-            'toggle_time': (self.toggle_time_control, 'value'),
-            'constant': (self.constant_control, 'value'),
+            'input_mux': ('_input_mux_control', 'value'),
+            'ac_coupling': ('_ac_coupling_control', 'value'),
+            'delay': ('_delay_control', 'value'),
+            'output_mux': ('_output_mux_control', 'value'),
+            'gain': ('_gain_module', 'gain'),
+            'toggle_delay': ('_toggle_delay_control', 'value'),
+            'toggle_time': ('_toggle_time_control', 'value'),
+            'constant': ('_constant_control', 'value'),
         }
         self._define_properties(property_definitions)
 
@@ -91,64 +91,64 @@ class DelayFilterModule(RedPitayaModule):
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
         self._input_mux_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=0,
             n_bits=1
         )
 
         self._ac_coupling_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=2,
             n_bits=1
         )
 
         self._delay_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=3,
             n_bits=17
         )
 
         self._output_mux_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=24,
             n_bits=3
         )
 
         self._fine_gain_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=25,
             n_bits=24
         )
 
         self._coarse_gain_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=26,
             n_bits=3
         )
 
         self._toggle_delay_cycles_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=27,
             n_bits=26
         )
 
         self._toggle_cycles_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=28,
             n_bits=26
         )
 
         self._constant_register = MuxedRegister(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             register_address=30,
             n_bits=17
         )
@@ -162,8 +162,8 @@ class DelayFilterModule(RedPitayaModule):
         # === DEFINE BIQUAD REGISTER LOCATIONS ===
         # ========================================
         self._biquad0_registers = BiquadFilterRegisters(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             a1_address=4,
             a2_address=5,
             b0_address=6,
@@ -175,8 +175,8 @@ class DelayFilterModule(RedPitayaModule):
         )
 
         self._biquad1_registers = BiquadFilterRegisters(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             a1_address=9,
             a2_address=10,
             b0_address=11,
@@ -188,8 +188,8 @@ class DelayFilterModule(RedPitayaModule):
         )
 
         self._biquad2_registers = BiquadFilterRegisters(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             a1_address=14,
             a2_address=15,
             b0_address=16,
@@ -201,8 +201,8 @@ class DelayFilterModule(RedPitayaModule):
         )
 
         self._biquad3_registers = BiquadFilterRegisters(
-            gpio_write_address=self.gpio_write_address,
-            gpio_read_address=self.gpio_read_address,
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
             a1_address=19,
             a2_address=20,
             b0_address=21,
@@ -218,7 +218,7 @@ class DelayFilterModule(RedPitayaModule):
         A method that defines all controls of a filter block (except for biquad filter modules)
         Called in __init__, but separated out for readability
         '''
-        self.input_mux_control = RedPitayaControl(
+        self._input_mux_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._input_mux_register,
             name='Input mux',
@@ -226,14 +226,14 @@ class DelayFilterModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 1),
         )
 
-        self.ac_coupling_control = RedPitayaControl(
+        self._ac_coupling_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._ac_coupling_register,
             name='AC coupling',
             dtype=DataType.BOOL,
         )
 
-        self.delay_control = RedPitayaControl(
+        self._delay_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._delay_register,
             name='Delay',
@@ -243,7 +243,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self.output_mux_control = RedPitayaControl(
+        self._output_mux_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._output_mux_register,
             name='Output mux',
@@ -251,13 +251,13 @@ class DelayFilterModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 7),
         )
 
-        self.gain_module = GainModule(
+        self._gain_module = GainModule(
             red_pitaya=self.rp,
             fine_gain_register=self._fine_gain_register,
             coarse_gain_register=self._coarse_gain_register,
         )
 
-        self.toggle_delay_control = RedPitayaControl(
+        self._toggle_delay_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._toggle_delay_cycles_register,
             name='Toggle delay',
@@ -267,7 +267,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self.toggle_time_control = RedPitayaControl(
+        self._toggle_time_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._toggle_cycles_register,
             name='Toggle time',
@@ -277,7 +277,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self.constant_control = RedPitayaControl(
+        self._constant_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._constant_register,
             name='Constant',

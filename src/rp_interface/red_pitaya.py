@@ -65,6 +65,7 @@ class RedPitaya:
             self._write_register_bits(register.gpio_address, bits)
             return
         elif isinstance(register, MuxedRegister):
+            old_register = old_register[-26:]  # Trim down old_register to data_bits only
             buffer_bits = register.build_data_bus_bits(write=False, data=data, dtype=dtype, old_register=old_register)
             write_bits = register.build_data_bus_bits(write=True, data=data, dtype=dtype, old_register=old_register)
             # Write to bus by toggling write_bit high
@@ -79,14 +80,14 @@ class RedPitaya:
         if isinstance(register, Register):
             return self._read_register_bits(register.gpio_address)
         elif isinstance(register, MuxedRegister):
-            self._write_register_bits(register.gpio_write_address, register.read_query_bits)
+            self._write_register_bits(register.gpio_write_address, register.read_query_bits())
             return self._read_register_bits(register.gpio_read_address)
         else:
             raise ValueError(f'Invalid register {register}')
 
     def read_register(self, register: Union[Register, MuxedRegister],
                       dtype: utils.DataType = utils.DataType.UNSIGNED_INT) -> Union[str, int]:
-        register.interpret_data(gpio_bus_bits=self.read_register_bits(register), dtype=dtype)
+        return register.interpret_data(gpio_bus_bits=self.read_register_bits(register), dtype=dtype)
 
     # =======================================
     # ==========  LOW LEVEL COMMS  ==========

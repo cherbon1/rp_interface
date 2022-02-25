@@ -29,7 +29,7 @@ class GainModule(RedPitayaModule):
         self._fine_gain_register = fine_gain_register
         self._coarse_gain_register = coarse_gain_register
 
-        self.fine_gain_control = RedPitayaControl(
+        self._fine_gain_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._fine_gain_register,
             name='Fine gain',
@@ -41,7 +41,7 @@ class GainModule(RedPitayaModule):
 
         max_coarse_gain = int(2 ** (2**self._coarse_gain_register.n_bits - 1))
 
-        self.coarse_gain_control = RedPitayaControl(
+        self._coarse_gain_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._coarse_gain_register,
             name='Coarse gain',
@@ -56,7 +56,7 @@ class GainModule(RedPitayaModule):
 
     @property
     def gain(self):
-        return self.fine_gain_control.value * self.coarse_gain_control.value
+        return self._fine_gain_control.value * self._coarse_gain_control.value
 
     @gain.setter
     def gain(self, value):
@@ -64,5 +64,5 @@ class GainModule(RedPitayaModule):
         while not (-0.5 <= value < 0.5):
             value /= 2.
             divider *= 2
-        self.fine_gain_control.value = value
-        self.coarse_gain_control.value = divider
+        self._fine_gain_control.value = value
+        self._coarse_gain_control.value = divider
