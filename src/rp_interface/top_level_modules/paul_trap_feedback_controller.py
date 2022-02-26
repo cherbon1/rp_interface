@@ -231,8 +231,8 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             register=self._constant_register,
             name='Constant',
             dtype=DataType.SIGNED_INT,
-            in_range=lambda val: (-1 <= val < 1),
-            write_data=lambda val: int(val * 2 ** (self._constant_register.n_bits - 1)),
+            in_range=lambda val: (-1 <= val <= 1),
+            write_data=lambda val: int(val * 2 ** (self._constant_register.n_bits - 1) - 1e-4),  # offset avoids overfl.
             read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
@@ -263,7 +263,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         aom_control_str = "AOM Control:\n" + self.aom_control.__str__()
         delay_filter_0_str = "Delay filter 0:\n" + self.delay_filter0.__str__()
         delay_filter_1_str = "Delay filter 1:\n" + self.delay_filter1.__str__()
-        delay_filter_2_str = "Delay filter 2:\n" +  self.delay_filter2.__str__()
+        delay_filter_2_str = "Delay filter 2:\n" + self.delay_filter2.__str__()
         delay_filter_3_str = "Delay filter 3:\n" + self.delay_filter3.__str__()
         sum_0_str = "Sum 0: " + self.sum_module_0.__str__()
         sum_1_str = "Sum 1: " + self.sum_module_1.__str__()
@@ -288,9 +288,9 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             sum_1_str
         ])
 
+
 if __name__ == "__main__":
     ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch')
     ptfb.delay_filter0.input_mux = 1
     print(ptfb)
-
 

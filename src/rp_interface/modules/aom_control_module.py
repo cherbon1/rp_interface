@@ -198,8 +198,8 @@ class AOMControlModule(RedPitayaModule):
             red_pitaya=self.rp,
             register=self._feedback_gain_register,
             name='Feedback gain',
-            dtype=DataType.SIGNED_INT,
-            in_range=lambda val: (-0.5 <= val < 0.5),
+            dtype=DataType.UNSIGNED_INT,
+            in_range=lambda val: (0 <= val < 1),
             write_data=lambda val: int(val * 2 ** self._feedback_gain_register.n_bits),
             read_data=lambda reg: reg / 2 ** self._feedback_gain_register.n_bits,
         )
