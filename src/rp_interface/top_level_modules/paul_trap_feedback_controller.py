@@ -312,9 +312,9 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 if __name__ == "__main__":
     ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', apply_defaults=False)
-    print(ptfb)
+    # print(ptfb)
     # print(ptfb.aom_control)
-    # print(ptfb.delay_filter0)
+    print(ptfb.delay_filter0)
     # print(ptfb.sum0)
     # print('=============================')
     # print(ptfb.description())

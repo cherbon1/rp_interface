@@ -287,7 +287,10 @@ class BiquadFilterModule(RedPitayaModule):
         biquad_coeffs = self.calculate_biquad_coefficients(filter_type, center_frequency, q_factor)
 
         # Store values
-        self._filter_type = filter_type
+        if isinstance(filter_type, str):
+            self._filter_type = FilterType(filter_type)
+        else:
+            self._filter_type = filter_type
         self._center_frequency = center_frequency
         self._q_factor = q_factor
 
