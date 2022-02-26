@@ -33,6 +33,9 @@ class DataType(Enum):
             return self.value == other
         return super().__eq__(other)
 
+    def all_dtypes_string(self):
+        return ', '.join(a.value for a in EE)
+
 
 def bin2hex(bin_value):
     '''
@@ -126,7 +129,7 @@ def any2bits(data, dtype, n_bits):
             bits = bits.zfill(n_bits)
         return bits
     else:
-        raise ValueError(f'Unknown data type {dtype}')
+        raise ValueError(f'Unknown data type {dtype}. Options are: {DataType.all_dtypes_string()}')
 
 
 def bits2any(bits, dtype):
@@ -148,4 +151,4 @@ def bits2any(bits, dtype):
     elif dtype == DataType.HEX:
         return bin2hex(bits)
     else:
-        raise ValueError(f'Unknown data type {dtype}')
+        raise ValueError(f'Unknown data type {dtype}. Options are: {DataType.all_dtypes_string()}')

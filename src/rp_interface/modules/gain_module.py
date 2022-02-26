@@ -19,12 +19,11 @@ class GainModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  fine_gain_register: Union[Register, MuxedRegister],
                  coarse_gain_register: Union[Register, MuxedRegister],
-                 default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
-        if default_values is None:
-            default_values = {'gain': 1.}
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)\
+
+        self.default_values = {'gain': 1.}
 
         self._fine_gain_register = fine_gain_register
         self._coarse_gain_register = coarse_gain_register

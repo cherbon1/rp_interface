@@ -23,11 +23,11 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
     and top-level controls:
         - trigger_now() to launch a toggling sequence
         - trigger_delay to control the delay between trigger command and GPIO trigger pulse
-        - two output_mux's to select one of 8 outputs, described below
+        - two output_selects to select one of 8 outputs, described below
         - A constant output (in range -1 to 1)
 
 
-    output mux options:
+    output select options:
         - 0 -> input 0
         - 1 -> input 1
         - 2 -> aom_control_output
@@ -41,19 +41,16 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
-                 default_values: Dict = None,
-                 apply_defaults: bool = False,
-                 load_bitfile: bool = False
+                 load_bitfile: bool = False,
+                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
-        if default_values is None:
-            default_values = {}
-        default_values.update({
-            'feedback_gain': 0.1,
-            'trap_enable': False,
-            'feedback_enable': False
-        })
+        self.default_values = {
+            'output0_select': 0,
+            'output1_select': 1
+
+        }
 
         # gpio addresses
         self._top_module_gpio_write_address = '0x41200000'
@@ -64,52 +61,25 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._delay_filter0_gpio_read_address = '0x41210008'
         self._delay_filter1_gpio_write_address = '0x41220000'
         self._delay_filter1_gpio_read_address = '0x41220008'
-        self._delay_filter2_gpio_write_address = '0x41200000' # '0x41230000'
-        self._delay_filter2_gpio_read_address = '0x41200008' # '0x41230008'
-        self._delay_filter3_gpio_write_address = '0x41210000' # '0x41240000'
-        self._delay_filter3_gpio_read_address = '0x41210008' # '0x41240008'
+        self._delay_filter2_gpio_write_address = '0x41230000'
+        self._delay_filter2_gpio_read_address = '0x41230008'
+        self._delay_filter3_gpio_write_address = '0x41240000'
+        self._delay_filter3_gpio_read_address = '0x41240008'
 
         self.fs = 125e6
 
         self._define_register_locations()
         self._define_controls()
+        self._define_modules(apply_defaults=apply_defaults)
 
         # define top level properties
         property_definitions = {
             'trigger_delay': ('_trigger_delay_control', 'value'),
-            'output0_mux': ('_output0_mux_control', 'value'),
-            'output1_mux': ('_output1_mux_control', 'value'),
+            'output0_select': ('_output0_select_control', 'value'),
+            'output1_select': ('_output1_select_control', 'value'),
             'constant': ('_constant_control', 'value'),
         }
         self._define_properties(property_definitions)
-
-        # define rest of modules
-        self._define_sum_modules()
-        self.aom_control = AOMControlModule(
-            red_pitaya=self.rp,
-            gpio_write_address=self._aom_control_gpio_write_address,
-            gpio_read_address=self._aom_control_gpio_read_address,
-        )
-        self.delay_filter0 = DelayFilterModule(
-            red_pitaya=self.rp,
-            gpio_write_address=self._delay_filter0_gpio_write_address,
-            gpio_read_address=self._delay_filter0_gpio_read_address,
-        )
-        self.delay_filter1 = DelayFilterModule(
-            red_pitaya=self.rp,
-            gpio_write_address=self._delay_filter1_gpio_write_address,
-            gpio_read_address=self._delay_filter1_gpio_read_address,
-        )
-        self.delay_filter2 = DelayFilterModule(
-            red_pitaya=self.rp,
-            gpio_write_address=self._delay_filter2_gpio_write_address,
-            gpio_read_address=self._delay_filter2_gpio_read_address,
-        )
-        self.delay_filter3 = DelayFilterModule(
-            red_pitaya=self.rp,
-            gpio_write_address=self._delay_filter3_gpio_write_address,
-            gpio_read_address=self._delay_filter3_gpio_read_address,
-        )
 
         if load_bitfile:
             self.load_bitfile()
@@ -139,14 +109,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             n_bits=26
         )
 
-        self._output0_mux_register = MuxedRegister(
+        self._output0_select_register = MuxedRegister(
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
             register_address=17,
             n_bits=3
         )
 
-        self._output1_mux_register = MuxedRegister(
+        self._output1_select_register = MuxedRegister(
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
             register_address=18,
@@ -210,17 +180,27 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / self.fs,
         )
 
-        self._output0_mux_control = RedPitayaControl(
+        self.output_select_names = {
+            0: 'In 0',
+            1: 'In 1',
+            2: 'AOM control',
+            3: 'Sum 0',
+            4: 'Sum 1',
+            5: 'Filter 0',
+            6: 'Trigger out',
+            7: 'Constant'
+        }
+        self._output0_select_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._output0_mux_register,
+            register=self._output0_select_register,
             name='Output 0 select',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (0 <= val <= 7)
         )
 
-        self._output1_mux_control = RedPitayaControl(
+        self._output1_select_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._output1_mux_register,
+            register=self._output1_select_register,
             name='Output 1 select',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (0 <= val <= 7)
@@ -236,17 +216,54 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
-    def _define_sum_modules(self):
-        self.sum_module_0 = SumModule(
+    def _define_modules(self, apply_defaults=False):
+        self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
+            apply_defaults=apply_defaults
         )
 
-        self.sum_module_1 = SumModule(
+        self.sum1 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
+            apply_defaults=apply_defaults
+        )
+
+        self.aom_control = AOMControlModule(
+            red_pitaya=self.rp,
+            gpio_write_address=self._aom_control_gpio_write_address,
+            gpio_read_address=self._aom_control_gpio_read_address,
+            apply_defaults=apply_defaults
+        )
+
+        self.delay_filter0 = DelayFilterModule(
+            red_pitaya=self.rp,
+            gpio_write_address=self._delay_filter0_gpio_write_address,
+            gpio_read_address=self._delay_filter0_gpio_read_address,
+            apply_defaults=apply_defaults
+        )
+
+        self.delay_filter1 = DelayFilterModule(
+            red_pitaya=self.rp,
+            gpio_write_address=self._delay_filter1_gpio_write_address,
+            gpio_read_address=self._delay_filter1_gpio_read_address,
+            apply_defaults=apply_defaults
+        )
+
+        self.delay_filter2 = DelayFilterModule(
+            red_pitaya=self.rp,
+            gpio_write_address=self._delay_filter2_gpio_write_address,
+            gpio_read_address=self._delay_filter2_gpio_read_address,
+            apply_defaults=apply_defaults
+        )
+
+        self.delay_filter3 = DelayFilterModule(
+            red_pitaya=self.rp,
+            gpio_write_address=self._delay_filter3_gpio_write_address,
+            gpio_read_address=self._delay_filter3_gpio_read_address,
+            apply_defaults=apply_defaults
         )
 
     def trigger_now(self):
@@ -256,41 +273,48 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
     def __str__(self):
         # Define strings
-        ptfb_str = "Output mux 0: {output_mux_0}, Output mux 1: {output_mux_1}".format(
-            output_mux_0=self._output0_mux_control.value,
-            output_mux_1=self._output1_mux_control.value
+        return ("Paul trap feedback controller\n"
+                "  Output 0: {output0_select_name} ({output0_select_number})\n"
+                "  Output 1: {output1_select_name} ({output1_select_number})\n"
+                "  1x aom control, 4x filter, 2x sum").format(
+            output0_select_name=self.output_select_names[self._output0_select_control.value],
+            output0_select_number=self._output0_select_control.value,
+            output1_select_name=self.output_select_names[self._output1_select_control.value],
+            output1_select_number=self._output1_select_control.value
         )
-        aom_control_str = "AOM Control:\n" + self.aom_control.__str__()
-        delay_filter_0_str = "Delay filter 0:\n" + self.delay_filter0.__str__()
-        delay_filter_1_str = "Delay filter 1:\n" + self.delay_filter1.__str__()
-        delay_filter_2_str = "Delay filter 2:\n" + self.delay_filter2.__str__()
-        delay_filter_3_str = "Delay filter 3:\n" + self.delay_filter3.__str__()
-        sum_0_str = "Sum 0: " + self.sum_module_0.__str__()
-        sum_1_str = "Sum 1: " + self.sum_module_1.__str__()
 
-        # Indent relevant strings
-        indent = '  '
-        aom_control_str = aom_control_str.replace('\n', '\n' + indent)
-        delay_filter_0_str = delay_filter_0_str.replace('\n', '\n' + indent)
-        delay_filter_1_str = delay_filter_1_str.replace('\n', '\n' + indent)
-        delay_filter_2_str = delay_filter_2_str.replace('\n', '\n' + indent)
-        delay_filter_3_str = delay_filter_3_str.replace('\n', '\n' + indent)
+    def description(self):
+        ptfb_str = '\n'.join(self.__str__().split('\n')[:-1])  # Drop last line
+
+        aom_control_str = self.aom_control.__str__()
+        delay_filter_0_str = self.delay_filter0.__str__()
+        delay_filter_1_str = self.delay_filter1.__str__()
+        delay_filter_2_str = self.delay_filter2.__str__()
+        delay_filter_3_str = self.delay_filter3.__str__()
+        sum_0_str = "Sum 0: " + self.sum0.__str__()
+        sum_1_str = "Sum 1: " + self.sum1.__str__()
 
         # return output separated by newlines:
         return "\n".join([
             ptfb_str,
             aom_control_str,
             delay_filter_0_str,
-            # delay_filter_1_str,
-            # delay_filter_2_str,
-            # delay_filter_3_str,
+            delay_filter_1_str,
+            delay_filter_2_str,
+            delay_filter_3_str,
             sum_0_str,
             sum_1_str
         ])
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch')
-    ptfb.delay_filter0.input_mux = 1
+    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', apply_defaults=False)
     print(ptfb)
+    print(ptfb.aom_control)
+    print(ptfb.delay_filter0)
+    print(ptfb.sum0)
+    ptfb.sum0.add1 = True
+    print(ptfb.sum0)
+    print('==================')
+    print(ptfb.description())
 

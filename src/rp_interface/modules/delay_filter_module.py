@@ -14,18 +14,18 @@ class DelayFilterModule(RedPitayaModule):
     Implements an interface to an entire delay + filter module.
 
     A delay + filter module is composed of:
-        - An input mux (select red pitaya input channel: 0 or 1)
+        - An input select (select red pitaya input channel: 0 or 1)
         - AC/DC coupling (Bypass a single pole high-pass filter, fc<1Hz)
         - A delay line (8ns resolution, up to 1.048568e-3 seconds)
         - 4 biquad filters:
             biquad0, biquad1, biquad2, biquad3
-        - An output mux (select one of 8 outputs, described below)
+        - An output select (select one of 8 outputs, described below)
         - An output gain module (up to 64x)
         - A triggered gate for fast toggling of filter output, composed of:
             Delay time, Toggle time (8ns resolution, up to 0.5368709 seconds)
         - A constant output (in range -1 to 1)
 
-    output mux options:
+    output select options:
         - 0 -> 4 filters (output of biquad3)
         - 1 -> 3 filters (output of biquad2)
         - 2 -> 2 filters (output of biquad1)
@@ -40,21 +40,18 @@ class DelayFilterModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
                  gpio_read_address: str,
-                 default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
-        if default_values is None:
-            default_values = {}
-        default_values.update({
-            'output_gain': 1.,
+        self.default_values = {
+            'gain': 1.,
             'ac_coupling': True,
             'delay': 0,
-            'output_mux': 3,  # default to output of 1st filter
+            'output_select': 3,  # default to output of 1st filter
             'toggle_delay': 1e-3,
             'toggle_time': 0
-        })
+        }
 
         self._gpio_write_address = gpio_write_address
         self._gpio_read_address = gpio_read_address
@@ -68,10 +65,10 @@ class DelayFilterModule(RedPitayaModule):
         self._define_biquads()
 
         property_definitions = {
-            'input_mux': ('_input_mux_control', 'value'),
+            'input_select': ('_input_select_control', 'value'),
             'ac_coupling': ('_ac_coupling_control', 'value'),
             'delay': ('_delay_control', 'value'),
-            'output_mux': ('_output_mux_control', 'value'),
+            'output_select': ('_output_select_control', 'value'),
             'gain': ('_gain_module', 'gain'),
             'toggle_delay': ('_toggle_delay_control', 'value'),
             'toggle_time': ('_toggle_time_control', 'value'),
@@ -90,7 +87,7 @@ class DelayFilterModule(RedPitayaModule):
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
-        self._input_mux_register = MuxedRegister(
+        self._input_select_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=0,
@@ -111,7 +108,7 @@ class DelayFilterModule(RedPitayaModule):
             n_bits=17
         )
 
-        self._output_mux_register = MuxedRegister(
+        self._output_select_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=24,
@@ -218,10 +215,11 @@ class DelayFilterModule(RedPitayaModule):
         A method that defines all controls of a filter block (except for biquad filter modules)
         Called in __init__, but separated out for readability
         '''
-        self._input_mux_control = RedPitayaControl(
+        self.input_select_names = {0: 'In 0', 1: 'In 1'}
+        self._input_select_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._input_mux_register,
-            name='Input mux',
+            register=self._input_select_register,
+            name='Input select',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (0 <= val <= 1),
         )
@@ -243,10 +241,20 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self._output_mux_control = RedPitayaControl(
+        self.output_select_names = {
+            0: '4 filters',
+            1: '3 filters',
+            2: '2 filters',
+            3: '1 filter',
+            4: 'No filters',
+            5: 'Reserved (troubleshooting)',
+            6: 'Reserved (troubleshooting)',
+            7: 'Constant'
+        }
+        self._output_select_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._output_mux_register,
-            name='Output mux',
+            register=self._output_select_register,
+            name='Output select',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (0 <= val <= 7),
         )
@@ -317,19 +325,23 @@ class DelayFilterModule(RedPitayaModule):
         )
 
     def __str__(self):
-        biquad0_str = "  biquad0: " + self.biquad0.__str__()
-        biquad1_str = "  biquad1: " + self.biquad1.__str__()
-        biquad2_str = "  biquad2: " + self.biquad2.__str__()
-        biquad3_str = "  biquad3: " + self.biquad3.__str__()
-        main_body_str =  ("Input mux: {input_mux}, {ac_coupling}-coupled, Output mux: {output_mux}\n"
-                          "Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
-                          "Output toggle: {toggle_time}us (delay {delay_time}us)").format(
-            input_mux=self._input_mux_control.value,
+        biquad0_str = "    biquad0: " + self.biquad0.__str__()
+        biquad1_str = "    biquad1: " + self.biquad1.__str__()
+        biquad2_str = "    biquad2: " + self.biquad2.__str__()
+        biquad3_str = "    biquad3: " + self.biquad3.__str__()
+        main_body_str =  ("Delay filter:\n"
+                          "  Input: {input_select_name} ({input_sel_number}), {ac_coupling}-coupled,"
+                          "  Output: {output_select_name} ({output_sel_number})\n"
+                          "  Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
+                          "  Output toggle: {toggle_time}us (delay {delay_time}us)").format(
+            input_select_name=self.input_select_names[self._input_select_control.value],
+            input_sel_number=self._input_select_control.value,
+            output_select_name=self.output_select_names[self._output_select_control.value],
+            output_sel_number=self._output_select_control.value,
             ac_coupling='AC' if self._ac_coupling_control.value else 'DC',
             delay=self._delay_control.value*1e6,
             frequency=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
             gain=self._gain_module.gain,
-            output_mux=self._output_mux_control.value,
             toggle_time=self._toggle_time_control.value*1e6,
             delay_time=self._delay_control.value*1e6,
         )

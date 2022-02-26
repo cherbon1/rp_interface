@@ -145,11 +145,9 @@ class BiquadFilterModule(RedPitayaModule):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  biquad_registers: BiquadFilterRegisters = None,
-                 fs: float = 125e6 / 2 ** 3,
-                 default_values: Dict = None,
-                 apply_defaults: bool = False
+                 fs: float = 125e6 / 2 ** 3
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
         if biquad_registers is None:
             raise KeyError('Need to define addresses to communicate with biquad filter')
@@ -164,9 +162,6 @@ class BiquadFilterModule(RedPitayaModule):
         self._filter_type = FilterType.UNKNOWN
         self._center_frequency = 1e3
         self._q_factor = 1
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def filter_type(self):
@@ -322,7 +317,7 @@ class BiquadFilterModule(RedPitayaModule):
                np.angle(complex_amplitudes[1:])
 
     def __str__(self):
-        return "{filter_type} filter, freq: {center_freq:.2}kHz, q_factor: {q_factor:.1f}".format(
+        return "{filter_type} filter, freq: {center_freq:.2}kHz, Q: {q_factor:.1f}".format(
             filter_type=self.filter_type.value,
             center_freq=self.center_frequency * 1e-3,
             q_factor=self.q_factor

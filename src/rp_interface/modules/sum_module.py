@@ -19,16 +19,14 @@ class SumModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  add_select_register: Union[Register, MuxedRegister],
                  divide_by_register: Union[Register, MuxedRegister],
-                 default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
-        if default_values is None:
-            default_values = {}
-        default_values.update({
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+
+        self.default_values = {
             'add0': True,  # The rest of the adder should in principle start out false
             'divide_by': 1.
-        })
+        }
 
         self._add_select_register = add_select_register
         self._divide_by_register = divide_by_register

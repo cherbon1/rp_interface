@@ -12,7 +12,7 @@ class AOMControlModule(RedPitayaModule):
     Implements an interface to an aom control module
 
     An aom control module is composed of:
-        - An input mux (0 or 1, designating the input channel of the red pitaya)
+        - An input select (0 or 1, designating the input channel of the red pitaya)
         - A trap enable input (output DC will be 1V if enabled, 0V if disabled)
         - Trap DC toggle timings for fast toggling of aom, composed of:
             Delay time, Toggle time (8ns resolution, up to 0.5368709 seconds)
@@ -27,18 +27,15 @@ class AOMControlModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
                  gpio_read_address: str,
-                 default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
-        if default_values is None:
-            default_values = {}
-        default_values.update({
-                'feedback_gain': 0.1,
+        self.default_values = {
+                'feedback_gain': 0.01,
                 'trap_enable': False,
                 'feedback_enable': False
-            })
+            }
 
         self._gpio_write_address = gpio_write_address
         self._gpio_read_address = gpio_read_address
@@ -49,7 +46,7 @@ class AOMControlModule(RedPitayaModule):
         self._define_controls()
 
         property_definitions = {
-            'input_mux': ('_input_mux_control', 'value'),
+            'input_select': ('_input_select_control', 'value'),
             'trap_enable': ('_trap_enable_control', 'value'),
             'trap_toggle_delay': ('_trap_toggle_delay_control', 'value'),
             'trap_toggle_time': ('_trap_toggle_time_control', 'value'),
@@ -71,7 +68,7 @@ class AOMControlModule(RedPitayaModule):
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
-        self._input_mux_register = MuxedRegister(
+        self._input_select_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=1,
@@ -132,10 +129,11 @@ class AOMControlModule(RedPitayaModule):
         A method that defines all controls of an aom block
         Called in __init__, but separated out for readability
         '''
-        self._input_mux_control = RedPitayaControl(
+        self.input_select_names = {0: 'In 0', 1: 'In 1'}
+        self._input_select_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._input_mux_register,
-            name='Input mux',
+            register=self._input_select_register,
+            name='Input select',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (0 <= val <= 1),
         )
@@ -215,14 +213,18 @@ class AOMControlModule(RedPitayaModule):
         # apply_default: bool = False)
 
     def __str__(self):
-        return ("Input mux: {input_mux},  Trap is {trap_enable}\n"
-                "Trap toggle: {trap_toggle_time}us (delay {trap_delay_time}us)\n"
-                "Feedback toggle: {feedback_toggle_time}us (delay {feedback_delay_time}us)\n"
-                "Feedback gain: {feedback_gain:.3f}").format(
-            input_mux=self._input_mux_control.value,
+        return ("AOM Control:\n"
+                "  Trap is {trap_enable}\n"
+                "    Trap toggle: {trap_toggle_time}us (delay {trap_delay_time}us)\n"
+                "  Feedback is {feedback_enable}, gain: {feedback_gain:.3f}, "
+                "  input: {input_select_name} ({input_sel_number})\n"
+                "    Feedback toggle: {feedback_toggle_time}us (delay {feedback_delay_time}us)").format(
+            input_select_name=self.input_select_names[self._input_select_control.value],
+            input_sel_number=self._input_select_control.value,
             trap_enable='ON' if self._trap_enable_control.value else 'OFF',
             trap_toggle_time=self._trap_toggle_time_control.value*1e6,
             trap_delay_time=self._trap_toggle_delay_control.value*1e6,
+            feedback_enable='ON' if self._feedback_enable_control.value else 'OFF',
             feedback_toggle_time=self._feedback_toggle_time_control.value*1e6,
             feedback_delay_time=self._feedback_toggle_delay_control.value*1e6,
             feedback_gain=self._feedback_gain_control.value,

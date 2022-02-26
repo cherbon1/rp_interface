@@ -27,9 +27,7 @@ class RedPitayaControl:
                  dtype: utils.DataType = utils.DataType.UNSIGNED_INT,
                  in_range: Callable = None,
                  write_data: Callable = None,
-                 read_data: Callable = None,
-                 default_value: Any = None,
-                 apply_default: bool = False):
+                 read_data: Callable = None):
         if isinstance(red_pitaya, str):
             red_pitaya = RedPitaya(host=red_pitaya)
         if not isinstance(red_pitaya, RedPitaya):
@@ -38,7 +36,6 @@ class RedPitayaControl:
         self.register = register
         self.name = name
         self.dtype = dtype
-        self.default_value = default_value
 
         if not in_range:
             in_range = lambda x: True
@@ -50,9 +47,6 @@ class RedPitayaControl:
         self.in_range = in_range
         self.write_data = write_data
         self.read_data = read_data
-
-        if apply_default:
-            self.apply_default()
 
     @property
     def value(self):
@@ -67,11 +61,6 @@ class RedPitayaControl:
         reg_val = self.write_data(value)
         log.debug(f'Writing {reg_val} to {self.register}')
         self.rp.write_register(register=self.register, data=reg_val, dtype=self.dtype)
-
-    def apply_default(self):
-        if self.default_value is None:
-            raise ValueError('A default_value must be specified')
-        self.value = self.default_value
 
     def __str__(self):
         return '{}: {}'.format(self.name, self.value)

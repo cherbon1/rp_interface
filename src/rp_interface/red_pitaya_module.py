@@ -21,7 +21,6 @@ class RedPitayaModule(ABC):
     '''
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
-                 default_values: Dict = None,
                  apply_defaults: bool = False
                  ):
         if isinstance(red_pitaya, str):
@@ -29,7 +28,7 @@ class RedPitayaModule(ABC):
         if not isinstance(red_pitaya, RedPitaya):
             raise ValueError('Invalid red_pitaya parameter {}'.format(red_pitaya))
         self.rp = red_pitaya
-        self.default_values = default_values
+        self.default_values = None
 
         self._define_properties({})
 
@@ -38,9 +37,13 @@ class RedPitayaModule(ABC):
 
     def apply_defaults(self):
         if self.default_values is None:
-            raise ValueError('default_values must be specified')
-        for name, value in self.default_values:
-            setattr(self, name, value)
+            log.warning('No default values specified')
+            return
+        for name, value in self.default_values.items():
+            if hasattr(self, name):
+                setattr(self, name, value)
+            else:
+                raise KeyError(f'Unknown attribute {name} for {self.__class__.__name__}')
 
     def _define_properties(self, property_definitions: Dict) -> None:
         '''
@@ -75,11 +78,10 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
     '''
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
-                 default_values: Dict = None,
-                 apply_defaults: bool = False,
-                 load_bitfile: bool = False
+                 load_bitfile: bool = False,
+                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, default_values=default_values, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
         if load_bitfile:
             self.load_bitfile()
