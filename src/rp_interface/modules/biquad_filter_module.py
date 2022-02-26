@@ -291,8 +291,9 @@ class BiquadFilterModule(RedPitayaModule):
         self._center_frequency = center_frequency
         self._q_factor = q_factor
 
-        # Apply settings
+        # Apply settings and refresh filter
         self.write_biquad_coefficients(biquad_coeffs)
+        self.refresh_filter()
 
     def refresh_filter(self):
         '''
