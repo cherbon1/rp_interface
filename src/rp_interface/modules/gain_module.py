@@ -33,8 +33,8 @@ class GainModule(RedPitayaModule):
             register=self._fine_gain_register,
             name='Fine gain',
             dtype=DataType.SIGNED_INT,
-            in_range=lambda val: (-1 <= val < 1),
-            write_data=lambda val: int(2**(self._fine_gain_register.n_bits-1) * val),
+            in_range=lambda val: (-1 <= val <= 1),
+            write_data=lambda val: int(2**(self._fine_gain_register.n_bits-1) * val - 1e-9),
             read_data=lambda reg: reg/2**(self._fine_gain_register.n_bits-1)
         )
 
@@ -60,7 +60,7 @@ class GainModule(RedPitayaModule):
     @gain.setter
     def gain(self, value):
         divider = 1
-        while not (-0.5 <= value < 0.5):
+        while not (-1 <= value <= 1):
             value /= 2.
             divider *= 2
         self._fine_gain_control.value = value
