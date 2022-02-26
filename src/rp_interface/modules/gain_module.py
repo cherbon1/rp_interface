@@ -33,9 +33,9 @@ class GainModule(RedPitayaModule):
             register=self._fine_gain_register,
             name='Fine gain',
             dtype=DataType.SIGNED_INT,
-            in_range=lambda val: (-0.5 <= val < 0.5),
-            write_data=lambda val: int(2**self._fine_gain_register.n_bits * val),
-            read_data=lambda reg: reg/2**self._fine_gain_register.n_bits
+            in_range=lambda val: (-1 <= val < 1),
+            write_data=lambda val: int(2**(self._fine_gain_register.n_bits-1) * val),
+            read_data=lambda reg: reg/2**(self._fine_gain_register.n_bits-1)
         )
 
         max_coarse_gain = int(2 ** (2**self._coarse_gain_register.n_bits - 1))
