@@ -1,7 +1,7 @@
 import enum
 import logging
 from dataclasses import dataclass
-from typing import Union, Dict
+from typing import Union
 
 import numpy as np
 import scipy.signal as signal
@@ -322,3 +322,6 @@ class BiquadFilterModule(RedPitayaModule):
             center_freq=self.center_frequency * 1e-3,
             q_factor=self.q_factor
         )
+
+    def __repr__(self):
+        return self.__str__()

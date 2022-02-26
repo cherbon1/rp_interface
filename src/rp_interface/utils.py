@@ -33,8 +33,9 @@ class DataType(Enum):
             return self.value == other
         return super().__eq__(other)
 
-    def all_dtypes_string(self):
-        return ', '.join(a.value for a in EE)
+    @classmethod
+    def all_dtypes_string(cls):
+        return ', '.join("'" + a.value + "'" for a in cls)
 
 
 def bin2hex(bin_value):

@@ -15,7 +15,7 @@ For upgrading, use the following options `--force-reinstall --no-deps`. Simply u
 
 
 ### Adding a new interface
-Add your bitfile to the `bitfiles` directort. Create a new class in the `top_level_modules` directory that inherits from `rp_interface.red_pitaya_module.RedPitayaTopLevelModule`.
+Add your bitfile to the `bitfiles` directory. Create a new class in the `top_level_modules` directory that inherits from `rp_interface.red_pitaya_module.RedPitayaTopLevelModule`.
 
 For more details on how to build the class, go through the [Code Structure](#code-structure) section below
 

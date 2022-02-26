@@ -11,6 +11,7 @@ from rp_interface.red_pitaya_register import Register, MuxedRegister
 
 log = logging.getLogger(__name__)
 
+
 class RedPitaya:
     '''
     Connects to a Red Pitaya using paramiko

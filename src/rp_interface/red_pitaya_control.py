@@ -1,4 +1,4 @@
-from typing import Union, Callable, Any
+from typing import Union, Callable
 
 from rp_interface import utils
 from rp_interface.red_pitaya import RedPitaya

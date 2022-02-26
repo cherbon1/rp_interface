@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union
 
 import numpy as np
 

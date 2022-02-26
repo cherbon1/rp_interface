@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union
 
 from rp_interface.red_pitaya_module import RedPitayaModule
 from rp_interface.red_pitaya import RedPitaya
@@ -229,3 +229,6 @@ class AOMControlModule(RedPitayaModule):
             feedback_delay_time=self._feedback_toggle_delay_control.value*1e6,
             feedback_gain=self._feedback_gain_control.value,
         )
+
+    def __repr__(self):
+        return self.__str__()

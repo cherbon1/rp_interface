@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union
 
 from rp_interface.modules.aom_control_module import AOMControlModule
 from rp_interface.modules.delay_filter_module import DelayFilterModule
@@ -283,6 +283,9 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             output1_select_number=self._output1_select_control.value
         )
 
+    def __repr__(self):
+        return self.__str__()
+
     def description(self):
         ptfb_str = '\n'.join(self.__str__().split('\n')[:-1])  # Drop last line
 
@@ -313,8 +316,5 @@ if __name__ == "__main__":
     print(ptfb.aom_control)
     print(ptfb.delay_filter0)
     print(ptfb.sum0)
-    ptfb.sum0.add1 = True
-    print(ptfb.sum0)
-    print('==================')
+    print('=============================')
     print(ptfb.description())
-

@@ -54,7 +54,7 @@ class RedPitayaModule(ABC):
         def make_property(obj_name: str, key: str):
             '''
             This function returns a property for accessing self.obj_name.key (since obj_name is a string, it's
-            referred to as getattr(self, obj_name) in code.
+            referred to as getattr(self, obj_name) in code)
 
             In practice, use this to make RedPitayaControls into top level properties:
             e.g. make_property('input_mux_control', 'value') is a property instance for getting and setting

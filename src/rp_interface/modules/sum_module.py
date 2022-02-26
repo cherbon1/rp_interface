@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union
 
 import numpy as np
 
@@ -94,7 +94,10 @@ class SumModule(RedPitayaModule):
     def __str__(self):
         add_select_string = self.rp.read_register(self._add_select_register, dtype='bits')[::-1]
         added_inputs = [f'In{i}' for i, val in enumerate(add_select_string) if bool(int(val))]
-        return ("({add_string})/{divide_by}").format(
+        return "({add_string})/{divide_by}".format(
             add_string=' + '.join(added_inputs),
             divide_by=self._divide_by_control.value
         )
+
+    def __repr__(self):
+        return self.__str__()

@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Union
 
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
@@ -329,11 +329,11 @@ class DelayFilterModule(RedPitayaModule):
         biquad1_str = "    biquad1: " + self.biquad1.__str__()
         biquad2_str = "    biquad2: " + self.biquad2.__str__()
         biquad3_str = "    biquad3: " + self.biquad3.__str__()
-        main_body_str =  ("Delay filter:\n"
-                          "  Input: {input_select_name} ({input_sel_number}), {ac_coupling}-coupled,"
-                          "  Output: {output_select_name} ({output_sel_number})\n"
-                          "  Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
-                          "  Output toggle: {toggle_time}us (delay {delay_time}us)").format(
+        main_body_str = ("Delay filter:\n"
+                         "  Input: {input_select_name} ({input_sel_number}), {ac_coupling}-coupled,"
+                         "  Output: {output_select_name} ({output_sel_number})\n"
+                         "  Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
+                         "  Output toggle: {toggle_time}us (delay {delay_time}us)").format(
             input_select_name=self.input_select_names[self._input_select_control.value],
             input_sel_number=self._input_select_control.value,
             output_select_name=self.output_select_names[self._output_select_control.value],
@@ -346,3 +346,6 @@ class DelayFilterModule(RedPitayaModule):
             delay_time=self._delay_control.value*1e6,
         )
         return "\n".join([main_body_str, biquad0_str, biquad1_str, biquad2_str, biquad3_str])
+
+    def __repr__(self):
+        return self.__str__()
