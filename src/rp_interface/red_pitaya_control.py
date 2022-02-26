@@ -1,9 +1,12 @@
-import functools
 from typing import Union, Callable, Any
 
 from rp_interface import utils
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
+
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class RedPitayaControl:
@@ -54,6 +57,7 @@ class RedPitayaControl:
     @property
     def value(self):
         reg_val = self.rp.read_register(register=self.register, dtype=self.dtype)
+        log.debug(f'Read {reg_val} from {self.register}')
         return self.read_data(reg_val)
 
     @value.setter
@@ -61,13 +65,13 @@ class RedPitayaControl:
         if not self.in_range(value):
             raise ValueError(f'Value {value} not in range for RedPitayaControl {self.name}')
         reg_val = self.write_data(value)
+        log.debug(f'Writing {reg_val} to {self.register}')
         self.rp.write_register(register=self.register, data=reg_val, dtype=self.dtype)
 
     def apply_default(self):
         if self.default_value is None:
             raise ValueError('A default_value must be specified')
         self.value = self.default_value
-
 
     def __str__(self):
         return '{}: {}'.format(self.name, self.value)
