@@ -64,10 +64,10 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._delay_filter0_gpio_read_address = '0x41210008'
         self._delay_filter1_gpio_write_address = '0x41220000'
         self._delay_filter1_gpio_read_address = '0x41220008'
-        self._delay_filter2_gpio_write_address = '0x41230000'
-        self._delay_filter2_gpio_read_address = '0x41230008'
-        self._delay_filter3_gpio_write_address = '0x41240000'
-        self._delay_filter3_gpio_read_address = '0x41240008'
+        self._delay_filter2_gpio_write_address = '0x41200000' # '0x41230000'
+        self._delay_filter2_gpio_read_address = '0x41200008' # '0x41230008'
+        self._delay_filter3_gpio_write_address = '0x41210000' # '0x41240000'
+        self._delay_filter3_gpio_read_address = '0x41210008' # '0x41240008'
 
         self.fs = 125e6
 
@@ -254,13 +254,43 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._trigger_control.value = True
         self._trigger_control.value = False
 
+    def __str__(self):
+        # Define strings
+        ptfb_str = "Output mux 0: {output_mux_0}, Output mux 1: {output_mux_1}".format(
+            output_mux_0=self._output0_mux_control.value,
+            output_mux_1=self._output1_mux_control.value
+        )
+        aom_control_str = "AOM Control:\n" + self.aom_control.__str__()
+        delay_filter_0_str = "Delay filter 0:\n" + self.delay_filter0.__str__()
+        delay_filter_1_str = "Delay filter 1:\n" + self.delay_filter1.__str__()
+        delay_filter_2_str = "Delay filter 2:\n" +  self.delay_filter2.__str__()
+        delay_filter_3_str = "Delay filter 3:\n" + self.delay_filter3.__str__()
+        sum_0_str = "Sum 0: " + self.sum_module_0.__str__()
+        sum_1_str = "Sum 1: " + self.sum_module_1.__str__()
+
+        # Indent relevant strings
+        indent = '  '
+        aom_control_str = aom_control_str.replace('\n', '\n' + indent)
+        delay_filter_0_str = delay_filter_0_str.replace('\n', '\n' + indent)
+        delay_filter_1_str = delay_filter_1_str.replace('\n', '\n' + indent)
+        delay_filter_2_str = delay_filter_2_str.replace('\n', '\n' + indent)
+        delay_filter_3_str = delay_filter_3_str.replace('\n', '\n' + indent)
+
+        # return output separated by newlines:
+        return "\n".join([
+            ptfb_str,
+            aom_control_str,
+            delay_filter_0_str,
+            # delay_filter_1_str,
+            # delay_filter_2_str,
+            # delay_filter_3_str,
+            sum_0_str,
+            sum_1_str
+        ])
 
 if __name__ == "__main__":
     ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch')
-    ptfb.output0_mux = 1
-    ptfb.output1_mux = 1
-    # ptfb._output0_mux_control.value
-    print(ptfb._output0_mux_control.value)
-    print(ptfb.output0_mux)
+    ptfb.delay_filter0.input_mux = 1
+    print(ptfb)
 
 

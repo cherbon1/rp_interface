@@ -322,9 +322,8 @@ class BiquadFilterModule(RedPitayaModule):
                np.angle(complex_amplitudes[1:])
 
     def __str__(self):
-        return ("Biquad filter: {filter_type}\n"
-                "  center frequency: {center_freq:.2}kHz, q_factor: {q_factor:.1f}").format(
-            filter_type=self.filter_type.name,
+        return "{filter_type} filter, freq: {center_freq:.2}kHz, q_factor: {q_factor:.1f}".format(
+            filter_type=self.filter_type.value,
             center_freq=self.center_frequency * 1e-3,
             q_factor=self.q_factor
         )

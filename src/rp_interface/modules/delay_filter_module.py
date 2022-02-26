@@ -315,3 +315,22 @@ class DelayFilterModule(RedPitayaModule):
             biquad_registers=self._biquad3_registers,
             fs=self.fs_biquad
         )
+
+    def __str__(self):
+        biquad0_str = "  biquad0: " + self.biquad0.__str__()
+        biquad1_str = "  biquad1: " + self.biquad1.__str__()
+        biquad2_str = "  biquad2: " + self.biquad2.__str__()
+        biquad3_str = "  biquad3: " + self.biquad3.__str__()
+        main_body_str =  ("Input mux: {input_mux}, {ac_coupling}-coupled, Output mux: {output_mux}\n"
+                          "Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
+                          "Output toggle: {toggle_time}us (delay {delay_time}us)").format(
+            input_mux=self._input_mux_control.value,
+            ac_coupling='AC' if self._ac_coupling_control.value else 'DC',
+            delay=self._delay_control.value*1e6,
+            frequency=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
+            gain=self._gain_module.gain,
+            output_mux=self._output_mux_control.value,
+            toggle_time=self._toggle_time_control.value*1e6,
+            delay_time=self._delay_control.value*1e6,
+        )
+        return "\n".join([main_body_str, biquad0_str, biquad1_str, biquad2_str, biquad3_str])

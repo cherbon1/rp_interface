@@ -200,8 +200,8 @@ class AOMControlModule(RedPitayaModule):
             name='Feedback gain',
             dtype=DataType.SIGNED_INT,
             in_range=lambda val: (-0.5 <= val < 0.5),
-            write_data=lambda val: int(val * 2**(self._feedback_gain_register.n_bits)),
-            read_data=lambda reg: reg / 2**(self._feedback_gain_register.n_bits),
+            write_data=lambda val: int(val * 2 ** self._feedback_gain_register.n_bits),
+            read_data=lambda reg: reg / 2 ** self._feedback_gain_register.n_bits,
         )
 
         # red_pitaya: Union[RedPitaya, str],
@@ -213,3 +213,17 @@ class AOMControlModule(RedPitayaModule):
         # read_data: Callable = None,
         # default_value: Any = None,
         # apply_default: bool = False)
+
+    def __str__(self):
+        return ("Input mux: {input_mux},  Trap is {trap_enable}\n"
+                "Trap toggle: {trap_toggle_time}us (delay {trap_delay_time}us)\n"
+                "Feedback toggle: {feedback_toggle_time}us (delay {feedback_delay_time}us)\n"
+                "Feedback gain: {feedback_gain:.3f}").format(
+            input_mux=self._input_mux_control.value,
+            trap_enable='ON' if self._trap_enable_control.value else 'OFF',
+            trap_toggle_time=self._trap_toggle_time_control.value*1e6,
+            trap_delay_time=self._trap_toggle_delay_control.value*1e6,
+            feedback_toggle_time=self._feedback_toggle_time_control.value*1e6,
+            feedback_delay_time=self._feedback_toggle_delay_control.value*1e6,
+            feedback_gain=self._feedback_gain_control.value,
+        )

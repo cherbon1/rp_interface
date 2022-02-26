@@ -92,3 +92,11 @@ class SumModule(RedPitayaModule):
                 dtype=DataType.BOOL,
             )
             setattr(self, control_attr_name, control)
+
+    def __str__(self):
+        add_select_string = self.rp.read_register(self._add_select_register, dtype='bits')[::-1]
+        added_inputs = [f'In{i}' for i, val in enumerate(add_select_string) if bool(int(val))]
+        return ("({add_string})/{divide_by}").format(
+            add_string=' + '.join(added_inputs),
+            divide_by=self._divide_by_control.value
+        )
