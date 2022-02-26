@@ -197,8 +197,8 @@ class AOMControlModule(RedPitayaModule):
             register=self._feedback_gain_register,
             name='Feedback gain',
             dtype=DataType.UNSIGNED_INT,
-            in_range=lambda val: (0 <= val < 1),
-            write_data=lambda val: int(val * 2 ** self._feedback_gain_register.n_bits),
+            in_range=lambda val: (0 <= val <= 1),
+            write_data=lambda val: int(val * 2 ** self._feedback_gain_register.n_bits - 1e-9),
             read_data=lambda reg: reg / 2 ** self._feedback_gain_register.n_bits,
         )
 
@@ -216,11 +216,10 @@ class AOMControlModule(RedPitayaModule):
         return ("AOM Control:\n"
                 "  Trap is {trap_enable}\n"
                 "    Trap toggle: {trap_toggle_time}us (delay {trap_delay_time}us)\n"
-                "  Feedback is {feedback_enable}, gain: {feedback_gain:.3f}, "
-                "  input: {input_select_name} ({input_sel_number})\n"
+                "  Feedback is {feedback_enable}, Input: {in_sel_name}, ({in_sel_no}), Gain: {feedback_gain:.3f}\n"
                 "    Feedback toggle: {feedback_toggle_time}us (delay {feedback_delay_time}us)").format(
-            input_select_name=self.input_select_names[self._input_select_control.value],
-            input_sel_number=self._input_select_control.value,
+            in_sel_name=self.input_select_names[self._input_select_control.value],
+            in_sel_no=self._input_select_control.value,
             trap_enable='ON' if self._trap_enable_control.value else 'OFF',
             trap_toggle_time=self._trap_toggle_time_control.value*1e6,
             trap_delay_time=self._trap_toggle_delay_control.value*1e6,

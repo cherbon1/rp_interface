@@ -10,7 +10,8 @@ Defines the following:
 - four `delay_filter` modules: these modules take an input signal, delay it by a specified amount, and apply filters to the delayed signal. Up to 4 filters can be applied per signal. Finally, and arbitrary gain can be applied to the signal.
 - two `sum` modules: these modules take the output of the filters as inputs and can selectively add them.
 
-
+## Detailed description
+More deets, coming up!
 
 
 ### Usage example

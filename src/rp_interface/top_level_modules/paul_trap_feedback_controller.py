@@ -212,7 +212,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             name='Constant',
             dtype=DataType.SIGNED_INT,
             in_range=lambda val: (-1 <= val <= 1),
-            write_data=lambda val: int(val * 2 ** (self._constant_register.n_bits - 1) - 1e-4),  # offset avoids overfl.
+            write_data=lambda val: int(val * 2 ** (self._constant_register.n_bits - 1) - 1e-9),  # offset avoids overfl.
             read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
