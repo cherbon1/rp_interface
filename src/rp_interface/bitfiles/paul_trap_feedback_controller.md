@@ -7,12 +7,78 @@ This red pitaya interface can be used to generate useful feedback cooling signal
 
 Defines the following:
 - one `aom_control` module: a module used for generating a signal that will drive the modulation input of an AOM. The signal can be turned on or off and can be modulated based on an input signal
-- four `delay_filter` modules: these modules take an input signal, delay it by a specified amount, and apply filters to the delayed signal. Up to 4 filters can be applied per signal. Finally, and arbitrary gain can be applied to the signal.
+- four `delay_filter` modules: these modules take an input signal, delay it by a specified amount, and apply filters to the delayed signal. Up to 4 `biquad_filters` can be applied per signal. Finally, and arbitrary gain can be applied to the signal.
 - two `sum` modules: these modules take the output of the filters as inputs and can selectively add them.
 
 ## Detailed description
-More deets, coming up!
+Here's the detailed list of what the `PaulTrapFeedbackController` class describes.
 
+- `PaulTrapFeedbackController`
+  - `trigger_delay`
+  - `output0_select`
+  - `output1_select`
+  - `constant`
+  - `sum0`
+  - `sum1`
+  - `aom_control`
+  - `delay_filter0`
+  - `delay_filter1`
+  - `delay_filter2`
+  - `delay_filter3`
+  - `trigger_now()`
+  - `description()`
+  - `input_select_names`
+  - `output_select_names`
+
+
+- `AOMControlModule`
+  - `input_select`
+  - `trap_enable`
+  - `trap_toggle_delay`
+  - `trap_toggle_time`
+  - `feedback_enable`
+  - `feedback_toggle_delay`
+  - `feedback_toggle_time`
+  - `feedback_gain`
+  - `input_select_names`
+
+
+- `DelayFilterModule`
+  - `input_select`
+  - `ac_coupling`
+  - `delay`
+  - `output_select`
+  - `gain`
+  - `toggle_delay`
+  - `toggle_time`
+  - `constant`
+  - `biquad0`
+  - `biquad1`
+  - `biquad2`
+  - `biquad3`
+  - `input_select_names`
+  - `output_select_names`
+  - `refresh_dc_block`
+
+
+- `BiquadFilterModule`
+  - `filter_type`
+  - `frequency`
+  - `q_factor`
+  - `biquad_coefficients`
+  - `write_biquad_coefficients`
+  - `calculate_biquad_coefficients`
+  - `apply_filter_settings`
+  - `refresh_filter`
+  - `transfer_function`
+
+
+- `SumModule`
+  - `add0`
+  - `add1`
+  - `add2`
+  - `add3`
+  - `divide_by`
 
 ### Usage example
 
@@ -32,7 +98,7 @@ ptfb.delay_filter0.output_select = 3
 ptfb.delay_filter0.delay = 30e-6
 ptfb.delay_filter0.biquad0.apply_filter_settings(
     filter_type='bandpass',
-    center_frequency=60e3,
+    frequency=60e3,
     q_factor=4
 )
 ptfb.sum1.add0 = True

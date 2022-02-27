@@ -37,7 +37,7 @@ ptfb.delay_filter0.output_select = 3
 ptfb.delay_filter0.delay = 30e-6
 ptfb.delay_filter0.biquad0.apply_filter_settings(
     filter_type='bandpass',
-    center_frequency=60e3,
+    frequency=60e3,
     q_factor=4
 )
 ptfb.sum1.add0 = True
@@ -57,6 +57,6 @@ Here's a brief description of how the different parts of this project are broken
 - `red_pitaya_control.py`: Defines `RedPitayaControl`, which is a class that writes to one register on the red pitaya. You can optionally define `in_range`, `write_data` and/or `read_data` methods that translate user values into appropriate register values. Nothing should have to inherit from this class. Instead, each register that needs to be written to on the FPGA should be an instance of this class.
 - `red_pitaya_module.py`: Defines two types of modules. Both are defined as abstract classes, which means that no instances of them are allowed to exist. Instead, subclasses must be defined that inherit from these classes. The two classes are:
   - `RedPitayaModule`: Defines a collection of registers, controls and other modules. Each subclass should live in its own file in the `modules` directory. The subclasses should be a collection of registers, controls and other modules. They can vary widely, from very simple (e.g. `gain_module.py`) to very complex (e.g. `delay_filter_module.py`). Ideally, individual registers should be passed to the `__init__` method, for maximum reusability (this way a module can easily be used by multiple other modules). However, this is not always convenient, e.g. in a situation where we need many registers. In those cases, try to make all register `MuxedRegisters` of the same multiplexed GPIO bus, and pass the relevant addresses instead (see `delay_filter_module.py` for a concrete example).
-  - `RedPitayaTopLevelModule`: This is the same thing as `RedPitayaModule`, but it additionally defines a bitfile. Subclasses of `RedPitayaTopLevelModule` should live in their own files, in the `top_level_modules` directory.
+  - `RedPitayaTopLevelModule`: This is the same thing as `RedPitayaModule`, but it additionally defines a bitfile. Subclasses of `RedPitayaTopLevelModule` should live in their own files, in the `top_level_modules` directory. When making a user-facing module (top-level or large submodule), keep addresses, registers and controls (or anything that isn't user-facing) private by prefixing it with an underscore. This makes the software much easier to use in practice.
 
 Finally, a `utils.py` file defines a few useful functions for converting to and from binary data.
