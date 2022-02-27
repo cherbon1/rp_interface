@@ -123,6 +123,7 @@ class FilterType(enum.Enum):
     DOUBLE_POLE_HIGHPASS = 'hhighpass'
     BANDPASS = 'bandpass'
     NOTCH = 'notch'
+    ALLPASS = 'allpass'
 
     def __eq__(self, other):
         '''
@@ -136,6 +137,10 @@ class FilterType(enum.Enum):
             return self.value == other
         return super().__eq__(other)
 
+    @classmethod
+    def all_filter_types_string(cls):
+        return ', '.join("'" + a.value + "'" for a in cls if a != 'unknown')
+
 
 class BiquadFilterModule(RedPitayaModule):
     '''
@@ -145,23 +150,31 @@ class BiquadFilterModule(RedPitayaModule):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  biquad_registers: BiquadFilterRegisters = None,
-                 fs: float = 125e6 / 2 ** 3
+                 fs: float = 125e6 / 2 ** 3,
+                 apply_defaults: bool = False
                  ):
         super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+
+        self.default_values = {
+            'filter_type': FilterType.ALLPASS
+        }
 
         if biquad_registers is None:
             raise KeyError('Need to define addresses to communicate with biquad filter')
         self.biquad_registers = biquad_registers
 
         # Define values for coefficient manipulation
-        self.fs = fs
-        self.n_bits = self.biquad_registers.b0.n_bits
-        self.bitshift = self.n_bits - 2
+        self._fs = fs
+        self._n_bits = self.biquad_registers.b0.n_bits
+        self._bitshift = self._n_bits - 2
 
         # Define parameters
         self._filter_type = FilterType.UNKNOWN
-        self._center_frequency = 1e3
-        self._q_factor = 1
+        self._frequency = None
+        self._q_factor = None
+
+        if apply_defaults:
+            self.apply_defaults()
 
     @property
     def filter_type(self):
@@ -171,18 +184,18 @@ class BiquadFilterModule(RedPitayaModule):
     def filter_type(self, value: FilterType):
         # raise RuntimeError("Can't set filter type directly, use BiquadFilter.apply_filter_settings() instead")
         self.apply_filter_settings(filter_type=value,
-                                   center_frequency=self.center_frequency,
+                                   frequency=self.frequency,
                                    q_factor=self.q_factor)
 
     @property
-    def center_frequency(self):
-        return self._center_frequency
+    def frequency(self):
+        return self._frequency
 
-    @center_frequency.setter
-    def center_frequency(self, value: float):
-        # raise RuntimeError("Can't set center_frequency directly, use BiquadFilter.apply_filter_settings() instead")
+    @frequency.setter
+    def frequency(self, value: float):
+        # raise RuntimeError("Can't set frequency directly, use BiquadFilter.apply_filter_settings() instead")
         self.apply_filter_settings(filter_type=self.filter_type,
-                                   center_frequency=value,
+                                   frequency=value,
                                    q_factor=self.q_factor)
 
     @property
@@ -193,12 +206,12 @@ class BiquadFilterModule(RedPitayaModule):
     def q_factor(self, value: float):
         # raise RuntimeError("Can't set q_factor directly, use BiquadFilter.apply_filter_settings() instead")
         self.apply_filter_settings(filter_type=self.filter_type,
-                                   center_frequency=self.center_frequency,
+                                   frequency=self.frequency,
                                    q_factor=value)
 
     @property
     def biquad_coefficients(self):
-        factor = 2 ** self.bitshift
+        factor = 2 ** self._bitshift
         b0 = self.rp.read_register(register=self.biquad_registers.b0, dtype=DataType.SIGNED_INT)
         b1 = self.rp.read_register(register=self.biquad_registers.b1, dtype=DataType.SIGNED_INT)
         b2 = self.rp.read_register(register=self.biquad_registers.b2, dtype=DataType.SIGNED_INT)
@@ -215,7 +228,7 @@ class BiquadFilterModule(RedPitayaModule):
         Writes the contents of BiquadFilterCoefficients to self.biquad_registers
         Coefficients should not be rescaled yet
         '''
-        scaled_coeffs = coefficients.get_bitshifted_coefficients(self.bitshift)
+        scaled_coeffs = coefficients.get_bitshifted_coefficients(self._bitshift)
         self.rp.write_register(self.biquad_registers.b0, scaled_coeffs.b0, dtype=DataType.SIGNED_INT)
         self.rp.write_register(self.biquad_registers.b1, scaled_coeffs.b1, dtype=DataType.SIGNED_INT)
         self.rp.write_register(self.biquad_registers.b2, scaled_coeffs.b2, dtype=DataType.SIGNED_INT)
@@ -224,9 +237,12 @@ class BiquadFilterModule(RedPitayaModule):
 
     # Supress inspection b.c. it's wrong about scipy.butter
     # noinspection PyTupleAssignmentBalance
-    def calculate_biquad_coefficients(self, filter_type: FilterType, center_frequency: float, q_factor: float):
+    def calculate_biquad_coefficients(self,
+                                      filter_type: FilterType,
+                                      frequency: float = None,
+                                      q_factor: float = None):
         '''
-        Calculate filter parameters based on type, center_frequency and q_factor
+        Calculate filter parameters based on type, frequency and q_factor
         This is copied from the cryolev calcBiquad function, which itself is copied from
         http://www.earlevel.com/scripts/widgets/20131013/biquads2.js
         Note that the labels for b and a were swapped to match literature
@@ -235,27 +251,43 @@ class BiquadFilterModule(RedPitayaModule):
         with functions from scipy. I'm only keeping the notch and bandpass implementations
         from that file, because they seem to work, and I don't want to deal with them right now
         '''
-        if not (0 < center_frequency < self.fs):
-            raise ValueError('Center frequency {:.2f} is out of range (0, {:.2f})'.format(center_frequency, self.fs))
-        k = np.tan(np.pi * center_frequency / self.fs)
+        if frequency is not None:
+            if frequency <= 0:
+                raise ValueError('Frequency should be positive')
+            elif frequency >= self._fs / 2:
+                raise ValueError('Frequency {:.2f}MHz is above Nyquist '
+                                 'frequency {:.2f}MHz'.format(frequency * 1e-6, self._fs / 2 * 1e-6))
 
         if filter_type == FilterType.SINGLE_POLE_LOWPASS:
-            b, a = signal.butter(1, center_frequency, btype='lowpass', fs=self.fs, output='ba')
+            if frequency is None:
+                raise KeyError('Must specify cutoff frequency of single pole lowpass filter')
+            b, a = signal.butter(1, frequency, btype='lowpass', fs=self._fs, output='ba')
             b = (b[0], b[1], 0)
             a = (a[0], a[1], 0)
 
         elif filter_type == FilterType.SINGLE_POLE_HIGHPASS:
-            b, a = signal.butter(1, center_frequency, btype='highpass', fs=self.fs, output='ba')
+            if frequency is None:
+                raise KeyError('Must specify cutoff frequency of single pole highpass filter')
+            b, a = signal.butter(1, frequency, btype='highpass', fs=self._fs, output='ba')
             b = (b[0], b[1], 0)
             a = (a[0], a[1], 0)
 
         elif filter_type == FilterType.DOUBLE_POLE_LOWPASS:
-            b, a = signal.butter(2, center_frequency, btype='lowpass', fs=self.fs, output='ba')
+            if frequency is None:
+                raise KeyError('Must specify cutoff frequency of double pole lowpass filter')
+            b, a = signal.butter(2, frequency, btype='lowpass', fs=self._fs, output='ba')
 
         elif filter_type == FilterType.DOUBLE_POLE_HIGHPASS:
-            b, a = signal.butter(2, center_frequency, btype='highpass', fs=self.fs, output='ba')
+            if frequency is None:
+                raise KeyError('Must specify cutoff frequency of double pole highpass filter')
+            b, a = signal.butter(2, frequency, btype='highpass', fs=self._fs, output='ba')
 
         elif filter_type == FilterType.BANDPASS:
+            if frequency is None:
+                raise KeyError('Must specify center frequency of bandpass filter')
+            if q_factor is None:
+                raise KeyError('Must specify Q-factor of bandpass filter')
+            k = np.tan(np.pi * frequency / self._fs)
             norm = 1 / (1 + k / q_factor + k ** 2)
             b0 = k / q_factor * norm
             a1 = 2 * (k ** 2 - 1) * norm
@@ -264,6 +296,11 @@ class BiquadFilterModule(RedPitayaModule):
             a = (1, a1, a2)
 
         elif filter_type == FilterType.NOTCH:
+            if frequency is None:
+                raise KeyError('Must specify center frequency of notch filter')
+            if q_factor is None:
+                raise KeyError('Must specify Q-factor of notch filter')
+            k = np.tan(np.pi * frequency / self._fs)
             norm = 1 / (1 + k / q_factor + k ** 2)
             b0 = (1 + k ** 2) * norm
             b1 = 2 * (k ** 2 - 1) * norm
@@ -273,25 +310,35 @@ class BiquadFilterModule(RedPitayaModule):
             b = (b0, b1, b2)
             a = (1, a1, a2)
 
+        elif filter_type == FilterType.ALLPASS:
+            b = (1, 0, 0)
+            a = (1, 0, 0)
+
         else:
-            raise KeyError(("Unknown filter type {}. Options are : 'lowpass', "
-                            "'llowpass', 'highpass', 'hhighpass', 'bandpass', 'notch'").format(filter_type))
+            raise KeyError("Unknown filter type {}. Options are : {}".format(
+                filter_type,
+                FilterType.all_filter_types_string()
+            ))
 
         return BiquadFilterCoefficients(b[0], b[1], b[2], a[1], a[2])
 
-    def apply_filter_settings(self, filter_type: FilterType, center_frequency: float, q_factor: float):
+    def apply_filter_settings(self,
+                              filter_type: FilterType,
+                              frequency: float = None,
+                              q_factor: float = None
+                              ):
         '''
         Computes and applies filter settings
         '''
         # Calculate coeffs
-        biquad_coeffs = self.calculate_biquad_coefficients(filter_type, center_frequency, q_factor)
+        biquad_coeffs = self.calculate_biquad_coefficients(filter_type, frequency, q_factor)
 
-        # Store values
+        # Once coeffs are successful, store values
         if isinstance(filter_type, str):
             self._filter_type = FilterType(filter_type)
         else:
             self._filter_type = filter_type
-        self._center_frequency = center_frequency
+        self._frequency = frequency
         self._q_factor = q_factor
 
         # Apply settings and refresh filter
@@ -316,16 +363,21 @@ class BiquadFilterModule(RedPitayaModule):
         normalized_freqs, complex_amplitudes = self.biquad_coefficients.normalized_transfer_function
 
         # drop DC sample
-        return normalized_freqs[1:] * self.fs / (2 * np.pi), \
+        return normalized_freqs[1:] * self._fs / (2 * np.pi), \
                np.abs(complex_amplitudes[1:]), \
                np.angle(complex_amplitudes[1:])
 
     def __str__(self):
-        return "{filter_type} filter, freq: {center_freq:.2}kHz, Q: {q_factor:.1f}".format(
-            filter_type=self.filter_type.value,
-            center_freq=self.center_frequency * 1e-3,
-            q_factor=self.q_factor
-        )
+        if self.filter_type in [FilterType.UNKNOWN, FilterType.ALLPASS]:
+            return f"{self.filter_type.value}"
+        elif self.filter_type not in [FilterType.BANDPASS, FilterType.NOTCH]:
+            return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2}kHz"
+        return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2}kHz, Q: {self.q_factor:.1f}"
 
     def __repr__(self):
         return self.__str__()
+
+
+if __name__ == "__main__":
+    print(FilterType.all_filter_types_string())
+    print('lowpass' in [FilterType.SINGLE_POLE_LOWPASS])
