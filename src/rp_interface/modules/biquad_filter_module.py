@@ -222,48 +222,46 @@ class BiquadFilterModule(RedPitayaModule):
         self.rp.write_register(self.biquad_registers.a1, scaled_coeffs.a1, dtype=DataType.SIGNED_INT)
         self.rp.write_register(self.biquad_registers.a2, scaled_coeffs.a2, dtype=DataType.SIGNED_INT)
 
+    # Supress inspection b.c. it's wrong about scipy.butter
+    # noinspection PyTupleAssignmentBalance
     def calculate_biquad_coefficients(self, filter_type: FilterType, center_frequency: float, q_factor: float):
         '''
         Calculate filter parameters based on type, center_frequency and q_factor
+        This is copied from the cryolev calcBiquad function, which itself is copied from
+        http://www.earlevel.com/scripts/widgets/20131013/biquads2.js
+        Note that the labels for b and a were swapped to match literature
+
+        However, the lowpass and highpass filters seem to be implemented incorrectly, so I replaced them
+        with functions from scipy. I'm only keeping the notch and bandpass implementations
+        from that file, because they seem to work, and I don't want to deal with them right now
         '''
         if not (0 < center_frequency < self.fs):
             raise ValueError('Center frequency {:.2f} is out of range (0, {:.2f})'.format(center_frequency, self.fs))
         k = np.tan(np.pi * center_frequency / self.fs)
+
         if filter_type == FilterType.SINGLE_POLE_LOWPASS:
-            a1 = np.exp(-2.0 * np.pi * (center_frequency / self.fs))
-            b0 = 1.0 - a1
-            a1 = -a1
-            b1 = b2 = a2 = 0
+            b, a = signal.butter(1, center_frequency, btype='lowpass', fs=self.fs, output='ba')
+            b = (b[0], b[1], 0)
+            a = (a[0], a[1], 0)
 
         elif filter_type == FilterType.SINGLE_POLE_HIGHPASS:
-            a1 = -np.exp(-2.0 * np.pi * (0.5 - center_frequency / self.fs))
-            b0 = 1.0 + a1
-            a1 = -a1
-            b1 = b2 = a2 = 0
+            b, a = signal.butter(1, center_frequency, btype='highpass', fs=self.fs, output='ba')
+            b = (b[0], b[1], 0)
+            a = (a[0], a[1], 0)
 
         elif filter_type == FilterType.DOUBLE_POLE_LOWPASS:
-            norm = 1 / (1 + k / q_factor + k ** 2)
-            b0 = k ** 2 * norm
-            b1 = 2 * b0
-            b2 = b0
-            a1 = 2 * (k ** 2 - 1) * norm
-            a2 = (1 - k / q_factor + k ** 2) * norm
+            b, a = signal.butter(2, center_frequency, btype='lowpass', fs=self.fs, output='ba')
 
         elif filter_type == FilterType.DOUBLE_POLE_HIGHPASS:
-            norm = 1 / (1 + k / q_factor + k ** 2)
-            b0 = 1 * norm
-            b1 = -2 * b0
-            b2 = b0
-            a1 = 2 * (k ** 2 - 1) * norm
-            a2 = (1 - k / q_factor + k ** 2) * norm
+            b, a = signal.butter(2, center_frequency, btype='highpass', fs=self.fs, output='ba')
 
         elif filter_type == FilterType.BANDPASS:
             norm = 1 / (1 + k / q_factor + k ** 2)
             b0 = k / q_factor * norm
-            b1 = 0
-            b2 = -b0
             a1 = 2 * (k ** 2 - 1) * norm
             a2 = (1 - k / q_factor + k ** 2) * norm
+            b = (b0, 0, -b0)
+            a = (1, a1, a2)
 
         elif filter_type == FilterType.NOTCH:
             norm = 1 / (1 + k / q_factor + k ** 2)
@@ -272,12 +270,14 @@ class BiquadFilterModule(RedPitayaModule):
             b2 = b0
             a1 = b1
             a2 = (1 - k / q_factor + k ** 2) * norm
+            b = (b0, b1, b2)
+            a = (1, a1, a2)
 
         else:
             raise KeyError(("Unknown filter type {}. Options are : 'lowpass', "
                             "'llowpass', 'highpass', 'hhighpass', 'bandpass', 'notch'").format(filter_type))
 
-        return BiquadFilterCoefficients(b0, b1, b2, a1, a2)
+        return BiquadFilterCoefficients(b[0], b[1], b[2], a[1], a[2])
 
     def apply_filter_settings(self, filter_type: FilterType, center_frequency: float, q_factor: float):
         '''

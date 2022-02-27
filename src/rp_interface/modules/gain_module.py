@@ -38,6 +38,8 @@ class GainModule(RedPitayaModule):
             read_data=lambda reg: reg/2**(self._fine_gain_register.n_bits-1)
         )
 
+        # Corresponds to 2**(largest bitshift that can be specified in n_bits).
+        # Will often be larger than what's required
         max_coarse_gain = int(2 ** (2**self._coarse_gain_register.n_bits - 1))
 
         self._coarse_gain_control = RedPitayaControl(

@@ -20,7 +20,7 @@ class DelayFilterModule(RedPitayaModule):
         - 4 biquad filters:
             biquad0, biquad1, biquad2, biquad3
         - An output select (select one of 8 outputs, described below)
-        - An output gain module (up to 64x)
+        - An output gain module
         - A triggered gate for fast toggling of filter output, composed of:
             Delay time, Toggle time (8ns resolution, up to 0.5368709 seconds)
         - A constant output (in range -1 to 1)
@@ -119,14 +119,14 @@ class DelayFilterModule(RedPitayaModule):
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=25,
-            n_bits=24
+            n_bits=25
         )
 
         self._coarse_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=26,
-            n_bits=3
+            n_bits=5
         )
 
         self._toggle_delay_cycles_register = MuxedRegister(
@@ -143,11 +143,19 @@ class DelayFilterModule(RedPitayaModule):
             n_bits=26
         )
 
+        self._reinit_dc_block = MuxedRegister(
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
+            register_address=29,
+            n_bits=1,
+            lsb_location=4
+        )
+
         self._constant_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=30,
-            n_bits=17
+            n_bits=26
         )
 
     def _define_biquad_register_locations(self):
@@ -168,7 +176,7 @@ class DelayFilterModule(RedPitayaModule):
             b2_address=8,
             reinit_address=29,
             reinit_lsb_location=0,
-            n_bits=26
+            n_bits=25
         )
 
         self._biquad1_registers = BiquadFilterRegisters(
@@ -181,7 +189,7 @@ class DelayFilterModule(RedPitayaModule):
             b2_address=13,
             reinit_address=29,
             reinit_lsb_location=1,
-            n_bits=26
+            n_bits=25
         )
 
         self._biquad2_registers = BiquadFilterRegisters(
@@ -194,7 +202,7 @@ class DelayFilterModule(RedPitayaModule):
             b2_address=18,
             reinit_address=29,
             reinit_lsb_location=2,
-            n_bits=26
+            n_bits=25
         )
 
         self._biquad3_registers = BiquadFilterRegisters(
@@ -207,7 +215,7 @@ class DelayFilterModule(RedPitayaModule):
             b2_address=23,
             reinit_address=29,
             reinit_lsb_location=3,
-            n_bits=26
+            n_bits=25
         )
 
     def _define_controls(self):
@@ -323,6 +331,14 @@ class DelayFilterModule(RedPitayaModule):
             biquad_registers=self._biquad3_registers,
             fs=self.fs_biquad
         )
+
+    def refresh_dc_block(self):
+        '''
+        Clears out contents of shift register in case filter gets stuck in weird mode
+        by toggling reinit high
+        '''
+        self.rp.write_register(self._reinit_dc_block, True, dtype=DataType.BOOL)
+        self.rp.write_register(self._reinit_dc_block, False, dtype=DataType.BOOL)
 
     def __str__(self):
         biquad0_str = "    biquad0: " + self.biquad0.__str__()
