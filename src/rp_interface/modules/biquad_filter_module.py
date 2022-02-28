@@ -117,10 +117,10 @@ class BiquadFilterCoefficients:
 
 class FilterType(enum.Enum):
     UNKNOWN = 'unknown'
-    SINGLE_POLE_LOWPASS = 'lowpass'
-    DOUBLE_POLE_LOWPASS = 'llowpass'
-    SINGLE_POLE_HIGHPASS = 'highpass'
-    DOUBLE_POLE_HIGHPASS = 'hhighpass'
+    LOWPASS = 'lowpass'
+    SECOND_ORDER_LOWPASS = 'llowpass'
+    HIGHPASS = 'highpass'
+    SECOND_ORDER_HIGHPASS = 'hhighpass'
     BANDPASS = 'bandpass'
     NOTCH = 'notch'
     ALLPASS = 'allpass'
@@ -129,9 +129,9 @@ class FilterType(enum.Enum):
         '''
         Override equality operator such that == value also returns true
         Example:
-            FilterType.SINGLE_POLE_LOWPASS == 'lowpass' --> True
-            FilterType.SINGLE_POLE_LOWPASS == FilterType.SINGLE_POLE_LOWPASS --> True
-            'lowpass' == FilterType.SINGLE_POLE_LOWPASS --> True
+            FilterType.LOWPASS == 'lowpass' --> True
+            FilterType.LOWPASS == FilterType.LOWPASS --> True
+            'lowpass' == FilterType.LOWPASS --> True
         '''
         if isinstance(other, str):
             return self.value == other
@@ -258,28 +258,28 @@ class BiquadFilterModule(RedPitayaModule):
                 raise ValueError('Frequency {:.2f}MHz is above Nyquist '
                                  'frequency {:.2f}MHz'.format(frequency * 1e-6, self._fs / 2 * 1e-6))
 
-        if filter_type == FilterType.SINGLE_POLE_LOWPASS:
+        if filter_type == FilterType.LOWPASS:
             if frequency is None:
-                raise KeyError('Must specify cutoff frequency of single pole lowpass filter')
+                raise KeyError('Must specify cutoff frequency of first order lowpass filter')
             b, a = signal.butter(1, frequency, btype='lowpass', fs=self._fs, output='ba')
             b = (b[0], b[1], 0)
             a = (a[0], a[1], 0)
 
-        elif filter_type == FilterType.SINGLE_POLE_HIGHPASS:
+        elif filter_type == FilterType.HIGHPASS:
             if frequency is None:
-                raise KeyError('Must specify cutoff frequency of single pole highpass filter')
+                raise KeyError('Must specify cutoff frequency of first order highpass filter')
             b, a = signal.butter(1, frequency, btype='highpass', fs=self._fs, output='ba')
             b = (b[0], b[1], 0)
             a = (a[0], a[1], 0)
 
-        elif filter_type == FilterType.DOUBLE_POLE_LOWPASS:
+        elif filter_type == FilterType.SECOND_ORDER_LOWPASS:
             if frequency is None:
-                raise KeyError('Must specify cutoff frequency of double pole lowpass filter')
+                raise KeyError('Must specify cutoff frequency of second order lowpass filter')
             b, a = signal.butter(2, frequency, btype='lowpass', fs=self._fs, output='ba')
 
-        elif filter_type == FilterType.DOUBLE_POLE_HIGHPASS:
+        elif filter_type == FilterType.SECOND_ORDER_HIGHPASS:
             if frequency is None:
-                raise KeyError('Must specify cutoff frequency of double pole highpass filter')
+                raise KeyError('Must specify cutoff frequency of second order highpass filter')
             b, a = signal.butter(2, frequency, btype='highpass', fs=self._fs, output='ba')
 
         elif filter_type == FilterType.BANDPASS:
@@ -380,4 +380,4 @@ class BiquadFilterModule(RedPitayaModule):
 
 if __name__ == "__main__":
     print(FilterType.all_filter_types_string())
-    print('lowpass' in [FilterType.SINGLE_POLE_LOWPASS])
+    print('lowpass' in [FilterType.LOWPASS])
