@@ -62,7 +62,7 @@ class DelayFilterModule(RedPitayaModule):
         self._define_register_locations()
         self._define_biquad_register_locations()
         self._define_controls()
-        self._define_biquads()
+        self._define_biquads(apply_defaults=apply_defaults)
 
         property_definitions = {
             'input_select': ('_input_select_control', 'value'),
@@ -303,7 +303,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
-    def _define_biquads(self):
+    def _define_biquads(self, apply_defaults=False):
         '''
         A method that defines all biquad filter modules of a filter block
         Called in __init__, but separated out for readability
@@ -311,25 +311,29 @@ class DelayFilterModule(RedPitayaModule):
         self.biquad0 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad0_registers,
-            fs=self.fs_biquad
+            fs=self.fs_biquad,
+            apply_defaults=apply_defaults
         )
 
         self.biquad1 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad1_registers,
-            fs=self.fs_biquad
+            fs=self.fs_biquad,
+            apply_defaults=apply_defaults
         )
 
         self.biquad2 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad2_registers,
-            fs=self.fs_biquad
+            fs=self.fs_biquad,
+            apply_defaults=apply_defaults
         )
 
         self.biquad3 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad3_registers,
-            fs=self.fs_biquad
+            fs=self.fs_biquad,
+            apply_defaults=apply_defaults
         )
 
     def refresh_dc_block(self):
