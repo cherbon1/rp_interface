@@ -11,8 +11,7 @@ Install repository with
 pip install git+https://gitlab.ethz.ch/ebonvin/rp_interface.git
 ```
 
-For upgrading, use the following options `--force-reinstall --no-deps`. Simply using `--upgrade` won't work because this option only compares the version number, and version numbers aren't automatically bumped here
-
+For upgrading, use the following options `--force-reinstall --no-deps`. Simply using `--upgrade` won't work because this option only compares the version number, and version numbers aren't automatically bumped here.
 
 ### Adding a new interface
 Add your bitfile to the `bitfiles` directory. Create a new class in the `top_level_modules` directory that inherits from `rp_interface.red_pitaya_module.RedPitayaTopLevelModule`.
@@ -47,7 +46,9 @@ ptfb.trigger_now()
 
 ## Code Structure
 
-Here's a brief description of how the different parts of this project are broken up. This repository consists of 5 main files that describe the communication with a Red Pitaya:
+All python code is found in the `src/rp_interface` directory. The `fpga` top level directory contains a snapshot of the FPGA project files. I will most likely not be keeping this up to date any time I do changes to the bitfiles in the future, but I think it's a good idea to include at least one version of a functioning project. 
+
+Here's a brief description of how the different parts of `rp_interface` are broken up. This repository consists of 5 main files that describe the communication with a Red Pitaya:
 
 - `red_pitaya.py`: Defines `RedPitaya`, which handles the SSH communication with the board, as well as some methods for writing to and reading from registers
 - `red_pitaya_bitfile`: Defines a `Bitfile` class which is essentially a string and a few handy path handling methods

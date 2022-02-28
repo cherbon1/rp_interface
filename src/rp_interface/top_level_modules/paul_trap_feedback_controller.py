@@ -37,6 +37,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         - 6 -> GPIO trigger pulse
         - 7 -> constant
     '''
+    # Bitfile is a class attribute that will override the abstract class bitfile property
     bitfile = Bitfile('paul_trap_feedback_controller.bit')
 
     def __init__(self,
@@ -44,7 +45,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
                  load_bitfile: bool = False,
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya, load_bitfile=load_bitfile, apply_defaults=False)
 
         self.default_values = {
             'output0_select': 0,
@@ -80,9 +81,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             'constant': ('_constant_control', 'value'),
         }
         self._define_properties(property_definitions)
-
-        if load_bitfile:
-            self.load_bitfile()
 
         if apply_defaults:
             self.apply_defaults()
