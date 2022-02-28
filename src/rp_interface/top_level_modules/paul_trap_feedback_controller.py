@@ -309,7 +309,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=True, apply_defaults=True)
+    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
     # print(ptfb)
     # print(ptfb.aom_control)
     print(ptfb.delay_filter0)
