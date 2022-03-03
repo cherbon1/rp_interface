@@ -1,5 +1,7 @@
 from typing import Union
 
+import numpy as np
+
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import MuxedRegister
@@ -45,6 +47,7 @@ class DelayFilterModule(RedPitayaModule):
         super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
         self.default_values = {
+            'preamp_gain': 1.,
             'gain': 1.,
             'ac_coupling': True,
             'delay': 0,
@@ -70,6 +73,7 @@ class DelayFilterModule(RedPitayaModule):
             'delay': ('_delay_control', 'value'),
             'output_select': ('_output_select_control', 'value'),
             'gain': ('_gain_module', 'gain'),
+            'preamp_gain': ('_preamp_gain_control', 'value'),
             'toggle_delay': ('_toggle_delay_control', 'value'),
             'toggle_time': ('_toggle_time_control', 'value'),
             'constant': ('_constant_control', 'value'),
@@ -92,6 +96,13 @@ class DelayFilterModule(RedPitayaModule):
             gpio_read_address=self._gpio_read_address,
             register_address=0,
             n_bits=1
+        )
+
+        self._preamp_gain_register = MuxedRegister(
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
+            register_address=1,
+            n_bits=4
         )
 
         self._ac_coupling_register = MuxedRegister(
@@ -232,6 +243,20 @@ class DelayFilterModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 1),
         )
 
+        # Corresponds to 2**(largest bitshift that can be specified in n_bits).
+        # Will often be larger than what's required
+        max_preamp_gain = int(2 ** (2**self._preamp_gain_register.n_bits - 1))
+
+        self._preamp_gain_control = RedPitayaControl(
+            red_pitaya=self.rp,
+            register=self._preamp_gain_register,
+            name='Preamp gain',
+            dtype=DataType.UNSIGNED_INT,
+            in_range=lambda val: (1 <= val <= max_preamp_gain),
+            write_data=lambda val: int(np.log2(val)),
+            read_data=lambda reg: 2**reg
+        )
+
         self._ac_coupling_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._ac_coupling_register,
@@ -250,13 +275,13 @@ class DelayFilterModule(RedPitayaModule):
         )
 
         self.output_select_names = {
-            0: '4 filters',
-            1: '3 filters',
+            0: 'No filters',
+            1: '1 filter',
             2: '2 filters',
-            3: '1 filter',
-            4: 'No filters',
-            5: 'Reserved (troubleshooting)',
-            6: 'Reserved (troubleshooting)',
+            3: '3 filters',
+            4: '4 filters',
+            5: 'N.C.',
+            6: 'N.C.',
             7: 'Constant'
         }
         self._output_select_control = RedPitayaControl(
@@ -352,7 +377,8 @@ class DelayFilterModule(RedPitayaModule):
         main_body_str = ("Delay filter:\n"
                          "  Input: {input_select_name} ({input_sel_number}), {ac_coupling}-coupled,"
                          "  Output: {output_select_name} ({output_sel_number})\n"
-                         "  Delay: {delay}us (freq: {frequency:.2f}kHz), Gain: {gain}\n"
+                         "  Preamp gain: {preamp_gain}, Gain: {gain:.3f}\n"
+                         "  Delay: {delay}us (freq: {frequency:.2f}kHz)\n"
                          "  Output toggle: {toggle_time}us (delay {delay_time}us)").format(
             input_select_name=self.input_select_names[self._input_select_control.value],
             input_sel_number=self._input_select_control.value,
@@ -361,6 +387,7 @@ class DelayFilterModule(RedPitayaModule):
             ac_coupling='AC' if self._ac_coupling_control.value else 'DC',
             delay=self._delay_control.value*1e6,
             frequency=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
+            preamp_gain=self._preamp_gain_control.value,
             gain=self._gain_module.gain,
             toggle_time=self._toggle_time_control.value*1e6,
             delay_time=self._delay_control.value*1e6,

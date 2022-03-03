@@ -15,6 +15,7 @@ Here's the detailed list of what the `PaulTrapFeedbackController` class describe
 
 - `PaulTrapFeedbackController`
   - `trigger_delay`
+  - `trigger_mode`
   - `output0_select`
   - `output1_select`
   - `constant`
@@ -46,6 +47,7 @@ Here's the detailed list of what the `PaulTrapFeedbackController` class describe
 - `DelayFilterModule`
   - `input_select`
   - `ac_coupling`
+  - `preamp_gain`
   - `delay`
   - `output_select`
   - `gain`

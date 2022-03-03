@@ -49,8 +49,8 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
         self.default_values = {
             'output0_select': 0,
-            'output1_select': 1
-
+            'output1_select': 1,
+            'trigger_mode': 0  # default to local trigger
         }
 
         # gpio addresses
@@ -79,6 +79,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             'output0_select': ('_output0_select_control', 'value'),
             'output1_select': ('_output1_select_control', 'value'),
             'constant': ('_constant_control', 'value'),
+            'trigger_mode': ('_trigger_mode_control', 'value')
         }
         self._define_properties(property_definitions)
 
@@ -93,6 +94,13 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
+        self._trigger_mode_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=21,
+            n_bits=1
+        )
+
         self._trigger_register = MuxedRegister(
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
@@ -166,6 +174,15 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             register=self._trigger_register,
             name='Trigger control',
             dtype=DataType.BOOL,
+        )
+
+        # 0 for local, 1 for external
+        self._trigger_mode_control = RedPitayaControl(
+            red_pitaya=self.rp,
+            register=self._trigger_mode_register,
+            name='Trigger mode',
+            dtype=DataType.UNSIGNED_INT,
+            in_range=lambda val: (0 <= val <= 1)
         )
 
         self._trigger_delay_control = RedPitayaControl(
@@ -274,11 +291,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         return ("Paul trap feedback controller\n"
                 "  Output 0: {output0_select_name} ({output0_select_number})\n"
                 "  Output 1: {output1_select_name} ({output1_select_number})\n"
+                "  Trigger mode: {trig_mode} ({trig_mode_number})\n"
                 "  1x aom control, 4x filter, 2x sum").format(
             output0_select_name=self.output_select_names[self._output0_select_control.value],
             output0_select_number=self._output0_select_control.value,
             output1_select_name=self.output_select_names[self._output1_select_control.value],
-            output1_select_number=self._output1_select_control.value
+            output1_select_number=self._output1_select_control.value,
+            trig_mode='EXTERNAL' if self._trigger_control.value else 'LOCAL',
+            trig_mode_number=self._trigger_control.value
         )
 
     def __repr__(self):
@@ -309,10 +329,11 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
+    # ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
     # print(ptfb)
     # print(ptfb.aom_control)
-    print(ptfb.delay_filter0)
+    # print(ptfb.delay_filter0)
     # print(ptfb.sum0)
     # print('=============================')
     # print(ptfb.description())
+    pass
