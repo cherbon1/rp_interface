@@ -371,8 +371,8 @@ class BiquadFilterModule(RedPitayaModule):
         if self.filter_type in [FilterType.UNKNOWN, FilterType.ALLPASS]:
             return f"{self.filter_type.value}"
         elif self.filter_type not in [FilterType.BANDPASS, FilterType.NOTCH]:
-            return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2}kHz"
-        return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2}kHz, Q: {self.q_factor:.1f}"
+            return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2f}kHz"
+        return f"{self.filter_type.value}, freq: {self.frequency * 1e-3:.2f}kHz, Q: {self.q_factor:.1f}"
 
     def __repr__(self):
         return self.__str__()

@@ -232,18 +232,23 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         )
 
     def _define_modules(self, apply_defaults=False):
+        sum_input_names = [f'delay_filter{i}' for i in range(4)]
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
-            apply_defaults=apply_defaults
+            apply_defaults=apply_defaults,
+            adder_width=4,
+            input_names=sum_input_names
         )
 
         self.sum1 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
-            apply_defaults=apply_defaults
+            apply_defaults=apply_defaults,
+            adder_width=4,
+            input_names=sum_input_names
         )
 
         self.aom_control = AOMControlModule(
