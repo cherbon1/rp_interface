@@ -121,7 +121,7 @@ class SumModule(RedPitayaModule):
         # Figure out which inputs are being summed are on
         add_select_string = self.rp.read_register(self._add_select_register, dtype='bits')[::-1]
         # Build addition string
-        added_inputs = [{name} for name, enable in zip(self.input_names, add_select_string) if bool(int(enable))]
+        added_inputs = [name for name, enable in zip(self.input_names, add_select_string) if bool(int(enable))]
         if len(added_inputs) == 0:
             return "no output"
         if self._divide_by_control.value == 1:

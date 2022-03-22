@@ -1,5 +1,7 @@
 from typing import Union
 
+import numpy as np
+
 from rp_interface.modules.amplitude_phase_module import AmplitudePhaseModule
 from rp_interface.modules.gain_module import GainModule
 from rp_interface.red_pitaya_module import RedPitayaModule
@@ -22,7 +24,7 @@ class PLLModule(RedPitayaModule):
         - A ki integral constant for the PID loop
         - A reference frequency f0
         - A bandwidth for the PID
-        - An alpha parameter, low pass filter bandwidth for the demodulators
+        - An filter_bandwidth, low pass filter bandwidth for the demodulators (implements alpha)
         - An order parameter, that sets the order of the low pass
         - An output select (select one of 8 outputs, described below)
         - An output gain module
@@ -48,7 +50,12 @@ class PLLModule(RedPitayaModule):
         self.default_values = {
                 'input_select': 0,
                 'second_harmonic': True,
-                'PID_enable': False
+                'pid_enable': False,
+                'a': 1,
+                'phi': 0,
+                'order': 1,
+                'gain': 1.,
+                'demodulator_bandwidth': 1e3
             }
 
         self._gpio_write_address = gpio_write_address
@@ -62,15 +69,15 @@ class PLLModule(RedPitayaModule):
         property_definitions = {
             'input_select': ('_input_select_control', 'value'),
             'second_harmonic': ('_second_harmonic_control', 'value'),
+            'frequency': ('_frequency_control', 'value'),
             'a': ('_amplitude_phase_module', 'a'),
             'phi': ('_amplitude_phase_module', 'phi'),
-            'PID_enable': ('_PID_enable_control', 'value'),
+            'demodulator_bandwidth': ('_demodulator_bandwidth_control', 'value'),
+            'order': ('_order_control', 'value'),
+            'pid_enable': ('_pid_enable_control', 'value'),
+            'pid_bandwidth': ('_pid_bandwidth_control', 'value'),
             'kp': ('_kp_control', 'value'),
             'ki': ('_ki_control', 'value'),
-            'frequency': ('_frequency_control', 'value'),
-            'PID_bandwidth': ('_PID_bandwidth_control', 'value'),
-            'alpha': ('_alpha_control', 'value'),
-            'order': ('_order_control', 'value'),
             'output_select': ('_output_select_control', 'value'),
             'gain': ('_gain_module', 'gain'),
         }
@@ -101,7 +108,7 @@ class PLLModule(RedPitayaModule):
             n_bits=1
         )
 
-        self._PID_enable_register = MuxedRegister(
+        self._pid_enable_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=2,
@@ -143,7 +150,7 @@ class PLLModule(RedPitayaModule):
             n_bits=26
         )
 
-        self._PID_bandwidth_register = MuxedRegister(
+        self._pid_bandwidth_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=8,
@@ -206,9 +213,9 @@ class PLLModule(RedPitayaModule):
             dtype=DataType.BOOL,
         )
 
-        self._PID_enable_control = RedPitayaControl(
+        self._pid_enable_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._PID_enable_register,
+            register=self._pid_enable_register,
             name='PID enable',
             dtype=DataType.BOOL,
         )
@@ -247,9 +254,9 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**26 * self.fs
         )
 
-        self._PID_bandwidth_control = RedPitayaControl(
+        self._pid_bandwidth_control = RedPitayaControl(
             red_pitaya=self.rp,
-            register=self._PID_bandwidth_register,
+            register=self._pid_bandwidth_register,
             name='PID bandwidth',
             dtype=DataType.SIGNED_INT,
             in_range=lambda val: val >= 0,  # Data is handled as a signed int, but should be positive
@@ -257,20 +264,24 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**26 * self.fs
         )
 
-        self._alpha_control = RedPitayaControl(
+        # alpha = exp(-2*np.pi*demodulator_bandwidth/sample_freq) with sample_freq = 125e6/2**10 = 122.07 kHz
+        self._demodulator_bandwidth_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._alpha_register,
-            name='Alpha',
+            name='demodulator bandwidth',
             dtype=DataType.UNSIGNED_INT,
-            write_data=lambda val: int(val * 2**17 - 1e-9),
-            read_data=lambda reg: reg / 2**17
+            write_data=lambda val: int(np.exp(-2*np.pi*val / (125e6/1024)) * 2**17 - 1e-9),
+            read_data=lambda reg: 0 if reg == 0 else -(125e6/1024) * np.log(reg / 2**17) / (2*np.pi)
         )
 
         self._order_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._order_register,
             name='Order',
-            dtype=DataType.UNSIGNED_INT
+            dtype=DataType.UNSIGNED_INT,
+            write_data=lambda val: val - 1,  # order 1 is written with register value 000
+            read_data=lambda reg: reg + 1
+
         )
 
         self.output_select_names = {
@@ -303,20 +314,20 @@ class PLLModule(RedPitayaModule):
         output_sel_no = self._output_select_control.value
         return ("PLL module:\n"
                 "  Input: {input_select_name} ({input_sel_number}), 2nd harm.: {sec_harm}\n"
-                "  Demod: freq {freq:.2f}kHz, phase {phase:.1f}deg, alpha {alpha:.2f}, order {order}\n"
-                "  PID {pid_on}: kp {kp:.1f}, ki {ki:.1f}, bandwidth {pid_bw}kHz\n"
+                "  Demod: freq {freq:.2f}kHz, phase {phase:.1f}deg, bandwidth {demod_bw:.2f}kHz, order {order}\n"
+                "  PID {pid_on}: kp {kp:.2f}, ki {ki:.2f}, bandwidth {pid_bw}kHz\n"
                 "  Output: {output_sel_name} ({output_sel_number}), gain {gain:.2f}").format(
             input_select_name=self.input_select_names[input_sel_no],
             input_sel_number=input_sel_no,
             sec_harm=self._second_harmonic_control.value,
-            freq=self._frequency_control.value,
+            freq=self._frequency_control.value * 1e-3,
             phase=self._amplitude_phase_module.phi,
-            alpha=self._alpha_control.value,
+            demod_bw=self._demodulator_bandwidth_control.value * 1e-3,
             order=self._order_control.value,
-            pid_on='ON' if self._PID_enable_control.value else 'OFF',
+            pid_on='ON' if self._pid_enable_control.value else 'OFF',
             kp=self._kp_control.value,
             ki=self._ki_control.value,
-            pid_bw=self._PID_bandwidth_control.value,
+            pid_bw=self._pid_bandwidth_control.value * 1e-3,
             output_sel_name=self.output_select_names[output_sel_no],
             output_sel_number=output_sel_no,
             gain=self._gain_module.gain,
