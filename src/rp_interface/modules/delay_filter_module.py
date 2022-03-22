@@ -28,11 +28,11 @@ class DelayFilterModule(RedPitayaModule):
         - A constant output (in range -1 to 1)
 
     output select options:
-        - 0 -> 4 filters (output of biquad3)
-        - 1 -> 3 filters (output of biquad2)
+        - 0 -> 0 filters (output of DC/AC coupling)
+        - 1 -> 1 filters (output of biquad0)
         - 2 -> 2 filters (output of biquad1)
-        - 3 -> 1 filters (output of biquad0)
-        - 4 -> output of DC/AC coupling
+        - 3 -> 3 filters (output of biquad2)
+        - 4 -> 4 filters (output of biquad3)
         - 5 -> delay_output
         - 6 -> coarse_delay_output
         - 7 -> constant

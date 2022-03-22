@@ -292,16 +292,18 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._trigger_control.value = False
 
     def __str__(self):
+        output_sel_no0 = self._output0_select_control.value
+        output_sel_no1 = self._output1_select_control.value
         # Define strings
         return ("Paul trap feedback controller\n"
                 "  Output 0: {output0_select_name} ({output0_select_number})\n"
                 "  Output 1: {output1_select_name} ({output1_select_number})\n"
                 "  Trigger mode: {trig_mode} ({trig_mode_number})\n"
                 "  1x aom control, 4x filter, 2x sum").format(
-            output0_select_name=self.output_select_names[self._output0_select_control.value],
-            output0_select_number=self._output0_select_control.value,
-            output1_select_name=self.output_select_names[self._output1_select_control.value],
-            output1_select_number=self._output1_select_control.value,
+            output0_select_name=self.output_select_names[output_sel_no0],
+            output0_select_number=output_sel_no0,
+            output1_select_name=self.output_select_names[output_sel_no1],
+            output1_select_number=output_sel_no1,
             trig_mode='EXTERNAL' if self._trigger_control.value else 'LOCAL',
             trig_mode_number=self._trigger_control.value
         )
