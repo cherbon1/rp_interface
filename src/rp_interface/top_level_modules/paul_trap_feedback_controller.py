@@ -291,6 +291,81 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._trigger_control.value = True
         self._trigger_control.value = False
 
+    def data_path(self, channel):
+        '''
+        Describes the data path that generates `channel` output
+        '''
+        # Work your way backwards.
+        # self.output_select_names = {
+        #     0: 'In 0',
+        #     1: 'In 1',
+        #     2: 'AOM control',
+        #     3: 'Sum 0',
+        #     4: 'Sum 1',
+        #     5: 'Filter 0',
+        #     6: 'Trigger out',
+        #     7: 'Constant'
+        # }
+        # Examples of what this function should produce:
+        # Sum of 2 delay_filter_outputs:
+        #   - Input 0, ac coupled -> preamp gain 4x -> 2ms delay -> bandpass filter 20kHz, q: 1.2 -> gain 15x
+        #   - Constant 0.1V
+        #
+        # Output of delay_filter0:
+        #   - Input 0, ac coupled -> preamp gain 1x -> 2ms delay -> bandpass filter 20kHz,
+        #     q: 1.2 -> bandpass filter 20kHz, q: 1.2 -> gain 15
+        #
+        # AOM Control signal, feedback from In0, gain 0.1x
+        #
+        # Where's the output coming from?
+        if channel == 0:
+            prev_stage = self._output0_select_control.value
+        elif channel == 1:
+            prev_stage = self._output1_select_control.value
+        else:
+            raise KeyError('Unknown channel {} for data path'.format(channel))
+
+        if prev_stage == 0:  # In0
+            return 'In0'
+        elif prev_stage == 1:  # In1
+            return 'In1'
+        elif prev_stage == 2:  # AOM Control
+            return ('AOM Control signal, trap is {trap_enable}, feedback from {aom_control_input} is {fb_enable}, '
+                    'gain {aom_control_gain}').format(
+                trap_enable='ON' if self.aom_control._trap_enable_control.value else 'OFF',
+                aom_control_input=self.aom_control.input_select_names[self.aom_control._input_select_control.value],
+                fb_enable='ON' if self.aom_control._feedback_enable_control.value else 'OFF',
+                aom_control_gain=self.aom_control._feedback_gain_control.value
+            )
+        elif prev_stage == 3 or prev_stage == 4:
+            if prev_stage == 3:
+                sum_enables = self.sum0.add_select_list
+            elif prev_stage == 4:
+                sum_enables = self.sum0.add_select_list
+            else:
+                raise RuntimeError('Wait, whaaaat???!')
+            delay_filters = {
+                'delay_filter0': self.delay_filter0,
+                'delay_filter1': self.delay_filter1,
+                'delay_filter2': self.delay_filter2,
+                'delay_filter3': self.delay_filter3
+            }
+            filters_string = '\n - '.join([f'{df_name}: {df.data_path()}' for (df_name, df), enable in \
+                                           zip(delay_filters.items(), sum_enables) if enable])
+            return ('Sum of {n_stages} delay filter outputs:\n'
+                    ' - {filters}').format(
+                n_stages=sum(sum_enables),
+                filters=filters_string if filters_string else 'No output',
+            )
+        elif prev_stage == 5:  # delay_filter0
+            return 'delay_filter0: {}'.format(self.delay_filter0.data_path())
+        elif prev_stage == 6:  # Trigger out
+            return 'Trigger output (source: {})'.format(
+                'LOCAL' if self._trigger_mode_control.value == 0 else 'EXTERNAL'
+            )
+        elif prev_stage == 7:  # Constant
+            return 'Constant: {}V'.format(self._constant_control.value)
+
     def __str__(self):
         output_sel_no0 = self._output0_select_control.value
         output_sel_no1 = self._output1_select_control.value

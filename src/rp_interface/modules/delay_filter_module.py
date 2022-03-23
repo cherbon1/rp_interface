@@ -369,6 +369,44 @@ class DelayFilterModule(RedPitayaModule):
         self.rp.write_register(self._reinit_dc_block, True, dtype=DataType.BOOL)
         self.rp.write_register(self._reinit_dc_block, False, dtype=DataType.BOOL)
 
+    def data_path(self):
+        '''
+        Describes the data path of the current output
+        Example output:
+        # Input 0, ac coupled -> preamp gain 1x -> 2ms delay -> bandpass filter 20kHz,
+        #   q: 1.2 -> bandpass filter 20kHz, q: 1.2 -> gain 15
+        '''
+
+        # self.output_select_names = {
+        #     0: 'No filters',
+        #     1: '1 filter',
+        #     2: '2 filters',
+        #     3: '3 filters',
+        #     4: '4 filters',
+        #     5: 'N.C.',
+        #     6: 'N.C.',
+        #     7: 'Constant'
+        # }
+        output_no = self._output_select_control.value
+        if output_no == 5 or output_no == 6:
+            return 'No output'
+        elif output_no == 7:
+            return 'Constant: {}V'.format(self._constant_control.value)
+
+        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3]
+        biquad_string = ' -> '.join([biquads[i].__str__() for i in range(output_no)])
+
+        return ('Input {input_no}, {ac_coupling}-coupled -> preamp gain {preamp_gain}x -> {delay:.1f}us delay '
+                '({freq:.2f}kHz) -> {biquad_string} -> gain {gain:.2f}x').format(
+            input_no=self._input_select_control.value,
+            ac_coupling='ac' if self._ac_coupling_control.value else 'dc',
+            preamp_gain=self._preamp_gain_control.value,
+            delay=self._delay_control.value * 1e6,
+            freq=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
+            biquad_string=biquad_string if biquad_string else 'no filter',
+            gain=self._gain_module.gain,
+        )
+
     def __str__(self):
         biquad0_str = "    biquad0: " + self.biquad0.__str__()
         biquad1_str = "    biquad1: " + self.biquad1.__str__()
