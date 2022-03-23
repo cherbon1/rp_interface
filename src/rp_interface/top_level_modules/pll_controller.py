@@ -157,14 +157,14 @@ class PLLController(RedPitayaTopLevelModule):
         )
 
     def _define_modules(self, apply_defaults=False):
-        sum_input_names = [
-            'In0',
-            'In1',
-            'PLL0',
-            'PLL1',
-            'PLL2',
-            'PLL3',
-        ]
+        sum_input_names = {
+            0: 'In0',
+            1: 'In1',
+            2: 'PLL0',
+            3: 'PLL1',
+            4: 'PLL2',
+            5: 'PLL3',
+        }
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,

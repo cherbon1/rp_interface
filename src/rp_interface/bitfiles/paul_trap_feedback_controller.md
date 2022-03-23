@@ -81,6 +81,7 @@ Here's the detailed list of what the `PaulTrapFeedbackController` class describe
   - `add2`
   - `add3`
   - `divide_by`
+  - `sum_input_names`
 
 ### Usage example
 

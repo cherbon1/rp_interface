@@ -52,7 +52,7 @@ Here's the detailed list of what the `PLLController` class describes.
   - `add3`
   - `add4`
   - `add5`
-  - `input_names`: `list` describing the input signals
+  - `sum_input_names`: `dict` describing the input signals
   - `divide_by`: `int`, must be a power of 2. The output will be divided by this value. This is useful to avoid saturating an output when adding multiple signals.
 
 ### Usage example
