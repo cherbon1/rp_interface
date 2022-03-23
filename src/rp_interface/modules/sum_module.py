@@ -41,16 +41,14 @@ class SumModule(RedPitayaModule):
         self._add_select_register = add_select_register
         self._divide_by_register = divide_by_register
 
-        self._define_add_select_register_locations()
-        self._define_add_select_controls()
-
         if adder_width is None:
             adder_width = self._add_select_register.n_bits
         self.adder_width = adder_width
-        max_divide_by = 2**int(np.ceil((np.log2(self.adder_width))))
+        divide_by_width = int(np.ceil((np.log2(self.adder_width))))
+        max_divide_by = 2**divide_by_width
 
         if input_names is None:
-            input_names = [f'In{i}' for i in range(self.adder_width)]
+            input_names = {i: f'In{i}' for i in range(self.adder_width)}
         self.input_names = input_names
 
         if len(input_names) != self.adder_width:
@@ -63,14 +61,17 @@ class SumModule(RedPitayaModule):
         if self.adder_width > self._add_select_register.n_bits:
             raise RuntimeError('Register is too small for adder_width {}'.format(self.adder_width))
 
+        self._define_add_select_register_locations()
+        self._define_add_select_controls()
+
         self._divide_by_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._divide_by_register,
             name='Divide by',
             dtype=DataType.UNSIGNED_INT,
             in_range=lambda val: (1 <= val <= max_divide_by),
-            write_data=lambda val: int(self.adder_width-np.log2(val)),
-            read_data=lambda reg: 2**(self.adder_width-reg)
+            write_data=lambda val: int(divide_by_width-np.log2(val)),
+            read_data=lambda reg: 2**(divide_by_width-reg)
         )
 
         property_definitions = {
@@ -128,7 +129,7 @@ class SumModule(RedPitayaModule):
 
     def __str__(self):
         # Build addition string
-        added_inputs = [name for name, enable in zip(self.input_names, self.add_select_list) if enable]
+        added_inputs = [name for name, enable in zip(self.input_names.values(), self.add_select_list) if enable]
         if len(added_inputs) == 0:
             return "no output"
         if self._divide_by_control.value == 1:

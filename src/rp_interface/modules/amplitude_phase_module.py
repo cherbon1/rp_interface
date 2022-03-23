@@ -78,7 +78,7 @@ class AmplitudePhaseModule(RedPitayaModule):
 
     def __str__(self):
         return ("Amplitude-phase module:\n"
-                "  a: {}, phi: {}deg").format(
+                "  a: {:.2f}, phi: {:.1f}deg").format(
             self.a,
             self.phi
         )

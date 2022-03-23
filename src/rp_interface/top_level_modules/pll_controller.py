@@ -228,8 +228,9 @@ class PLLController(RedPitayaTopLevelModule):
     def __repr__(self):
         return self.__str__()
 
+
 if __name__ == "__main__":
-    pc = PLLController('red-pitaya-16.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+    pc = PLLController('red-pitaya-21.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
     print(pc)
     pc.pll0.kp = 1
     pc.pll0.ki = -0.5
