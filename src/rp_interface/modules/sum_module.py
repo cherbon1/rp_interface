@@ -45,9 +45,9 @@ class SumModule(RedPitayaModule):
         self._define_add_select_controls()
 
         if adder_width is None:
-            adder_width = int(np.log2(self._add_select_register.n_bits))
+            adder_width = self._add_select_register.n_bits
         self.adder_width = adder_width
-        max_divide_by = 2**self.adder_width
+        max_divide_by = 2**int(np.ceil((np.log2(self.adder_width))))
 
         if input_names is None:
             input_names = [f'In{i}' for i in range(self.adder_width)]
@@ -90,7 +90,7 @@ class SumModule(RedPitayaModule):
         '''
         Breaks apart self._add_select_register into individual controls
         '''
-        for i in range(self._add_select_register.n_bits):
+        for i in range(self.adder_width):
             attr_name = '_add{}_register'.format(i)
             reg = MuxedRegister(
                 gpio_write_address=self._add_select_register.gpio_write_address,
@@ -105,7 +105,7 @@ class SumModule(RedPitayaModule):
         '''
         Defines controls
         '''
-        for i in range(self._add_select_register.n_bits):
+        for i in range(self.adder_width):
             control_attr_name = '_add{}_control'.format(i)
             register_attr_name = '_add{}_register'.format(i)
             register = getattr(self, register_attr_name)
@@ -117,11 +117,18 @@ class SumModule(RedPitayaModule):
             )
             setattr(self, control_attr_name, control)
 
+    @property
+    def add_select_list(self):
+        '''
+        Returns a list of booleans, stating whether input n is summed or not
+        '''
+        # Invert order of string, and select adder_width first values
+        add_select_string = self.rp.read_register(self._add_select_register, dtype='bits')[::-1][:self.adder_width]
+        return [bool(int(enable)) for enable in add_select_string]
+
     def __str__(self):
-        # Figure out which inputs are being summed are on
-        add_select_string = self.rp.read_register(self._add_select_register, dtype='bits')[::-1]
         # Build addition string
-        added_inputs = [name for name, enable in zip(self.input_names, add_select_string) if bool(int(enable))]
+        added_inputs = [name for name, enable in zip(self.input_names, self.add_select_list) if enable]
         if len(added_inputs) == 0:
             return "no output"
         if self._divide_by_control.value == 1:
