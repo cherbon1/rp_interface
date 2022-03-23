@@ -51,7 +51,7 @@ class DelayFilterModule(RedPitayaModule):
             'gain': 1.,
             'ac_coupling': True,
             'delay': 0,
-            'output_select': 3,  # default to output of 1st filter
+            'output_select': 1,  # default to output of 1st filter
             'toggle_delay': 1e-3,
             'toggle_time': 0
         }

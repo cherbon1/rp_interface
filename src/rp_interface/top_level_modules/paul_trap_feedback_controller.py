@@ -232,7 +232,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         )
 
     def _define_modules(self, apply_defaults=False):
-        sum_input_names = {0: f'delay_filter{i}' for i in range(4)}
+        sum_input_names = {i: f'delay_filter{i}' for i in range(4)}
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
@@ -411,8 +411,11 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    # ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
-    # print(ptfb)
+    ptfb = PaulTrapFeedbackController('red-pitaya-21.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
+    ptfb.output0_select = 3
+    print(ptfb.delay_filter0.output_select_names)
+    print(ptfb.delay_filter0.output_select)
+    print(ptfb.data_path(0))
     # print(ptfb.aom_control)
     # print(ptfb.delay_filter0)
     # print(ptfb.sum0)
