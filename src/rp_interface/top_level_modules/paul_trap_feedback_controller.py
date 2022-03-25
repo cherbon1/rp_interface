@@ -425,7 +425,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+    ptfb = PaulTrapFeedbackController('red-pitaya-00.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
 
     ptfb.output1_select = 4
     print(ptfb)

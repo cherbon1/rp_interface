@@ -215,7 +215,7 @@ class PLLController(RedPitayaTopLevelModule):
         # copy properties
         super().copy_settings(other)
         # copy properties of submodules
-        modules = ['delay_filter0', 'delay_filter1', 'delay_filter2', 'delay_filter3', 'sum0', 'sum1']
+        modules = ['pll0', 'pll1', 'pll2', 'pll3', 'sum0', 'sum1']
         for module in modules:
             getattr(self, module).copy_settings(getattr(other, module))
 
@@ -238,7 +238,7 @@ class PLLController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    pc = PLLController('red-pitaya-21.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
+    pc = PLLController('red-pitaya-00.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
     print(pc)
     pc.pll0.kp = 1
     pc.pll0.ki = -0.5
@@ -246,9 +246,14 @@ if __name__ == "__main__":
     pc.pll0.phi = -180
     pc.pll0.demodulator_bandwidth = 10e3
     pc.pll0.PID_bandwidth = 10e3
-    print(pc.pll0.demodulator_bandwidth)
-    print(pc.pll0._amplitude_phase_module)
+
     print(pc.pll0)
+    print(pc.pll1)
+
+    pc.pll1.copy_settings(pc.pll0)
+
+    print(pc.pll0)
+    print(pc.pll1)
 
     pc.sum0.add0 = True
     pc.sum0.add2 = True
