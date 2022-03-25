@@ -12,7 +12,7 @@ from rp_interface.red_pitaya_module import RedPitayaModule
 class GainModule(RedPitayaModule):
     '''
     Defines an interface to fine and coarse gain registers. The fine gain
-    multiplies a signal by a range of -0.5 to 0.5 while the coarse gain bitshifts the
+    multiplies a signal by a range of -1 to 1 while the coarse gain bitshifts the
     output signal to multiply by powers of 2.
     '''
     def __init__(self,
@@ -21,7 +21,7 @@ class GainModule(RedPitayaModule):
                  coarse_gain_register: Union[Register, MuxedRegister],
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)\
+        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
 
         self.default_values = {'gain': 1.}
 

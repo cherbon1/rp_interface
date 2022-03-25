@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod
-from typing import Dict, Union
-
 import logging
+from abc import ABC, abstractmethod
+from typing import Union
 
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_bitfile import Bitfile
@@ -30,7 +29,10 @@ class RedPitayaModule(ABC):
         self.rp = red_pitaya
         self.default_values = None
 
-        self._define_properties({})
+        # dict of form: {property_name: (control_name, control_property_name)}
+        # e.g. {'input_select': ('_input_select_control', 'value')}
+        self.property_definitions = {}
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
@@ -45,8 +47,9 @@ class RedPitayaModule(ABC):
             else:
                 raise KeyError(f'Unknown attribute {name} for {self.__class__.__name__}')
 
-    def _define_properties(self, property_definitions: Dict) -> None:
+    def _define_properties(self) -> None:
         '''
+        registers every property in self.property_definitions as a property
         property_definitions is a dict of the form {'prop_name': ('object_name', 'obj_prop_name')}
             e.g. {'input_mux': ('input_mux_control', 'value')}.
         This will make Module.input_mux = 4 behave the same as Module.input_mux_control.value = 4
@@ -67,8 +70,15 @@ class RedPitayaModule(ABC):
             return property(lambda self, f=get_func: f(self),
                             lambda self, value, f=set_func: f(self, value))
 
-        for prop_name, prop_definition in property_definitions.items():
+        for prop_name, prop_definition in self.property_definitions.items():
             setattr(self.__class__, prop_name, make_property(*prop_definition))
+
+    def copy_settings(self, other):
+        # Copies all defined properties from one red pitaya module instance to another
+        if not isinstance(other, self.__class__):
+            raise RuntimeError('copy_settings: other instance must be of type: {}'.format(self.__class__.__name__))
+        for prop_name in self.property_definitions.keys():
+            setattr(self, prop_name, getattr(other, prop_name))
 
 
 class RedPitayaTopLevelModule(RedPitayaModule, ABC):

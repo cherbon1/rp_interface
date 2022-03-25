@@ -74,17 +74,20 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._define_modules(apply_defaults=apply_defaults)
 
         # define top level properties
-        property_definitions = {
+        self.property_definitions = {
             'trigger_delay': ('_trigger_delay_control', 'value'),
             'output0_select': ('_output0_select_control', 'value'),
             'output1_select': ('_output1_select_control', 'value'),
             'constant': ('_constant_control', 'value'),
             'trigger_mode': ('_trigger_mode_control', 'value')
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
+            # Custom default setting that lives outside of defaults dictionary
+            self.sum1.add0 = False
+            self.sum1.add1 = True
 
     def _define_register_locations(self):
         '''
@@ -232,7 +235,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         )
 
     def _define_modules(self, apply_defaults=False):
-        sum_input_names = [f'delay_filter{i}' for i in range(4)]
+        sum_input_names = {i: f'delay_filter{i}' for i in range(4)}
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
@@ -291,17 +294,105 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._trigger_control.value = True
         self._trigger_control.value = False
 
+    def copy_settings(self, other):
+        # copy properties
+        super().copy_settings(other)
+        # copy properties of submodules
+        modules = ['delay_filter0', 'delay_filter1', 'delay_filter2', 'delay_filter3', 'sum0', 'sum1']
+        for module in modules:
+            getattr(self, module).copy_settings(getattr(other, module))
+
+    def data_path(self, channel):
+        '''
+        Describes the data path that generates `channel` output
+        '''
+        # Work your way backwards.
+        # self.output_select_names = {
+        #     0: 'In 0',
+        #     1: 'In 1',
+        #     2: 'AOM control',
+        #     3: 'Sum 0',
+        #     4: 'Sum 1',
+        #     5: 'Filter 0',
+        #     6: 'Trigger out',
+        #     7: 'Constant'
+        # }
+        # Examples of what this function should produce:
+        # Sum of 2 delay_filter_outputs:
+        #   - Input 0, ac coupled -> preamp gain 4x -> 2ms delay -> bandpass filter 20kHz, q: 1.2 -> gain 15x
+        #   - Constant 0.1V
+        #
+        # Output of delay_filter0:
+        #   - Input 0, ac coupled -> preamp gain 1x -> 2ms delay -> bandpass filter 20kHz,
+        #     q: 1.2 -> bandpass filter 20kHz, q: 1.2 -> gain 15
+        #
+        # AOM Control signal, feedback from In0, gain 0.1x
+        #
+        # Where's the output coming from?
+        if channel == 0:
+            prev_stage = self._output0_select_control.value
+        elif channel == 1:
+            prev_stage = self._output1_select_control.value
+        else:
+            raise KeyError('Unknown channel {} for data path'.format(channel))
+
+        if prev_stage == 0:  # In0
+            return 'In0'
+        elif prev_stage == 1:  # In1
+            return 'In1'
+        elif prev_stage == 2:  # AOM Control
+            return ('AOM Control signal, trap is {trap_enable}, feedback from {aom_control_input} is {fb_enable}, '
+                    'gain {aom_control_gain}').format(
+                trap_enable='ON' if self.aom_control._trap_enable_control.value else 'OFF',
+                aom_control_input=self.aom_control.input_select_names[self.aom_control._input_select_control.value],
+                fb_enable='ON' if self.aom_control._feedback_enable_control.value else 'OFF',
+                aom_control_gain=self.aom_control._feedback_gain_control.value
+            )
+        elif prev_stage == 3 or prev_stage == 4:
+            if prev_stage == 3:
+                sum_enables = self.sum0.add_select_list
+            elif prev_stage == 4:
+                sum_enables = self.sum0.add_select_list
+            else:
+                raise RuntimeError('Wait, whaaaat???!')
+            delay_filters = {
+                'delay_filter0': self.delay_filter0,
+                'delay_filter1': self.delay_filter1,
+                'delay_filter2': self.delay_filter2,
+                'delay_filter3': self.delay_filter3
+            }
+            filters_string = '\n - '.join([f'{df_name}: {df.data_path()}' for (df_name, df), enable in \
+                                           zip(delay_filters.items(), sum_enables) if enable])
+            return ('Sum of {n_stages} delay filter outputs:\n'
+                    ' - {filters}').format(
+                n_stages=sum(sum_enables),
+                filters=filters_string if filters_string else 'No output',
+            )
+        elif prev_stage == 5:  # delay_filter0
+            return 'delay_filter0: {}'.format(self.delay_filter0.data_path())
+        elif prev_stage == 6:  # Trigger out
+            return 'Trigger output (source: {})'.format(
+                'LOCAL' if self._trigger_mode_control.value == 0 else 'EXTERNAL'
+            )
+        elif prev_stage == 7:  # Constant
+            return 'Constant: {}V'.format(self._constant_control.value)
+
     def __str__(self):
+        output_sel_no0 = self._output0_select_control.value
+        output_sel_no1 = self._output1_select_control.value
         # Define strings
         return ("Paul trap feedback controller\n"
                 "  Output 0: {output0_select_name} ({output0_select_number})\n"
+                "    {datapath0}\n"
                 "  Output 1: {output1_select_name} ({output1_select_number})\n"
-                "  Trigger mode: {trig_mode} ({trig_mode_number})\n"
-                "  1x aom control, 4x filter, 2x sum").format(
-            output0_select_name=self.output_select_names[self._output0_select_control.value],
-            output0_select_number=self._output0_select_control.value,
-            output1_select_name=self.output_select_names[self._output1_select_control.value],
-            output1_select_number=self._output1_select_control.value,
+                "    {datapath1}\n"
+                "  Trigger mode: {trig_mode} ({trig_mode_number})").format(
+            output0_select_name=self.output_select_names[output_sel_no0],
+            output0_select_number=output_sel_no0,
+            datapath0=self.data_path(0).replace('\n', '\n    '),
+            output1_select_name=self.output_select_names[output_sel_no1],
+            output1_select_number=output_sel_no1,
+            datapath1=self.data_path(1).replace('\n', '\n    '),
             trig_mode='EXTERNAL' if self._trigger_control.value else 'LOCAL',
             trig_mode_number=self._trigger_control.value
         )
@@ -334,8 +425,39 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    # ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
-    # print(ptfb)
+    ptfb = PaulTrapFeedbackController('red-pitaya-00.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+
+    ptfb.output1_select = 4
+    print(ptfb)
+    ptfb.sum0.add0 = True
+    ptfb.sum0.add1 = False
+    print(ptfb.sum0)
+    print(ptfb.sum1)
+
+    print('COPYING SETTINGS')
+    ptfb.sum1.copy_settings(ptfb.sum0)
+
+    print(ptfb.sum0)
+    print(ptfb.sum1)
+
+
+
+
+    # ptfb.delay_filter0.delay = 100e-6
+    # ptfb.delay_filter0.biquad0.apply_filter_settings('bandpass', 10e3, 1.0)
+    # ptfb.delay_filter0.output0_select = 1
+    # ptfb.delay_filter0.gain = 8.2
+    # ptfb.delay_filter0.preamp_gain = 2
+    #
+    # print(ptfb.delay_filter0)
+    # print(ptfb.delay_filter1)
+    #
+    # print('COPYING SETTINGS')
+    # ptfb.delay_filter1.copy_settings(ptfb.delay_filter0)
+    #
+    # print(ptfb.delay_filter0)
+    # print(ptfb.delay_filter1)
+
     # print(ptfb.aom_control)
     # print(ptfb.delay_filter0)
     # print(ptfb.sum0)

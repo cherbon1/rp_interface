@@ -1,5 +1,4 @@
 from typing import Union
-
 import numpy as np
 
 from rp_interface.utils import DataType
@@ -28,11 +27,11 @@ class DelayFilterModule(RedPitayaModule):
         - A constant output (in range -1 to 1)
 
     output select options:
-        - 0 -> 4 filters (output of biquad3)
-        - 1 -> 3 filters (output of biquad2)
+        - 0 -> 0 filters (output of DC/AC coupling)
+        - 1 -> 1 filters (output of biquad0)
         - 2 -> 2 filters (output of biquad1)
-        - 3 -> 1 filters (output of biquad0)
-        - 4 -> output of DC/AC coupling
+        - 3 -> 3 filters (output of biquad2)
+        - 4 -> 4 filters (output of biquad3)
         - 5 -> delay_output
         - 6 -> coarse_delay_output
         - 7 -> constant
@@ -51,7 +50,7 @@ class DelayFilterModule(RedPitayaModule):
             'gain': 1.,
             'ac_coupling': True,
             'delay': 0,
-            'output_select': 3,  # default to output of 1st filter
+            'output_select': 1,  # default to output of 1st filter
             'toggle_delay': 1e-3,
             'toggle_time': 0
         }
@@ -67,7 +66,7 @@ class DelayFilterModule(RedPitayaModule):
         self._define_controls()
         self._define_biquads(apply_defaults=apply_defaults)
 
-        property_definitions = {
+        self.property_definitions = {
             'input_select': ('_input_select_control', 'value'),
             'ac_coupling': ('_ac_coupling_control', 'value'),
             'delay': ('_delay_control', 'value'),
@@ -78,7 +77,7 @@ class DelayFilterModule(RedPitayaModule):
             'toggle_time': ('_toggle_time_control', 'value'),
             'constant': ('_constant_control', 'value'),
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
@@ -368,6 +367,53 @@ class DelayFilterModule(RedPitayaModule):
         '''
         self.rp.write_register(self._reinit_dc_block, True, dtype=DataType.BOOL)
         self.rp.write_register(self._reinit_dc_block, False, dtype=DataType.BOOL)
+
+    def data_path(self):
+        '''
+        Describes the data path of the current output
+        Example output:
+        # Input 0, ac coupled -> preamp gain 1x -> 2ms delay -> bandpass filter 20kHz,
+        #   q: 1.2 -> bandpass filter 20kHz, q: 1.2 -> gain 15
+        '''
+
+        # self.output_select_names = {
+        #     0: 'No filters',
+        #     1: '1 filter',
+        #     2: '2 filters',
+        #     3: '3 filters',
+        #     4: '4 filters',
+        #     5: 'N.C.',
+        #     6: 'N.C.',
+        #     7: 'Constant'
+        # }
+        output_no = self._output_select_control.value
+        if output_no == 5 or output_no == 6:
+            return 'No output'
+        elif output_no == 7:
+            return 'Constant: {}V'.format(self._constant_control.value)
+
+        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3]
+        biquad_string = ' -> '.join([biquads[i].__str__() for i in range(output_no)])
+
+        return ('Input {input_no}, {ac_coupling}-coupled -> preamp gain {preamp_gain}x -> {delay:.1f}us delay '
+                '({freq:.2f}kHz) -> {biquad_string} -> gain {gain:.2f}x').format(
+            input_no=self._input_select_control.value,
+            ac_coupling='ac' if self._ac_coupling_control.value else 'dc',
+            preamp_gain=self._preamp_gain_control.value,
+            delay=self._delay_control.value * 1e6,
+            freq=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
+            biquad_string=biquad_string if biquad_string else 'no filter',
+            gain=self._gain_module.gain,
+        )
+
+    def copy_settings(self, other):
+        # copy properties
+        super().copy_settings(other)
+
+        # copy properties of submodules
+        modules = ['biquad0', 'biquad1', 'biquad2', 'biquad3']
+        for module in modules:
+            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         biquad0_str = "    biquad0: " + self.biquad0.__str__()

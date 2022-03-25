@@ -4,6 +4,7 @@ A central repository for containing red pitaya bitfiles and python interfaces co
 
 List of bitfiles and interfaces:
 - [Paul trap feedback controller](src/rp_interface/bitfiles/paul_trap_feedback_controller.md)
+- [PLL controller](src/rp_interface/bitfiles/pll_controller.md)
 
 ### Installation
 Install repository with
