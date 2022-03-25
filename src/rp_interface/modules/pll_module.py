@@ -66,7 +66,7 @@ class PLLModule(RedPitayaModule):
         self._define_register_locations()
         self._define_controls()
 
-        property_definitions = {
+        self.property_definitions = {
             'input_select': ('_input_select_control', 'value'),
             'second_harmonic': ('_second_harmonic_control', 'value'),
             'frequency': ('_frequency_control', 'value'),
@@ -81,7 +81,7 @@ class PLLModule(RedPitayaModule):
             'output_select': ('_output_select_control', 'value'),
             'gain': ('_gain_module', 'gain'),
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()

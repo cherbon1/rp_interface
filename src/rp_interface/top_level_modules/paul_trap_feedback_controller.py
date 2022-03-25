@@ -74,17 +74,20 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._define_modules(apply_defaults=apply_defaults)
 
         # define top level properties
-        property_definitions = {
+        self.property_definitions = {
             'trigger_delay': ('_trigger_delay_control', 'value'),
             'output0_select': ('_output0_select_control', 'value'),
             'output1_select': ('_output1_select_control', 'value'),
             'constant': ('_constant_control', 'value'),
             'trigger_mode': ('_trigger_mode_control', 'value')
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
+            # Custom default setting that lives outside of defaults dictionary
+            self.sum1.add0 = False
+            self.sum1.add1 = True
 
     def _define_register_locations(self):
         '''
@@ -291,6 +294,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._trigger_control.value = True
         self._trigger_control.value = False
 
+    def copy_settings(self, other):
+        # copy properties
+        super().copy_settings(other)
+        # copy properties of submodules
+        modules = ['delay_filter0', 'delay_filter1', 'delay_filter2', 'delay_filter3', 'sum0', 'sum1']
+        for module in modules:
+            getattr(self, module).copy_settings(getattr(other, module))
+
     def data_path(self, channel):
         '''
         Describes the data path that generates `channel` output
@@ -372,13 +383,16 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         # Define strings
         return ("Paul trap feedback controller\n"
                 "  Output 0: {output0_select_name} ({output0_select_number})\n"
+                "    {datapath0}\n"
                 "  Output 1: {output1_select_name} ({output1_select_number})\n"
-                "  Trigger mode: {trig_mode} ({trig_mode_number})\n"
-                "  1x aom control, 4x filter, 2x sum").format(
+                "    {datapath1}\n"
+                "  Trigger mode: {trig_mode} ({trig_mode_number})").format(
             output0_select_name=self.output_select_names[output_sel_no0],
             output0_select_number=output_sel_no0,
+            datapath0=self.data_path(0).replace('\n', '\n    '),
             output1_select_name=self.output_select_names[output_sel_no1],
             output1_select_number=output_sel_no1,
+            datapath1=self.data_path(1).replace('\n', '\n    '),
             trig_mode='EXTERNAL' if self._trigger_control.value else 'LOCAL',
             trig_mode_number=self._trigger_control.value
         )
@@ -411,11 +425,39 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-21.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
-    ptfb.output0_select = 3
-    print(ptfb.delay_filter0.output_select_names)
-    print(ptfb.delay_filter0.output_select)
-    print(ptfb.data_path(0))
+    ptfb = PaulTrapFeedbackController('red-pitaya-18.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+
+    ptfb.output1_select = 4
+    print(ptfb)
+    ptfb.sum0.add0 = True
+    ptfb.sum0.add1 = False
+    print(ptfb.sum0)
+    print(ptfb.sum1)
+
+    print('COPYING SETTINGS')
+    ptfb.sum1.copy_settings(ptfb.sum0)
+
+    print(ptfb.sum0)
+    print(ptfb.sum1)
+
+
+
+
+    # ptfb.delay_filter0.delay = 100e-6
+    # ptfb.delay_filter0.biquad0.apply_filter_settings('bandpass', 10e3, 1.0)
+    # ptfb.delay_filter0.output0_select = 1
+    # ptfb.delay_filter0.gain = 8.2
+    # ptfb.delay_filter0.preamp_gain = 2
+    #
+    # print(ptfb.delay_filter0)
+    # print(ptfb.delay_filter1)
+    #
+    # print('COPYING SETTINGS')
+    # ptfb.delay_filter1.copy_settings(ptfb.delay_filter0)
+    #
+    # print(ptfb.delay_filter0)
+    # print(ptfb.delay_filter1)
+
     # print(ptfb.aom_control)
     # print(ptfb.delay_filter0)
     # print(ptfb.sum0)

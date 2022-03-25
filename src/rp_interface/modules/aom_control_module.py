@@ -45,7 +45,7 @@ class AOMControlModule(RedPitayaModule):
         self._define_register_locations()
         self._define_controls()
 
-        property_definitions = {
+        self.property_definitions = {
             'input_select': ('_input_select_control', 'value'),
             'trap_enable': ('_trap_enable_control', 'value'),
             'trap_toggle_delay': ('_trap_toggle_delay_control', 'value'),
@@ -55,7 +55,7 @@ class AOMControlModule(RedPitayaModule):
             'feedback_toggle_time': ('_feedback_toggle_time_control', 'value'),
             'feedback_gain': ('_feedback_gain_control', 'value'),
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()

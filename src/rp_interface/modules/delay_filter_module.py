@@ -1,5 +1,4 @@
 from typing import Union
-
 import numpy as np
 
 from rp_interface.utils import DataType
@@ -67,7 +66,7 @@ class DelayFilterModule(RedPitayaModule):
         self._define_controls()
         self._define_biquads(apply_defaults=apply_defaults)
 
-        property_definitions = {
+        self.property_definitions = {
             'input_select': ('_input_select_control', 'value'),
             'ac_coupling': ('_ac_coupling_control', 'value'),
             'delay': ('_delay_control', 'value'),
@@ -78,7 +77,7 @@ class DelayFilterModule(RedPitayaModule):
             'toggle_time': ('_toggle_time_control', 'value'),
             'constant': ('_constant_control', 'value'),
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
@@ -406,6 +405,15 @@ class DelayFilterModule(RedPitayaModule):
             biquad_string=biquad_string if biquad_string else 'no filter',
             gain=self._gain_module.gain,
         )
+
+    def copy_settings(self, other):
+        # copy properties
+        super().copy_settings(other)
+
+        # copy properties of submodules
+        modules = ['biquad0', 'biquad1', 'biquad2', 'biquad3']
+        for module in modules:
+            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         biquad0_str = "    biquad0: " + self.biquad0.__str__()

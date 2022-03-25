@@ -66,11 +66,11 @@ class PLLController(RedPitayaTopLevelModule):
         self._define_modules(apply_defaults=apply_defaults)
 
         # define top level properties
-        property_definitions = {
+        self.property_definitions = {
             'output0_select': ('_output0_select_control', 'value'),
             'output1_select': ('_output1_select_control', 'value'),
         }
-        self._define_properties(property_definitions)
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()
@@ -210,6 +210,14 @@ class PLLController(RedPitayaTopLevelModule):
             gpio_read_address=self._pll3_gpio_read_address,
             apply_defaults=apply_defaults
         )
+
+    def copy_settings(self, other):
+        # copy properties
+        super().copy_settings(other)
+        # copy properties of submodules
+        modules = ['delay_filter0', 'delay_filter1', 'delay_filter2', 'delay_filter3', 'sum0', 'sum1']
+        for module in modules:
+            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         output_sel_no0 = self._output0_select_control.value

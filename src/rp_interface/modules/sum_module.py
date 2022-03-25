@@ -74,15 +74,15 @@ class SumModule(RedPitayaModule):
             read_data=lambda reg: 2**(divide_by_width-reg)
         )
 
-        property_definitions = {
+        self.property_definitions = {
             'divide_by': ('_divide_by_control', 'value')
         }
         # add elements of the form {'add0': (self.add0_control, 'value')} to property_definitions
         for i in range(self.adder_width):
             prop_name = 'add{}'.format(i)
             control_attr_name = '_add{}_control'.format(i)
-            property_definitions[prop_name] = (control_attr_name, 'value')
-        self._define_properties(property_definitions)
+            self.property_definitions[prop_name] = (control_attr_name, 'value')
+        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()

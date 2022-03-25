@@ -367,6 +367,16 @@ class BiquadFilterModule(RedPitayaModule):
                np.abs(complex_amplitudes[1:]), \
                np.angle(complex_amplitudes[1:])
 
+    def copy_settings(self, other):
+        # try calling apply_filter_coefficients. If it fails, copy biquad coefficients individually
+        try:
+            self.apply_filter_settings(other.filter_type, other.frequency, other.q_factor)
+        except KeyError:
+            self.write_biquad_coefficients(other.biquad_coefficients)
+            self._filter_type = other.filter_type
+            self._frequency = other.frequency
+            self._q_factor = other.q_factor
+
     def __str__(self):
         if self.filter_type in [FilterType.UNKNOWN, FilterType.ALLPASS]:
             return f"{self.filter_type.value}"

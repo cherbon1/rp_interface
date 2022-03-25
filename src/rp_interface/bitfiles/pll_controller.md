@@ -32,8 +32,8 @@ Here's the detailed list of what the `PLLController` class describes.
   - `input_select_names`: `dict` describing the options for `input_select`
   - `second_harmonic`: `bool` describing whether the output frequency should be doubled or not
   - `frequency`: `float`, the frequency of the reference signal in Hz
-  - `a`: `float`, the amplitude of the reference signal (in range -1 to 1)
-  - `phi`: `float`, the phase of the reference signal (in degrees, in range -180 to 180)
+  - `a`: `float`, the amplitude of the output signal (in range -1 to 1)
+  - `phi`: `float`, the phase of the output signal (in degrees, in range -180 to 180)
   - `demodulator_bandwidth`: `float`, bandwidth of demodulator (in range 0 to 120kHz)
   - `order`: `int`, order of demodulator filter
   - `pid_enable`: `bool`, whether the pid loop is enabled or not
@@ -67,11 +67,14 @@ pc = PLLController(
 )
 
 # set up pll0
-pc.input_select = 0
-pc.frequency = 65e3
+pc.pll0.input_select = 0
+pc.pll0.frequency = 65e3
 pc.pll0.pid_enable = True
 pc.pll0.gain = 1.8
 print(pc.pll0)  # View pll settings
+
+# Copy settings of pll0 to pll1
+pc.pll1.copy_settings(pc.pll0)
 
 # set up pll1
 pc.input_select = 1
