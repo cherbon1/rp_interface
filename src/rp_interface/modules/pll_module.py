@@ -80,6 +80,7 @@ class PLLModule(RedPitayaModule):
             'ki': ('_ki_control', 'value'),
             'output_select': ('_output_select_control', 'value'),
             'gain': ('_gain_module', 'gain'),
+            'constant': ('_constant_control', 'value')
         }
         self._define_properties()
 
@@ -192,6 +193,13 @@ class PLLModule(RedPitayaModule):
             n_bits=5
         )
 
+        self._constant_register = MuxedRegister(
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
+            register_address=14,
+            n_bits=24
+        )
+
     def _define_controls(self):
         '''
         A method that defines all controls of a filter block (except for biquad filter modules)
@@ -279,7 +287,8 @@ class PLLModule(RedPitayaModule):
             register=self._order_register,
             name='Order',
             dtype=DataType.UNSIGNED_INT,
-            write_data=lambda val: val - 1,  # order 1 is written with register value 000
+            in_range=lambda val: 1 <= val <= 8,
+            write_data=lambda val: int(val - 1),  # order 1 is written with register value 000
             read_data=lambda reg: reg + 1
 
         )
@@ -290,7 +299,7 @@ class PLLModule(RedPitayaModule):
             2: 'demod y',
             3: 'demod r',
             4: 'demod theta',
-            5: 'N.C.',
+            5: 'constant',
             6: 'N.C.',
             7: 'N.C.'
         }
@@ -307,6 +316,16 @@ class PLLModule(RedPitayaModule):
             red_pitaya=self.rp,
             fine_gain_register=self._fine_gain_register,
             coarse_gain_register=self._coarse_gain_register,
+        )
+
+        self._constant_control = RedPitayaControl(
+            red_pitaya=self.rp,
+            register=self._constant_register,
+            name='Constant',
+            dtype=DataType.SIGNED_INT,
+            in_range=lambda val: (-1 <= val <= 1),
+            write_data=lambda val: int(val * 2**(self._constant_register.n_bits-1) - 1e-9),  # offset avoids overflow
+            read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
     def __str__(self):

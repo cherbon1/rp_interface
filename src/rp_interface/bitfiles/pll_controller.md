@@ -19,6 +19,8 @@ Here's the detailed list of what the `PLLController` class describes.
   - `output0_select`: `int` selecting the output for PLL controller
   - `output1_select`: `int` selecting the output for PLL controller
   - `output_select_names`: `dict` describing the options for `output0_select` and `output1_select`
+  - `constant0`: `float`, constant value in range -1 to 1 (connected to input of sum module)
+  - `constant1`: `float`, constant value in range -1 to 1 (connected to input of sum module)
   - `sum0`: `SumModule` instance
   - `sum1`: `SumModule` instance
   - `pll0`: `PLLModule` instance
@@ -43,6 +45,7 @@ Here's the detailed list of what the `PLLController` class describes.
   - `gain`: `float`, gain of PLL output signal
   - `output_select`: `int` for selecting the output of the PLL module
   - `output_select_names` : `dict` describing the options for `output_select`
+  - `constant`: `float`, value of constant output (in range -1 to 1)
 
 
 - `SumModule`
@@ -52,6 +55,8 @@ Here's the detailed list of what the `PLLController` class describes.
   - `add3`
   - `add4`
   - `add5`
+  - `add6`
+  - `add7`
   - `sum_input_names`: `dict` describing the input signals
   - `divide_by`: `int`, must be a power of 2. The output will be divided by this value. This is useful to avoid saturating an output when adding multiple signals.
 

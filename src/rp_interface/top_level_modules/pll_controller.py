@@ -69,6 +69,8 @@ class PLLController(RedPitayaTopLevelModule):
         self.property_definitions = {
             'output0_select': ('_output0_select_control', 'value'),
             'output1_select': ('_output1_select_control', 'value'),
+            'constant0': ('_constant0_control', 'value'),
+            'constant1': ('_constant1_control', 'value')
         }
         self._define_properties()
 
@@ -125,6 +127,20 @@ class PLLController(RedPitayaTopLevelModule):
             n_bits=3
         )
 
+        self._constant0_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=6,
+            n_bits=14
+        )
+
+        self._constant1_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=7,
+            n_bits=14
+        )
+
     def _define_controls(self):
         '''
         A method that defines all controls required here
@@ -156,6 +172,26 @@ class PLLController(RedPitayaTopLevelModule):
             in_range=lambda val: (0 <= val <= 7)
         )
 
+        self._constant0_control = RedPitayaControl(
+            red_pitaya=self.rp,
+            register=self._constant0_register,
+            name='Constant 0',
+            dtype=DataType.SIGNED_INT,
+            in_range=lambda val: (-1 <= val <= 1),
+            write_data=lambda val: int(val * 2**(self._constant0_register.n_bits-1) - 1e-9),  # offset avoids overflow
+            read_data=lambda reg: reg / 2**(self._constant0_register.n_bits-1),
+        )
+
+        self._constant1_control = RedPitayaControl(
+            red_pitaya=self.rp,
+            register=self._constant1_register,
+            name='Constant 1',
+            dtype=DataType.SIGNED_INT,
+            in_range=lambda val: (-1 <= val <= 1),
+            write_data=lambda val: int(val * 2**(self._constant1_register.n_bits-1) - 1e-9),  # offset avoids overflow
+            read_data=lambda reg: reg / 2**(self._constant1_register.n_bits-1),
+        )
+
     def _define_modules(self, apply_defaults=False):
         sum_input_names = {
             0: 'In0',
@@ -164,13 +200,15 @@ class PLLController(RedPitayaTopLevelModule):
             3: 'PLL1',
             4: 'PLL2',
             5: 'PLL3',
+            6: 'constant0',
+            7: 'constant1',
         }
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
             apply_defaults=apply_defaults,
-            adder_width=6,
+            adder_width=8,
             input_names=sum_input_names
         )
 
@@ -179,7 +217,7 @@ class PLLController(RedPitayaTopLevelModule):
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
             apply_defaults=apply_defaults,
-            adder_width=6,
+            adder_width=8,
             input_names=sum_input_names
         )
 
