@@ -342,7 +342,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             return 'In1'
         elif prev_stage == 2:  # AOM Control
             return ('AOM Control signal, trap is {trap_enable}, feedback from {aom_control_input} is {fb_enable}, '
-                    'gain {aom_control_gain}').format(
+                    'gain {aom_control_gain:.2g}').format(
                 trap_enable='ON' if self.aom_control._trap_enable_control.value else 'OFF',
                 aom_control_input=self.aom_control.input_select_names[self.aom_control._input_select_control.value],
                 fb_enable='ON' if self.aom_control._feedback_enable_control.value else 'OFF',

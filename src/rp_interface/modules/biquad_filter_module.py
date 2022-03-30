@@ -119,8 +119,10 @@ class FilterType(enum.Enum):
     UNKNOWN = 'unknown'
     LOWPASS = 'lowpass'
     SECOND_ORDER_LOWPASS = 'llowpass'
+    RESONANT_LOWPASS = 'rlowpass'
     HIGHPASS = 'highpass'
     SECOND_ORDER_HIGHPASS = 'hhighpass'
+    RESONANT_HIGHPASS = 'rhighpass'
     BANDPASS = 'bandpass'
     NOTCH = 'notch'
     ALLPASS = 'allpass'
@@ -281,6 +283,38 @@ class BiquadFilterModule(RedPitayaModule):
             if frequency is None:
                 raise KeyError('Must specify cutoff frequency of second order highpass filter')
             b, a = signal.butter(2, frequency, btype='highpass', fs=self._fs, output='ba')
+
+        elif filter_type == FilterType.RESONANT_LOWPASS:
+            if frequency is None:
+                raise KeyError('Must specify center frequency of resonant lowpass filter')
+            if q_factor is None:
+                raise KeyError('Must specify Q-factor of resonant lowpass filter')
+            k = np.tan(np.pi * frequency / self._fs)
+            norm = 1 / (1 + k / q_factor + k**2)
+            b0 = k**2 * norm
+            b1 = 2 * b0
+            b2 = b0
+            a1 = 2 * (k * k - 1) * norm
+            a2 = (1 - k / q_factor + k * k) * norm
+
+            b = (b0/q_factor, b1/q_factor, b2/q_factor)
+            a = (1, a1, a2)
+
+        elif filter_type == FilterType.RESONANT_HIGHPASS:
+            if frequency is None:
+                raise KeyError('Must specify center frequency of resonant highpass filter')
+            if q_factor is None:
+                raise KeyError('Must specify Q-factor of resonant highpass filter')
+            k = np.tan(np.pi * frequency / self._fs)
+            norm = 1 / (1 + k / q_factor + k**2)
+            b0 = 1 * norm
+            b1 = -2 * b0
+            b2 = b0
+            a1 = 2 * (k**2 - 1) * norm
+            a2 = (1 - k / q_factor + k**2) * norm
+
+            b = (b0/q_factor, b1/q_factor, b2/q_factor)
+            a = (1, a1, a2)
 
         elif filter_type == FilterType.BANDPASS:
             if frequency is None:
