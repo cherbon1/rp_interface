@@ -277,7 +277,7 @@ class PLLController(RedPitayaTopLevelModule):
 
 if __name__ == "__main__":
     # pc = PLLController('red-pitaya-00.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
-    pc = PLLController('169.254.87.198', load_bitfile=True, apply_defaults=False)
+    pc = PLLController('169.254.87.198', load_bitfile=True, apply_defaults=True)
     print(pc)
     pc.pll0.kp = 1
     pc.pll0.ki = -0.5

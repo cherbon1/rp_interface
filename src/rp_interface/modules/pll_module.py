@@ -1,9 +1,8 @@
 from typing import Union
 
-import numpy as np
-
 from rp_interface.modules.amplitude_phase_module import AmplitudePhaseModule
 from rp_interface.modules.gain_module import GainModule
+from rp_interface.modules.pll_second_harmonic_control_module import PLLSecondHarmonicControlModule
 from rp_interface.red_pitaya_module import RedPitayaModule
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_control import RedPitayaControl
@@ -50,7 +49,10 @@ class PLLModule(RedPitayaModule):
         self.default_values = {
                 'input_select': 0,
                 'second_harmonic': True,
+                'frequency': 10e3,
                 'pid_enable': False,
+                'kp': -100.,
+                'ki': -1.,
                 'a': 1,
                 'phi': 0,
                 'order': 1,
@@ -68,11 +70,11 @@ class PLLModule(RedPitayaModule):
 
         self.property_definitions = {
             'input_select': ('_input_select_control', 'value'),
-            'second_harmonic': ('_second_harmonic_control', 'value'),
-            'frequency': ('_frequency_control', 'value'),
+            'second_harmonic': ('_pll_second_harmonic_control_module', 'second_harmonic'),
+            'frequency': ('_pll_second_harmonic_control_module', 'frequency'),
             'a': ('_amplitude_phase_module', 'a'),
             'phi': ('_amplitude_phase_module', 'phi'),
-            'demodulator_bandwidth': ('_demodulator_bandwidth_control', 'value'),
+            'demodulator_bandwidth': ('_pll_second_harmonic_control_module', 'demodulator_bandwidth'),
             'order': ('_order_control', 'value'),
             'pid_enable': ('_pid_enable_control', 'value'),
             'pid_bandwidth': ('_pid_bandwidth_control', 'value'),
@@ -214,13 +216,6 @@ class PLLModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 1),
         )
 
-        self._second_harmonic_control = RedPitayaControl(
-            red_pitaya=self.rp,
-            register=self._second_harmonic_register,
-            name='Second harmonic',
-            dtype=DataType.BOOL,
-        )
-
         self._pid_enable_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._pid_enable_register,
@@ -252,16 +247,6 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg/2**10
         )
 
-        self._frequency_control = RedPitayaControl(
-            red_pitaya=self.rp,
-            register=self._frequency_register,
-            name='frequency',
-            dtype=DataType.SIGNED_INT,
-            in_range=lambda val: val >= 0,  # Data is handled as a signed int, but should be positive
-            write_data=lambda val: int(val * 2**26 / self.fs),
-            read_data=lambda reg: reg / 2**26 * self.fs
-        )
-
         self._pid_bandwidth_control = RedPitayaControl(
             red_pitaya=self.rp,
             register=self._pid_bandwidth_register,
@@ -270,16 +255,6 @@ class PLLModule(RedPitayaModule):
             in_range=lambda val: val >= 0,  # Data is handled as a signed int, but should be positive
             write_data=lambda val: int(val * 2**26 / self.fs),
             read_data=lambda reg: reg / 2**26 * self.fs
-        )
-
-        # alpha = exp(-2*np.pi*demodulator_bandwidth/sample_freq) with sample_freq = 125e6/2**10 = 122.07 kHz
-        self._demodulator_bandwidth_control = RedPitayaControl(
-            red_pitaya=self.rp,
-            register=self._alpha_register,
-            name='demodulator bandwidth',
-            dtype=DataType.UNSIGNED_INT,
-            write_data=lambda val: int(np.exp(-2*np.pi*val / (125e6/1024)) * 2**17 - 1e-9),
-            read_data=lambda reg: 0 if reg == 0 else -(125e6/1024) * np.log(reg / 2**17) / (2*np.pi)
         )
 
         self._order_control = RedPitayaControl(
@@ -328,20 +303,28 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
+        self._pll_second_harmonic_control_module = PLLSecondHarmonicControlModule(
+            red_pitaya=self.rp,
+            second_harmonic_register=self._second_harmonic_register,
+            alpha_register=self._alpha_register,
+            frequency_register=self._frequency_register,
+            fs=self.fs
+        )
+
     def __str__(self):
         input_sel_no = self._input_select_control.value
         output_sel_no = self._output_select_control.value
         return ("PLL module:\n"
                 "  Input: {input_select_name} ({input_sel_number}), 2nd harm.: {sec_harm}\n"
                 "  Demod: freq {freq:.2f}kHz, phase {phase:.1f}deg, bandwidth {demod_bw:.2f}kHz, order {order}\n"
-                "  PID {pid_on}: kp {kp:.2f}, ki {ki:.2f}, bandwidth {pid_bw}kHz\n"
+                "  PID {pid_on}: kp {kp:.2f}, ki {ki:.2f}, bandwidth {pid_bw:.2f}kHz\n"
                 "  Output: {output_sel_name} ({output_sel_number}), gain {gain:.2f}").format(
             input_select_name=self.input_select_names[input_sel_no],
             input_sel_number=input_sel_no,
-            sec_harm=self._second_harmonic_control.value,
-            freq=self._frequency_control.value * 1e-3,
+            sec_harm=self._pll_second_harmonic_control_module.second_harmonic,
+            freq=self._pll_second_harmonic_control_module.frequency * 1e-3,
             phase=self._amplitude_phase_module.phi,
-            demod_bw=self._demodulator_bandwidth_control.value * 1e-3,
+            demod_bw=self._pll_second_harmonic_control_module.demodulator_bandwidth * 1e-3,
             order=self._order_control.value,
             pid_on='ON' if self._pid_enable_control.value else 'OFF',
             kp=self._kp_control.value,
