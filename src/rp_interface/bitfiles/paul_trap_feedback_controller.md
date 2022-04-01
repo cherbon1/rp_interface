@@ -62,6 +62,7 @@ Here's the detailed list of what the `PaulTrapFeedbackController` class describe
   - `output_select_names`
   - `refresh_dc_block`
 
+Each delay filter modules only exposes 4 biquad filter modules while 6 are programmed in hardware. `biquad4` and `biquad5` are identical copies of `biquad2` and `biquad3` respectively (i.e. they're connected to the same parameters).  They are meant to e.g. generate higher order lowpass/highpass filter.
 
 - `BiquadFilterModule`
   - `filter_type`
