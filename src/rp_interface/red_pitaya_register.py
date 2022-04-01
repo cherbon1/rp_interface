@@ -14,6 +14,7 @@ class Register:
     gpio_address: str
     n_bits: int = 32
     lsb_location: int = 0
+    is_shared: bool = True  # States whether there's other data on this same register. If not, read/write can be sped up
 
     def __post_init__(self):
         # Check register size
@@ -68,6 +69,7 @@ class MuxedRegister:
     register_address: int
     n_bits: int = 26
     lsb_location: int = 0
+    is_shared: bool = True
 
     def __post_init__(self):
         # Check register size

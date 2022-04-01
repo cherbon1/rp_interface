@@ -32,35 +32,40 @@ class BiquadFilterRegisters:
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=a1_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.a2 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=a2_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b0 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b0_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b1 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b1_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b2 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b2_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.reinit = MuxedRegister(

@@ -72,56 +72,64 @@ class AOMControlModule(RedPitayaModule):
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=1,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._trap_enable_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=2,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._trap_toggle_delay_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=3,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._trap_toggle_time_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=4,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._feedback_enable_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=5,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._feedback_toggle_delay_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=6,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._feedback_toggle_time_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=7,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._feedback_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=8,
-            n_bits=17
+            n_bits=17,
+            is_shared=False
         )
 
     def _define_controls(self):
