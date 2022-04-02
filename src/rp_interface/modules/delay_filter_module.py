@@ -397,12 +397,10 @@ class DelayFilterModule(RedPitayaModule):
         #     7: 'Constant'
         # }
         output_no = self._output_select_control.value
-        if output_no == 5 or output_no == 6:
-            return 'No output'
-        elif output_no == 7:
+        if output_no == 7:
             return 'Constant: {}V'.format(self._constant_control.value)
 
-        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3]
+        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3, self.biquad2, self.biquad3]
         biquad_string = ' -> '.join([biquads[i].__str__() for i in range(output_no)])
 
         return ('Input {input_no}, {ac_coupling}-coupled -> preamp gain {preamp_gain}x -> {delay:.1f}us delay '
