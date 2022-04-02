@@ -154,7 +154,7 @@ class PLLController(RedPitayaTopLevelModule):
             4: 'PLL 2',
             5: 'PLL 3',
             6: 'Sum 0',
-            7: 'SUm 1'
+            7: 'Sum 1'
         }
         self._output0_select_control = RedPitayaControl(
             red_pitaya=self.rp,

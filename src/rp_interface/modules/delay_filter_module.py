@@ -94,63 +94,72 @@ class DelayFilterModule(RedPitayaModule):
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=0,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._preamp_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=1,
-            n_bits=4
+            n_bits=4,
+            is_shared=False
         )
 
         self._ac_coupling_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=2,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._delay_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=3,
-            n_bits=17
+            n_bits=17,
+            is_shared=False
         )
 
         self._output_select_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=24,
-            n_bits=3
+            n_bits=3,
+            is_shared=False
         )
 
         self._fine_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=25,
-            n_bits=25
+            n_bits=25,
+            is_shared=False
         )
 
         self._coarse_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=26,
-            n_bits=5
+            n_bits=5,
+            is_shared=False
         )
 
         self._toggle_delay_cycles_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=27,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._toggle_cycles_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=28,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._reinit_dc_block = MuxedRegister(
@@ -165,7 +174,8 @@ class DelayFilterModule(RedPitayaModule):
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=30,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
     def _define_biquad_register_locations(self):
@@ -279,8 +289,8 @@ class DelayFilterModule(RedPitayaModule):
             2: '2 filters',
             3: '3 filters',
             4: '4 filters',
-            5: 'N.C.',
-            6: 'N.C.',
+            5: '5 filters',
+            6: '6 filters',
             7: 'Constant'
         }
         self._output_select_control = RedPitayaControl(
@@ -382,17 +392,15 @@ class DelayFilterModule(RedPitayaModule):
         #     2: '2 filters',
         #     3: '3 filters',
         #     4: '4 filters',
-        #     5: 'N.C.',
-        #     6: 'N.C.',
+        #     5: '5 filters',
+        #     6: '6 filters',
         #     7: 'Constant'
         # }
         output_no = self._output_select_control.value
-        if output_no == 5 or output_no == 6:
-            return 'No output'
-        elif output_no == 7:
+        if output_no == 7:
             return 'Constant: {}V'.format(self._constant_control.value)
 
-        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3]
+        biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3, self.biquad2, self.biquad3]
         biquad_string = ' -> '.join([biquads[i].__str__() for i in range(output_no)])
 
         return ('Input {input_no}, {ac_coupling}-coupled -> preamp gain {preamp_gain}x -> {delay:.1f}us delay '

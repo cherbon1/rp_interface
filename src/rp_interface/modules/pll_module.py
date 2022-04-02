@@ -34,7 +34,7 @@ class PLLModule(RedPitayaModule):
         - 2 -> y of demodulator
         - 3 -> r of demodulator
         - 4 -> theta of demodulator
-        - 5 -> N.C.
+        - 5 -> constant
         - 6 -> N.C.
         - 7 -> N.C.
     '''
@@ -57,7 +57,8 @@ class PLLModule(RedPitayaModule):
                 'phi': 0,
                 'order': 1,
                 'gain': 1.,
-                'demodulator_bandwidth': 1e3
+                'demodulator_bandwidth': 1e3,
+                'pid_bandwidth': 5e3
             }
 
         self._gpio_write_address = gpio_write_address
@@ -101,105 +102,120 @@ class PLLModule(RedPitayaModule):
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=0,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._second_harmonic_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=1,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._pid_enable_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=2,
-            n_bits=1
+            n_bits=1,
+            is_shared=False
         )
 
         self._wa_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=3,
-            n_bits=8
+            n_bits=8,
+            is_shared=False
         )
 
         self._wb_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=4,
-            n_bits=8
+            n_bits=8,
+            is_shared=False
         )
 
         self._kp_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=5,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._ki_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=6,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._frequency_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=7,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._pid_bandwidth_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=8,
-            n_bits=26
+            n_bits=26,
+            is_shared=False
         )
 
         self._alpha_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=9,
-            n_bits=17
+            n_bits=17,
+            is_shared=False
         )
 
         self._order_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=10,
-            n_bits=3
+            n_bits=3,
+            is_shared=False
         )
 
         self._output_select_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=11,
-            n_bits=3
+            n_bits=3,
+            is_shared=False
         )
 
         self._fine_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=12,
-            n_bits=18
+            n_bits=18,
+            is_shared=False
         )
 
         self._coarse_gain_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=13,
-            n_bits=5
+            n_bits=5,
+            is_shared=False
         )
 
         self._constant_register = MuxedRegister(
             gpio_write_address=self._gpio_write_address,
             gpio_read_address=self._gpio_read_address,
             register_address=14,
-            n_bits=24
+            n_bits=24,
+            is_shared=False
         )
 
     def _define_controls(self):

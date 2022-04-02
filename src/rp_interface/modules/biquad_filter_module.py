@@ -32,35 +32,40 @@ class BiquadFilterRegisters:
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=a1_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.a2 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=a2_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b0 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b0_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b1 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b1_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.b2 = MuxedRegister(
             gpio_write_address=gpio_write_address,
             gpio_read_address=gpio_read_address,
             register_address=b2_address,
-            n_bits=n_bits
+            n_bits=n_bits,
+            is_shared=False
         )
 
         self.reinit = MuxedRegister(
@@ -110,9 +115,12 @@ class BiquadFilterCoefficients:
                                         int(self.a1 * factor) / factor,
                                         int(self.a2 * factor) / factor)
 
-    @property
-    def normalized_transfer_function(self):
-        return signal.freqz((self.b0, self.b1, self.b2), (1, self.a1, self.a2))
+    def normalized_transfer_function(self, **kwargs):
+        '''
+        Get the normalized transfer function based on current filter params.
+        Any kwargs get passed on to signal.freqz()
+        '''
+        return signal.freqz((self.b0, self.b1, self.b2), (1, self.a1, self.a2), **kwargs)
 
 
 class FilterType(enum.Enum):
@@ -297,7 +305,13 @@ class BiquadFilterModule(RedPitayaModule):
             a1 = 2 * (k * k - 1) * norm
             a2 = (1 - k / q_factor + k * k) * norm
 
-            b = (b0/q_factor, b1/q_factor, b2/q_factor)
+            # The gain of the filter should never exceed unity.
+            # This is a hack, but it works. Consider replacing this by a properly calculated maximum value
+            # Right now, I'm too lazy to deal with that.
+            normalized_freqs, complex_amplitudes = signal.freqz((b0, b1, b2), (1, a1, a2), worN=2048)
+            max_value = max(np.max(np.abs(complex_amplitudes)), q_factor)
+
+            b = (b0/max_value, b1/max_value, b2/max_value)
             a = (1, a1, a2)
 
         elif filter_type == FilterType.RESONANT_HIGHPASS:
@@ -313,7 +327,10 @@ class BiquadFilterModule(RedPitayaModule):
             a1 = 2 * (k**2 - 1) * norm
             a2 = (1 - k / q_factor + k**2) * norm
 
-            b = (b0/q_factor, b1/q_factor, b2/q_factor)
+            normalized_freqs, complex_amplitudes = signal.freqz((b0, b1, b2), (1, a1, a2), worN=2048)
+            max_value = max(np.max(np.abs(complex_amplitudes)), q_factor)
+
+            b = (b0/max_value, b1/max_value, b2/max_value)
             a = (1, a1, a2)
 
         elif filter_type == FilterType.BANDPASS:
@@ -387,14 +404,15 @@ class BiquadFilterModule(RedPitayaModule):
         self.rp.write_register(self.biquad_registers.reinit, True, dtype=DataType.BOOL)
         self.rp.write_register(self.biquad_registers.reinit, False, dtype=DataType.BOOL)
 
-    @property
-    def transfer_function(self):
+    def transfer_function(self, **kwargs):
         '''
         Returns the transfer function of the current parameters
         returns frequencies, amplitudes and phases
         e.g. freq, amp, phase = BiquadFilter.transfer_function
+
+        Any kwargs get passed on to signal.freqz()
         '''
-        normalized_freqs, complex_amplitudes = self.biquad_coefficients.normalized_transfer_function
+        normalized_freqs, complex_amplitudes = self.biquad_coefficients.normalized_transfer_function(**kwargs)
 
         # drop DC sample
         return normalized_freqs[1:] * self._fs / (2 * np.pi), \
