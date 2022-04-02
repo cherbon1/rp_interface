@@ -172,9 +172,9 @@ class RedPitaya:
 
         Only use this method if you know what you're doing.
         '''
-        command_str = '\n'.join(commands)
+        command_str = ' && '.join(commands)
         return_str = self.exec_command(command_str)
-        # print(command_str)
+
         return return_str.split('\n')
 
     def _write_muxed_register_bits(self, address: str, buffer_bits: str, write_bits: str):
