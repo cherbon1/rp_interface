@@ -408,7 +408,7 @@ class BiquadFilterModule(RedPitayaModule):
         '''
         Returns the transfer function of the current parameters
         returns frequencies, amplitudes and phases
-        e.g. freq, amp, phase = BiquadFilter.transfer_function
+        e.g. freq, amp, phase = BiquadFilter.transfer_function()
 
         Any kwargs get passed on to signal.freqz()
         '''

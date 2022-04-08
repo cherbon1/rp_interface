@@ -3,6 +3,7 @@ from typing import Union
 from rp_interface.modules.aom_control_module import AOMControlModule
 from rp_interface.modules.delay_filter_module import DelayFilterModule
 from rp_interface.modules.sum_module import SumModule
+from rp_interface.modules.wavegen_module import WavegenModule
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_bitfile import Bitfile
 from rp_interface.red_pitaya_control import RedPitayaControl
@@ -143,14 +144,14 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
             register_address=13,
-            n_bits=4
+            n_bits=8
         )
 
         self._sum1_add_select_register = MuxedRegister(
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
             register_address=14,
-            n_bits=4
+            n_bits=8
         )
 
         self._sum0_divide_by_register = MuxedRegister(
@@ -164,6 +165,27 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             gpio_write_address=self._top_module_gpio_write_address,
             gpio_read_address=self._top_module_gpio_read_address,
             register_address=16,
+            n_bits=2
+        )
+
+        self._wavegen_frequency_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=24,
+            n_bits=26
+        )
+
+        self._wavegen_fine_gain_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=25,
+            n_bits=25
+        )
+
+        self._wavegen_coarse_gain_register = MuxedRegister(
+            gpio_write_address=self._top_module_gpio_write_address,
+            gpio_read_address=self._top_module_gpio_read_address,
+            register_address=26,
             n_bits=2
         )
 
@@ -235,13 +257,22 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         )
 
     def _define_modules(self, apply_defaults=False):
-        sum_input_names = {i: f'delay_filter{i}' for i in range(4)}
+        sum_input_names = {
+            0: 'In0',
+            1: 'In1',
+            2: 'delay_filter0',
+            3: 'delay_filter1',
+            4: 'delay_filter2',
+            5: 'delay_filter3',
+            6: 'wavegen',
+            7: 'constant'
+        }
         self.sum0 = SumModule(
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
             apply_defaults=apply_defaults,
-            adder_width=4,
+            adder_width=8,
             input_names=sum_input_names
         )
 
@@ -250,7 +281,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
             apply_defaults=apply_defaults,
-            adder_width=4,
+            adder_width=8,
             input_names=sum_input_names
         )
 
@@ -287,6 +318,15 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             gpio_write_address=self._delay_filter3_gpio_write_address,
             gpio_read_address=self._delay_filter3_gpio_read_address,
             apply_defaults=apply_defaults
+        )
+
+        self.wavegen = WavegenModule(
+            red_pitaya=self.rp,
+            frequency_register=self._wavegen_frequency_register,
+            fine_gain_register=self._wavegen_fine_gain_register,
+            coarse_gain_register=self._wavegen_coarse_gain_register,
+            fs=self.fs,
+            apply_defaults=apply_defaults,
         )
 
     def trigger_now(self):
@@ -352,18 +392,32 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             if prev_stage == 3:
                 sum_enables = self.sum0.add_select_list
             elif prev_stage == 4:
-                sum_enables = self.sum0.add_select_list
+                sum_enables = self.sum1.add_select_list
             else:
                 raise RuntimeError('Wait, whaaaat???!')
+
+            # Monkey patch objects for non delay-line filter objects (quite messy...)
+            class DummyBlock:
+                def __init__(self, data_path_output=None):
+                    self.data_path = lambda: data_path_output
+            in0 = DummyBlock('In0')
+            in1 = DummyBlock('In1')
+            wavegen = DummyBlock()
+            wavegen.data_path = lambda: f'{self.wavegen.frequency*1e-3:.2f}kHz'
+            constant = DummyBlock('constant')
             delay_filters = {
+                'in0': in0,
+                'in1': in1,
                 'delay_filter0': self.delay_filter0,
                 'delay_filter1': self.delay_filter1,
                 'delay_filter2': self.delay_filter2,
-                'delay_filter3': self.delay_filter3
+                'delay_filter3': self.delay_filter3,
+                'wavegen': wavegen,
+                'constant': constant
             }
             filters_string = '\n - '.join([f'{df_name}: {df.data_path()}' for (df_name, df), enable in \
                                            zip(delay_filters.items(), sum_enables) if enable])
-            return ('Sum of {n_stages} delay filter outputs:\n'
+            return ('Sum of {n_stages} signals:\n'
                     ' - {filters}').format(
                 n_stages=sum(sum_enables),
                 filters=filters_string if filters_string else 'No output',
@@ -427,18 +481,34 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 if __name__ == "__main__":
     ptfb = PaulTrapFeedbackController('red-pitaya-00.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
 
-    ptfb.output1_select = 4
+    # ptfb.wavegen.frequency = 120e3
+    # ptfb.wavegen.amplitude = 0.5
+    # ptfb.output0_select = 3  # sum0
+    # ptfb.sum0.add0 = False
+    # ptfb.sum0.add1 = False
+    # ptfb.sum0.add2 = False
+    # ptfb.sum0.add3 = False
+    # ptfb.sum0.add4 = False
+    # ptfb.sum0.add5 = False
+    # ptfb.sum0.add6 = True
+    # ptfb.sum0.add7 = False
+
+    print(ptfb.sum0)
     print(ptfb)
-    ptfb.sum0.add0 = True
-    ptfb.sum0.add1 = False
-    print(ptfb.sum0)
-    print(ptfb.sum1)
 
-    print('COPYING SETTINGS')
-    ptfb.sum1.copy_settings(ptfb.sum0)
 
-    print(ptfb.sum0)
-    print(ptfb.sum1)
+    # ptfb.output1_select = 4
+    # print(ptfb)
+    # ptfb.sum0.add0 = True
+    # ptfb.sum0.add1 = False
+    # print(ptfb.sum0)
+    # print(ptfb.sum1)
+    #
+    # print('COPYING SETTINGS')
+    # ptfb.sum1.copy_settings(ptfb.sum0)
+    #
+    # print(ptfb.sum0)
+    # print(ptfb.sum1)
 
 
 
