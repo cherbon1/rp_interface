@@ -431,9 +431,9 @@ class DelayFilterModule(RedPitayaModule):
         main_body_str = ("Delay filter:\n"
                          "  Input: {input_select_name} ({input_sel_number}), {ac_coupling}-coupled,"
                          "  Output: {output_select_name} ({output_sel_number})\n"
-                         "  Preamp gain: {preamp_gain}, Gain: {gain:.3f}\n"
-                         "  Delay: {delay}us (freq: {frequency:.2f}kHz)\n"
-                         "  Output toggle: {toggle_time}us (delay {delay_time}us)").format(
+                         "  Preamp gain: {preamp_gain}, Gain: {gain:.2f}\n"
+                         "  Delay: {delay:.2f}us (freq: {frequency:.2f}kHz)\n"
+                         "  Output toggle: {toggle_time:.2f}us (delay {delay_time:.2f}us)").format(
             input_select_name=self.input_select_names[self._input_select_control.value],
             input_sel_number=self._input_select_control.value,
             output_select_name=self.output_select_names[self._output_select_control.value],
@@ -444,7 +444,7 @@ class DelayFilterModule(RedPitayaModule):
             preamp_gain=self._preamp_gain_control.value,
             gain=self._gain_module.gain,
             toggle_time=self._toggle_time_control.value*1e6,
-            delay_time=self._delay_control.value*1e6,
+            delay_time=self._toggle_delay_control.value*1e6,
         )
         return "\n".join([main_body_str, biquad0_str, biquad1_str, biquad2_str, biquad3_str])
 
