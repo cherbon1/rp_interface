@@ -1,7 +1,7 @@
 import enum
 import logging
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Dict
 
 import numpy as np
 import scipy.signal as signal
@@ -156,14 +156,18 @@ class BiquadFilterModule(RedPitayaModule):
     '''
     Implements an interface to a biquad filter module
     '''
+    # I'm not quite sure how to handle this module
+    # For now, keep properties and submodules empty, and overload the copy_settings,
+    # get_settings_dict and set_settings_dict methods.
+    _properties = {}
+    _submodules = []
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  biquad_registers: BiquadFilterRegisters = None,
                  fs: float = 125e6 / 2 ** 3,
-                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'filter_type': FilterType.ALLPASS
@@ -182,9 +186,6 @@ class BiquadFilterModule(RedPitayaModule):
         self._filter_type = FilterType.UNKNOWN
         self._frequency = None
         self._q_factor = None
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def filter_type(self):
@@ -428,6 +429,60 @@ class BiquadFilterModule(RedPitayaModule):
             self._filter_type = other.filter_type
             self._frequency = other.frequency
             self._q_factor = other.q_factor
+
+    def get_settings_dict(self) -> Dict:
+        '''
+        The properties of a biquad filter are either:
+        filter_type, frequency, q_factor
+        or
+        biquad_coefficients b0, b1, b2, a1, a2
+        '''
+        try:
+            # Check whether filter_type, frequency and q_factor are sufficient to define a filter
+            _ = self.calculate_biquad_coefficients(self.filter_type, self.frequency, self.q_factor)
+
+            # If so, define properties based on filter_type, frequency (if defined) and q_factor (if defined)
+            properties = {'filter_type': self.filter_type.value}  # store the string representation, not the enum object
+            if self.frequency is not None:
+                properties['frequency'] = self.frequency
+            if self.q_factor is not None:
+                properties['q_factor'] = self.q_factor
+        except KeyError:
+            # If filter_type, frequency and q_factor are insufficient to define a filter, save biquad coeffs instead
+            biquad_coeffs = self.biquad_coefficients
+            properties = {
+                'b0': biquad_coeffs.b0,
+                'b1': biquad_coeffs.b1,
+                'b2': biquad_coeffs.b2,
+                'a1': biquad_coeffs.a1,
+                'a2': biquad_coeffs.a2,
+            }
+        return {
+            'properties': properties,
+            'submodules': {}
+        }
+
+    def set_settings_dict(self, input_dict: Dict) -> None:
+        properties = input_dict['properties']
+        # if defined by filter type, apply settings
+        if 'filter_type' in properties:
+            self.apply_filter_settings(
+                properties['filter_type'],
+                properties.get('frequency', None),
+                properties.get('q_factor', None),
+            )
+        else:
+            # if defined by biquad_coeffs, apply coeffs directly
+            biquad_coeffs = BiquadFilterCoefficients(
+                properties['b0'],
+                properties['b1'],
+                properties['b2'],
+                properties['a1'],
+                properties['a2'],
+            )
+            # Apply settings and refresh filter
+            self.write_biquad_coefficients(biquad_coeffs)
+            self.refresh_filter()
 
     def __str__(self):
         if self.filter_type in [FilterType.UNKNOWN, FilterType.ALLPASS]:

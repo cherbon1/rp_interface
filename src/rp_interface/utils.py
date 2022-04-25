@@ -1,5 +1,6 @@
 from enum import Enum
 import logging
+import functools
 
 log = logging.getLogger(__name__)
 
@@ -153,3 +154,30 @@ def bits2any(bits, dtype):
         return bin2hex(bits)
     else:
         raise ValueError(f'Unknown data type {dtype}. Options are: {DataType.all_dtypes_string()}')
+
+
+# copied from: https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-subobjects-chained-properties
+def rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition('.')
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+
+def define_property(path: str):
+    '''
+    This function returns a property for accessing object.path. The property object is then attached to the class with:
+    setattr(Class, control_name, define_property(control_path)) (defining self.control_name for objects of type Class)
+    path can be several instances deep to, e.g. define_property('input_mux_control.value') will return a
+    property object for accessing class.input_mux_control.value
+    '''
+    # Watch out for closures... https://stackoverflow.com/questions/9551082/create-properties-with-loop
+    # Also, read this: https://stackoverflow.com/questions/1325673/how-to-add-property-to-a-class-dynamically
+    get_func = lambda self: rgetattr(self, path)
+    set_func = lambda self, value: rsetattr(self, path, value)
+    return property(lambda self, f=get_func: f(self),
+                    lambda self, value, f=set_func: f(self, value))

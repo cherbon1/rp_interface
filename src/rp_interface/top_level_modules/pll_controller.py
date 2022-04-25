@@ -34,6 +34,20 @@ class PLLController(RedPitayaTopLevelModule):
     '''
     # Bitfile is a class attribute that will override the abstract class bitfile property
     bitfile = Bitfile('pll_controller.bit')
+    _properties = {
+            'output0_select': '_output0_select_control.value',
+            'output1_select': '_output1_select_control.value',
+            'constant0': '_constant0_control.value',
+            'constant1': '_constant1_control.value',
+        }
+    _submodules = [
+        'sum0',
+        'sum1',
+        'pll0',
+        'pll1',
+        'pll2',
+        'pll3',
+    ]
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
@@ -47,6 +61,24 @@ class PLLController(RedPitayaTopLevelModule):
             'output1_select': 1,
         }
 
+        self.fs = 31.25e6
+
+        self._define_register_locations()
+        self._define_controls()
+        self._define_modules()
+
+        self.defaults_file = 'pll_controller_defaults.yaml'
+        if apply_defaults:
+            self.apply_defaults()
+
+    def _define_register_locations(self):
+        '''
+        A method that defines all register addresses needed here.
+        Called in __init__, but separated out for readability
+        '''
+        # =======================================
+        # ========== DEFINE ADDRESSES ===========
+        # =======================================
         # gpio addresses
         self._top_module_gpio_write_address = '0x41200000'
         self._top_module_gpio_read_address = '0x41200008'
@@ -59,29 +91,6 @@ class PLLController(RedPitayaTopLevelModule):
         self._pll3_gpio_write_address = '0x41240000'
         self._pll3_gpio_read_address = '0x41240008'
 
-        self.fs = 31.25e6
-
-        self._define_register_locations()
-        self._define_controls()
-        self._define_modules(apply_defaults=apply_defaults)
-
-        # define top level properties
-        self.property_definitions = {
-            'output0_select': ('_output0_select_control', 'value'),
-            'output1_select': ('_output1_select_control', 'value'),
-            'constant0': ('_constant0_control', 'value'),
-            'constant1': ('_constant1_control', 'value')
-        }
-        self._define_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
-
-    def _define_register_locations(self):
-        '''
-        A method that defines all register addresses needed here.
-        Called in __init__, but separated out for readability
-        '''
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
@@ -192,7 +201,7 @@ class PLLController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2**(self._constant1_register.n_bits-1),
         )
 
-    def _define_modules(self, apply_defaults=False):
+    def _define_modules(self):
         sum_input_names = {
             0: 'In0',
             1: 'In1',
@@ -207,7 +216,6 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -216,7 +224,6 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -225,37 +232,25 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             gpio_write_address=self._pll0_gpio_write_address,
             gpio_read_address=self._pll0_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll1 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll1_gpio_write_address,
             gpio_read_address=self._pll1_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll2 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll2_gpio_write_address,
             gpio_read_address=self._pll2_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll3 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll3_gpio_write_address,
             gpio_read_address=self._pll3_gpio_read_address,
-            apply_defaults=apply_defaults
         )
-
-    def copy_settings(self, other):
-        # copy properties
-        super().copy_settings(other)
-        # copy properties of submodules
-        modules = ['pll0', 'pll1', 'pll2', 'pll3', 'sum0', 'sum1']
-        for module in modules:
-            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         output_sel_no0 = self._output0_select_control.value
@@ -276,25 +271,26 @@ class PLLController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    # pc = PLLController('red-pitaya-00.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
-    pc = PLLController('169.254.87.198', load_bitfile=True, apply_defaults=True)
-    print(pc)
-    pc.pll0.kp = 1
-    pc.pll0.ki = -0.5
-    pc.pll0.a = 1
-    pc.pll0.phi = -180
-    pc.pll0.demodulator_bandwidth = 10e3
-    pc.pll0.PID_bandwidth = 10e3
+    pc = PLLController('red-pitaya-26.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
+    # pc.save_settings('test.yaml', overwrite=True)
 
-    print(pc.pll0)
-    print(pc.pll1)
-
-    pc.pll1.copy_settings(pc.pll0)
-
-    print(pc.pll0)
-    print(pc.pll1)
-
-    pc.sum0.add0 = True
-    pc.sum0.add2 = True
-    pc.sum0.divide_by = 2
-    print(pc.sum0)
+    # print(pc)
+    # pc.pll0.kp = 1
+    # pc.pll0.ki = -0.5
+    # pc.pll0.a = 1
+    # pc.pll0.phi = -180
+    # pc.pll0.demodulator_bandwidth = 10e3
+    # pc.pll0.PID_bandwidth = 10e3
+    #
+    # print(pc.pll0)
+    # print(pc.pll1)
+    #
+    # pc.pll1.copy_settings(pc.pll0)
+    #
+    # print(pc.pll0)
+    # print(pc.pll1)
+    #
+    # pc.sum0.add0 = True
+    # pc.sum0.add2 = True
+    # pc.sum0.divide_by = 2
+    # print(pc.sum0)

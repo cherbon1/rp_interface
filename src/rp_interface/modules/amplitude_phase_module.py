@@ -14,18 +14,15 @@ class AmplitudePhaseModule(RedPitayaModule):
     Defines an interface to wa and wb registers (think x and y), and exposes a and phi parameters, the amplitude
     and phase of the reference signal
     '''
+    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  wa_register: Union[Register, MuxedRegister],
-                 wb_register: Union[Register, MuxedRegister],
-                 apply_defaults: bool = False
+                 wb_register: Union[Register, MuxedRegister]
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
-
-        self.default_values = {
-            'a': 1.,
-            'phi': 0.
-        }
+        super().__init__(red_pitaya=red_pitaya)
 
         self._wa_register = wa_register
         self._wb_register = wb_register
@@ -50,17 +47,14 @@ class AmplitudePhaseModule(RedPitayaModule):
             read_data=lambda reg: reg/2**(self._wb_register.n_bits-1)
         )
 
-        if apply_defaults:
-            self.apply_defaults()
-
     @property
     def a(self):
-        return np.sqrt(self._wb_control.value ** 2 + self._wa_control.value ** 2)
+        return float(np.sqrt(self._wb_control.value ** 2 + self._wa_control.value ** 2))
 
     @property
     def phi(self):
         # In degrees
-        return np.arctan2(self._wb_control.value, self._wa_control.value) / np.pi * 180
+        return float(np.arctan2(self._wb_control.value, self._wa_control.value) / np.pi * 180)
 
     @a.setter
     def a(self, value):

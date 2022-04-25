@@ -1,6 +1,7 @@
 pip==22.0.4
-setuptools==61.2.0
+setuptools==62.1.0
 wheel==0.37.1
 paramiko==2.10.3
 numpy==1.22.3
 scipy==1.8.0
+PyYAML==6.0

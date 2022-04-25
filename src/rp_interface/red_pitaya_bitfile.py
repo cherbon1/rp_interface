@@ -20,6 +20,9 @@ class Bitfile:
 
     @property
     def full_path(self):
+        '''
+        First looks for bitfile in self.bitfiles_directory, then looks for it locally (e.g. ./bitfile.bit)
+        '''
         bitfiles_directory_path = os.path.join(self.bitfiles_directory, self.bitfile)
         local_path = os.path.join('./', self.bitfile)
         if os.path.isfile(bitfiles_directory_path):

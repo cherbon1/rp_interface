@@ -37,13 +37,30 @@ class DelayFilterModule(RedPitayaModule):
         - 7 -> constant
 
     '''
+    _properties = {
+            'input_select': '_input_select_control.value',
+            'ac_coupling': '_ac_coupling_control.value',
+            'delay': '_delay_control.value',
+            'output_select': '_output_select_control.value',
+            'gain': '_gain_module.gain',
+            'preamp_gain': '_preamp_gain_control.value',
+            'toggle_delay': '_toggle_delay_control.value',
+            'toggle_time': '_toggle_time_control.value',
+            'constant': '_constant_control.value',
+        }
+    _submodules = [
+        'biquad0',
+        'biquad1',
+        'biquad2',
+        'biquad3',
+    ]
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
                  gpio_read_address: str,
-                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'preamp_gain': 1.,
@@ -64,23 +81,7 @@ class DelayFilterModule(RedPitayaModule):
         self._define_register_locations()
         self._define_biquad_register_locations()
         self._define_controls()
-        self._define_biquads(apply_defaults=apply_defaults)
-
-        self.property_definitions = {
-            'input_select': ('_input_select_control', 'value'),
-            'ac_coupling': ('_ac_coupling_control', 'value'),
-            'delay': ('_delay_control', 'value'),
-            'output_select': ('_output_select_control', 'value'),
-            'gain': ('_gain_module', 'gain'),
-            'preamp_gain': ('_preamp_gain_control', 'value'),
-            'toggle_delay': ('_toggle_delay_control', 'value'),
-            'toggle_time': ('_toggle_time_control', 'value'),
-            'constant': ('_constant_control', 'value'),
-        }
-        self._define_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
+        self._define_biquads()
 
     def _define_register_locations(self):
         '''
@@ -337,7 +338,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
-    def _define_biquads(self, apply_defaults=False):
+    def _define_biquads(self):
         '''
         A method that defines all biquad filter modules of a filter block
         Called in __init__, but separated out for readability
@@ -346,28 +347,24 @@ class DelayFilterModule(RedPitayaModule):
             red_pitaya=self.rp,
             biquad_registers=self._biquad0_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad1 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad1_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad2 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad2_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad3 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad3_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
     def refresh_dc_block(self):
@@ -413,15 +410,6 @@ class DelayFilterModule(RedPitayaModule):
             biquad_string=biquad_string if biquad_string else 'no filter',
             gain=self._gain_module.gain,
         )
-
-    def copy_settings(self, other):
-        # copy properties
-        super().copy_settings(other)
-
-        # copy properties of submodules
-        modules = ['biquad0', 'biquad1', 'biquad2', 'biquad3']
-        for module in modules:
-            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         biquad0_str = "    biquad0: " + self.biquad0.__str__()

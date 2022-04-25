@@ -40,6 +40,23 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
     '''
     # Bitfile is a class attribute that will override the abstract class bitfile property
     bitfile = Bitfile('paul_trap_feedback_controller.bit')
+    _properties = {
+        'trigger_delay': '_trigger_delay_control.value',
+        'output0_select': '_output0_select_control.value',
+        'output1_select': '_output1_select_control.value',
+        'constant': '_constant_control.value',
+        'trigger_mode': '_trigger_mode_control.value',
+    }
+    _submodules = [
+        'sum0',
+        'sum1',
+        'aom_control',
+        'delay_filter0',
+        'delay_filter1',
+        'delay_filter2',
+        'delay_filter3',
+        'wavegen',
+    ]
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
@@ -54,6 +71,24 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             'trigger_mode': 0  # default to local trigger
         }
 
+        self.fs = 125e6
+
+        self._define_register_locations()
+        self._define_controls()
+        self._define_modules()
+
+        self.defaults_file = 'paul_trap_feedback_controller_defaults.yaml'
+        if apply_defaults:
+            self.apply_defaults()
+
+    def _define_register_locations(self):
+        '''
+        A method that defines all register addresses needed here.
+        Called in __init__, but separated out for readability
+        '''
+        # =======================================
+        # ========== DEFINE ADDRESSES ===========
+        # =======================================
         # gpio addresses
         self._top_module_gpio_write_address = '0x41200000'
         self._top_module_gpio_read_address = '0x41200008'
@@ -68,33 +103,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
         self._delay_filter3_gpio_write_address = '0x41240000'
         self._delay_filter3_gpio_read_address = '0x41240008'
 
-        self.fs = 125e6
-
-        self._define_register_locations()
-        self._define_controls()
-        self._define_modules(apply_defaults=apply_defaults)
-
-        # define top level properties
-        self.property_definitions = {
-            'trigger_delay': ('_trigger_delay_control', 'value'),
-            'output0_select': ('_output0_select_control', 'value'),
-            'output1_select': ('_output1_select_control', 'value'),
-            'constant': ('_constant_control', 'value'),
-            'trigger_mode': ('_trigger_mode_control', 'value')
-        }
-        self._define_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
-            # Custom default setting that lives outside of defaults dictionary
-            self.sum1.add0 = False
-            self.sum1.add1 = True
-
-    def _define_register_locations(self):
-        '''
-        A method that defines all register addresses needed here.
-        Called in __init__, but separated out for readability
-        '''
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
@@ -256,7 +264,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
-    def _define_modules(self, apply_defaults=False):
+    def _define_modules(self):
         sum_input_names = {
             0: 'In0',
             1: 'In1',
@@ -271,7 +279,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -280,7 +287,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -289,35 +295,30 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             gpio_write_address=self._aom_control_gpio_write_address,
             gpio_read_address=self._aom_control_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter0 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter0_gpio_write_address,
             gpio_read_address=self._delay_filter0_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter1 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter1_gpio_write_address,
             gpio_read_address=self._delay_filter1_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter2 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter2_gpio_write_address,
             gpio_read_address=self._delay_filter2_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter3 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter3_gpio_write_address,
             gpio_read_address=self._delay_filter3_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.wavegen = WavegenModule(
@@ -326,21 +327,12 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             fine_gain_register=self._wavegen_fine_gain_register,
             coarse_gain_register=self._wavegen_coarse_gain_register,
             fs=self.fs,
-            apply_defaults=apply_defaults,
         )
 
     def trigger_now(self):
         self._trigger_control.value = False
         self._trigger_control.value = True
         self._trigger_control.value = False
-
-    def copy_settings(self, other):
-        # copy properties
-        super().copy_settings(other)
-        # copy properties of submodules
-        modules = ['delay_filter0', 'delay_filter1', 'delay_filter2', 'delay_filter3', 'sum0', 'sum1']
-        for module in modules:
-            getattr(self, module).copy_settings(getattr(other, module))
 
     def data_path(self, channel):
         '''
@@ -400,10 +392,11 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             class DummyBlock:
                 def __init__(self, data_path_output=None):
                     self.data_path = lambda: data_path_output
+
             in0 = DummyBlock('In0')
             in1 = DummyBlock('In1')
             wavegen = DummyBlock()
-            wavegen.data_path = lambda: f'{self.wavegen.frequency*1e-3:.2f}kHz'
+            wavegen.data_path = lambda: f'{self.wavegen.frequency * 1e-3:.2f}kHz'
             constant = DummyBlock('constant')
             delay_filters = {
                 'in0': in0,
@@ -415,7 +408,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
                 'wavegen': wavegen,
                 'constant': constant
             }
-            filters_string = '\n - '.join([f'{df_name}: {df.data_path()}' for (df_name, df), enable in \
+            filters_string = '\n - '.join([f'{df_name}: {df.data_path()}' for (df_name, df), enable in
                                            zip(delay_filters.items(), sum_enables) if enable])
             return ('Sum of {n_stages} signals:\n'
                     ' - {filters}').format(
@@ -479,7 +472,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    ptfb = PaulTrapFeedbackController('red-pitaya-00.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+    ptfb = PaulTrapFeedbackController('red-pitaya-26.ee.ethz.ch', load_bitfile=True, apply_defaults=True)
 
     # ptfb.wavegen.frequency = 120e3
     # ptfb.wavegen.amplitude = 0.5
@@ -496,7 +489,6 @@ if __name__ == "__main__":
     print(ptfb.sum0)
     print(ptfb)
 
-
     # ptfb.output1_select = 4
     # print(ptfb)
     # ptfb.sum0.add0 = True
@@ -509,9 +501,6 @@ if __name__ == "__main__":
     #
     # print(ptfb.sum0)
     # print(ptfb.sum1)
-
-
-
 
     # ptfb.delay_filter0.delay = 100e-6
     # ptfb.delay_filter0.biquad0.apply_filter_settings('bandpass', 10e3, 1.0)

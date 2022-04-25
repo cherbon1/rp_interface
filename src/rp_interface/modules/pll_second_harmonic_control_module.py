@@ -15,15 +15,17 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
     closely interconnected. This module handles the interaction between those controls.
     The demodulator_bandwidth control is set via the alpha register
     '''
+    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _submodules = []
+    
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  second_harmonic_register: Union[Register, MuxedRegister],
                  alpha_register: Union[Register, MuxedRegister],
                  frequency_register: Union[Register, MuxedRegister],
-                 fs: float,
-                 apply_defaults: bool = False
+                 fs: float
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'second_harmonic': True,
@@ -63,9 +65,6 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
             read_data=lambda reg: 0 if reg == 0 else -(125e6/1024) * np.log(reg / 2**17) / (2*np.pi)
         )
 
-        if apply_defaults:
-            self.apply_defaults()
-
     @property
     def second_harmonic(self):
         return self._second_harmonic_control.value
@@ -92,7 +91,7 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
     @property
     def demodulator_bandwidth(self):
         divide_by = 2 if self.second_harmonic else 1
-        return self._demodulator_bandwidth_control.value / divide_by
+        return float(self._demodulator_bandwidth_control.value / divide_by)
 
     @demodulator_bandwidth.setter
     def demodulator_bandwidth(self, value):

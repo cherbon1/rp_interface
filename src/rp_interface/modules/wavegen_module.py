@@ -10,19 +10,22 @@ from rp_interface.red_pitaya_module import RedPitayaModule
 
 class WavegenModule(RedPitayaModule):
     '''
-    Defines an interface to fine and coarse gain registers. The fine gain
-    multiplies a signal by a range of -1 to 1 while the coarse gain bitshifts the
-    output signal to multiply by powers of 2.
+    Defines an interface to a wavegen module (a dds compiler and a gain module)
     '''
+    _properties = {
+        'frequency': '_frequency_control.value',
+        'amplitude': '_raw_amplitude',
+    }
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  frequency_register: Union[Register, MuxedRegister],
                  fine_gain_register: Union[Register, MuxedRegister],
                  coarse_gain_register: Union[Register, MuxedRegister],
-                 fs: float,
-                 apply_defaults: bool = False
+                 fs: float
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'frequency': 100e3,
@@ -50,21 +53,10 @@ class WavegenModule(RedPitayaModule):
             coarse_gain_register=self._coarse_gain_register
         )
 
-        if apply_defaults:
-            self.apply_defaults()
-
     @property
-    def frequency(self):
-        return self._frequency_control.value
-
-    @frequency.setter
-    def frequency(self, value):
-        self._frequency_control.value = value
-
-    @property
-    def amplitude(self):
+    def _raw_amplitude(self):
         return self._gain_module.gain / 2
 
-    @amplitude.setter
-    def amplitude(self, value):
+    @_raw_amplitude.setter
+    def _raw_amplitude(self, value):
         self._gain_module.gain = 2 * value

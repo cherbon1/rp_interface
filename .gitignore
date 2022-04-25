@@ -1,1 +1,4 @@
 .idea
+/src/rp_interface.egg-info/*
+/build/*
+*.ipynb

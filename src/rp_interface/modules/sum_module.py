@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Dict
 
 import numpy as np
 
@@ -23,18 +23,25 @@ class SumModule(RedPitayaModule):
         - add{adder_width}
         - divide_by
     '''
+    # This one's slightly awkward because not all sum modules will be identical
+    # Instead, grow the controls dict as much as necessary at every init
+    # and overload get_settings_dict() to only read as far as necessary
+    _properties = {
+        'divide_by': '_divide_by_control.value'
+    }
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  add_select_register: Union[Register, MuxedRegister],
                  divide_by_register: Union[Register, MuxedRegister],
-                 apply_defaults: bool = False,
                  adder_width: int = None,
                  input_names: List = None
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
-            'add0': True,  # The rest of the adder should in principle start out false
+            # 'add0': True,  # The rest of the adder should in principle start out false
             'divide_by': 1.
         }
 
@@ -74,18 +81,14 @@ class SumModule(RedPitayaModule):
             read_data=lambda reg: 2**(divide_by_width-reg)
         )
 
-        self.property_definitions = {
-            'divide_by': ('_divide_by_control', 'value')
-        }
-        # add elements of the form {'add0': (self.add0_control, 'value')} to property_definitions
+        # grow the controls dict as required:
+        # add elements of the form  {'add0': '_add0_control.value'}
         for i in range(self.adder_width):
-            prop_name = 'add{}'.format(i)
-            control_attr_name = '_add{}_control'.format(i)
-            self.property_definitions[prop_name] = (control_attr_name, 'value')
-        self._define_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
+            property_name = 'add{}'.format(i)
+            property_path = '_add{}_control.value'.format(i)
+            if property_name not in self._properties:
+                self._properties[property_name] = property_path
+        self._attach_properties()  # redefine controls
 
     def _define_add_select_register_locations(self):
         '''
@@ -117,6 +120,19 @@ class SumModule(RedPitayaModule):
                 dtype=DataType.BOOL,
             )
             setattr(self, control_attr_name, control)
+
+    def get_settings_dict(self) -> Dict:
+        properties_dict = {'divide_by': getattr(self, 'divide_by')}
+
+        # add elements of the form  {'add0': '_add0_control.value'}
+        for i in range(self.adder_width):
+            property_name = 'add{}'.format(i)
+            properties_dict[property_name] = getattr(self, property_name)
+
+        return {
+            'properties': properties_dict,
+            'submodules': {}
+        }
 
     @property
     def add_select_list(self):
