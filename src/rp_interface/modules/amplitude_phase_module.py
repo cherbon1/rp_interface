@@ -58,12 +58,12 @@ class AmplitudePhaseModule(RedPitayaModule):
 
     @property
     def a(self):
-        return np.sqrt(self._wb_control.value ** 2 + self._wa_control.value ** 2)
+        return float(np.sqrt(self._wb_control.value ** 2 + self._wa_control.value ** 2))
 
     @property
     def phi(self):
         # In degrees
-        return np.arctan2(self._wb_control.value, self._wa_control.value) / np.pi * 180
+        return float(np.arctan2(self._wb_control.value, self._wa_control.value) / np.pi * 180)
 
     @a.setter
     def a(self, value):

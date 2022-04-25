@@ -1,0 +1,99 @@
+# PLL controller defaults
+properties:
+  constant0: 0.0
+  constant1: 0.0
+  output0_select: 0
+  output1_select: 1
+submodules:
+  pll0:
+    properties:
+      a: 1.0
+      constant: 0.0
+      demodulator_bandwidth: 1000.0
+      frequency: 10000.0
+      gain: 1.0
+      input_select: 0
+      ki: -1.0
+      kp: -100.0
+      order: 1
+      output_select: 0
+      phi: 0.0
+      pid_bandwidth: 5000.0
+      pid_enable: false
+      second_harmonic: true
+    submodules: {}
+  pll1:
+    properties:
+      a: 1.0
+      constant: 0.0
+      demodulator_bandwidth: 1000.0
+      frequency: 10000.0
+      gain: 1.0
+      input_select: 0
+      ki: -1.0
+      kp: -100.0
+      order: 1
+      output_select: 0
+      phi: 0.0
+      pid_bandwidth: 5000.0
+      pid_enable: false
+      second_harmonic: true
+    submodules: {}
+  pll2:
+    properties:
+      a: 1.0
+      constant: 0.0
+      demodulator_bandwidth: 1000.0
+      frequency: 10000.0
+      gain: 1.0
+      input_select: 0
+      ki: -1.0
+      kp: -100.0
+      order: 1
+      output_select: 0
+      phi: 0.0
+      pid_bandwidth: 5000.0
+      pid_enable: false
+      second_harmonic: true
+    submodules: {}
+  pll3:
+    properties:
+      a: 1.0
+      constant: 0.0
+      demodulator_bandwidth: 1000.0
+      frequency: 10000.0
+      gain: 1.0
+      input_select: 0
+      ki: -1.0
+      kp: -100.0
+      order: 1
+      output_select: 0
+      phi: 0.0
+      pid_bandwidth: 5000.0
+      pid_enable: false
+      second_harmonic: true
+    submodules: {}
+  sum0:
+    properties:
+      add0: true
+      add1: false
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}
+  sum1:
+    properties:
+      add0: false
+      add1: true
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}

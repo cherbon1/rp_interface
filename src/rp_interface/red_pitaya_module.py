@@ -97,10 +97,15 @@ class RedPitayaModule(ABC):
             getattr(self, submodule).copy_settings(getattr(other, submodule))
 
     def save_settings(self, filepath, overwrite=False):
+        '''
+        Implemented with yaml.safe_dump to avoid saving python objects by accident (can happen e.g. with numpy.float64)
+        A yaml.representer.RepresenterError will be raised if an invalid object is saved. If that's the case, consider
+        replacing `safe_dump` with `dump` for debugging purposes (the output file will make it clear where the error is)
+        '''
         mode = 'w' if overwrite else 'x'
         try:
             with open(filepath, mode) as f:
-                yaml.dump(self.get_settings_dict(), f)
+                yaml.safe_dump(self.get_settings_dict(), f)
         except FileExistsError as e:
             log.warning('File {} already exists. Set overwrite=True and try again'.format(filepath))
             raise e

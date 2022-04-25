@@ -276,25 +276,26 @@ class PLLController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    # pc = PLLController('red-pitaya-00.ee.ethz.ch', load_bitfile=True, apply_defaults=False)
-    pc = PLLController('169.254.87.198', load_bitfile=True, apply_defaults=True)
-    print(pc)
-    pc.pll0.kp = 1
-    pc.pll0.ki = -0.5
-    pc.pll0.a = 1
-    pc.pll0.phi = -180
-    pc.pll0.demodulator_bandwidth = 10e3
-    pc.pll0.PID_bandwidth = 10e3
+    pc = PLLController('red-pitaya-26.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
+    pc.save_settings('test.yaml', overwrite=True)
 
-    print(pc.pll0)
-    print(pc.pll1)
-
-    pc.pll1.copy_settings(pc.pll0)
-
-    print(pc.pll0)
-    print(pc.pll1)
-
-    pc.sum0.add0 = True
-    pc.sum0.add2 = True
-    pc.sum0.divide_by = 2
-    print(pc.sum0)
+    # print(pc)
+    # pc.pll0.kp = 1
+    # pc.pll0.ki = -0.5
+    # pc.pll0.a = 1
+    # pc.pll0.phi = -180
+    # pc.pll0.demodulator_bandwidth = 10e3
+    # pc.pll0.PID_bandwidth = 10e3
+    #
+    # print(pc.pll0)
+    # print(pc.pll1)
+    #
+    # pc.pll1.copy_settings(pc.pll0)
+    #
+    # print(pc.pll0)
+    # print(pc.pll1)
+    #
+    # pc.sum0.add0 = True
+    # pc.sum0.add2 = True
+    # pc.sum0.divide_by = 2
+    # print(pc.sum0)

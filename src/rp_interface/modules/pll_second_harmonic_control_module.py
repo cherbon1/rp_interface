@@ -95,7 +95,7 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
     @property
     def demodulator_bandwidth(self):
         divide_by = 2 if self.second_harmonic else 1
-        return self._demodulator_bandwidth_control.value / divide_by
+        return float(self._demodulator_bandwidth_control.value / divide_by)
 
     @demodulator_bandwidth.setter
     def demodulator_bandwidth(self, value):
