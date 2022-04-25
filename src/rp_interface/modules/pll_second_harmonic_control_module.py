@@ -15,6 +15,9 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
     closely interconnected. This module handles the interaction between those controls.
     The demodulator_bandwidth control is set via the alpha register
     '''
+    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _submodules = []
+    
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  second_harmonic_register: Union[Register, MuxedRegister],

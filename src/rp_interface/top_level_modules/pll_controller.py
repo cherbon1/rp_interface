@@ -34,6 +34,20 @@ class PLLController(RedPitayaTopLevelModule):
     '''
     # Bitfile is a class attribute that will override the abstract class bitfile property
     bitfile = Bitfile('pll_controller.bit')
+    _properties = {
+            'output0_select': '_output0_select_control.value',
+            'output1_select': '_output1_select_control.value',
+            'constant0': '_constant0_control.value',
+            'constant1': '_constant1_control.value',
+        }
+    _submodules = [
+        'sum0',
+        'sum1',
+        'pll0',
+        'pll1',
+        'pll2',
+        'pll3',
+    ]
 
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
@@ -47,6 +61,23 @@ class PLLController(RedPitayaTopLevelModule):
             'output1_select': 1,
         }
 
+        self.fs = 31.25e6
+
+        self._define_register_locations()
+        self._define_controls()
+        self._define_modules(apply_defaults=apply_defaults)
+
+        if apply_defaults:
+            self.apply_defaults()
+
+    def _define_register_locations(self):
+        '''
+        A method that defines all register addresses needed here.
+        Called in __init__, but separated out for readability
+        '''
+        # =======================================
+        # ========== DEFINE ADDRESSES ===========
+        # =======================================
         # gpio addresses
         self._top_module_gpio_write_address = '0x41200000'
         self._top_module_gpio_read_address = '0x41200008'
@@ -59,29 +90,6 @@ class PLLController(RedPitayaTopLevelModule):
         self._pll3_gpio_write_address = '0x41240000'
         self._pll3_gpio_read_address = '0x41240008'
 
-        self.fs = 31.25e6
-
-        self._define_register_locations()
-        self._define_controls()
-        self._define_modules(apply_defaults=apply_defaults)
-
-        # define top level properties
-        self.property_definitions = {
-            'output0_select': ('_output0_select_control', 'value'),
-            'output1_select': ('_output1_select_control', 'value'),
-            'constant0': ('_constant0_control', 'value'),
-            'constant1': ('_constant1_control', 'value')
-        }
-        self._define_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
-
-    def _define_register_locations(self):
-        '''
-        A method that defines all register addresses needed here.
-        Called in __init__, but separated out for readability
-        '''
         # =======================================
         # ====== DEFINE REGISTER LOCATIONS ======
         # =======================================
@@ -248,14 +256,6 @@ class PLLController(RedPitayaTopLevelModule):
             gpio_read_address=self._pll3_gpio_read_address,
             apply_defaults=apply_defaults
         )
-
-    def copy_settings(self, other):
-        # copy properties
-        super().copy_settings(other)
-        # copy properties of submodules
-        modules = ['pll0', 'pll1', 'pll2', 'pll3', 'sum0', 'sum1']
-        for module in modules:
-            getattr(self, module).copy_settings(getattr(other, module))
 
     def __str__(self):
         output_sel_no0 = self._output0_select_control.value

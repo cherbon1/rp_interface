@@ -14,6 +14,9 @@ class AmplitudePhaseModule(RedPitayaModule):
     Defines an interface to wa and wb registers (think x and y), and exposes a and phi parameters, the amplitude
     and phase of the reference signal
     '''
+    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  wa_register: Union[Register, MuxedRegister],

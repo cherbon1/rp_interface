@@ -38,6 +38,24 @@ class PLLModule(RedPitayaModule):
         - 6 -> N.C.
         - 7 -> N.C.
     '''
+    _properties = {
+            'input_select': '_input_select_control.value',
+            'second_harmonic': '_pll_second_harmonic_control_module.second_harmonic',
+            'frequency': '_pll_second_harmonic_control_module.frequency',
+            'a': '_amplitude_phase_module.a',
+            'phi': '_amplitude_phase_module.phi',
+            'demodulator_bandwidth': '_pll_second_harmonic_control_module.demodulator_bandwidth',
+            'order': '_order_control.value',
+            'pid_enable': '_pid_enable_control.value',
+            'pid_bandwidth': '_pid_bandwidth_control.value',
+            'kp': '_kp_control.value',
+            'ki': '_ki_control.value',
+            'output_select': '_output_select_control.value',
+            'gain': '_gain_module.gain',
+            'constant': '_constant_control.value',
+        }
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
@@ -68,24 +86,6 @@ class PLLModule(RedPitayaModule):
 
         self._define_register_locations()
         self._define_controls()
-
-        self.property_definitions = {
-            'input_select': ('_input_select_control', 'value'),
-            'second_harmonic': ('_pll_second_harmonic_control_module', 'second_harmonic'),
-            'frequency': ('_pll_second_harmonic_control_module', 'frequency'),
-            'a': ('_amplitude_phase_module', 'a'),
-            'phi': ('_amplitude_phase_module', 'phi'),
-            'demodulator_bandwidth': ('_pll_second_harmonic_control_module', 'demodulator_bandwidth'),
-            'order': ('_order_control', 'value'),
-            'pid_enable': ('_pid_enable_control', 'value'),
-            'pid_bandwidth': ('_pid_bandwidth_control', 'value'),
-            'kp': ('_kp_control', 'value'),
-            'ki': ('_ki_control', 'value'),
-            'output_select': ('_output_select_control', 'value'),
-            'gain': ('_gain_module', 'gain'),
-            'constant': ('_constant_control', 'value')
-        }
-        self._define_properties()
 
         if apply_defaults:
             self.apply_defaults()

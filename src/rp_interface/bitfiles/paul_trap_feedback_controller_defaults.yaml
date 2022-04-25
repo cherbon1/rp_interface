@@ -1,0 +1,160 @@
+# Paul trap feedback controller defaults
+properties:
+  constant: 0.0
+  output0_select: 0  # In 0
+  output1_select: 1  # In 1
+  trigger_delay: 0.0
+  trigger_mode: 0
+submodules:
+  aom_control:
+    properties:
+      feedback_enable: false
+      feedback_gain: 0.01
+      feedback_toggle_delay: 0.0
+      feedback_toggle_time: 0.0
+      input_select: 0  # In 0
+      trap_enable: false
+      trap_toggle_delay: 0.0
+      trap_toggle_time: 0.0
+    submodules: {}
+  delay_filter0:
+    properties:
+      ac_coupling: true
+      constant: 0.0
+      delay: 0.0
+      gain: 1.0
+      input_select: 0
+      output_select: 6  # apply 6 filters
+      preamp_gain: 1
+      toggle_delay: 0.001
+      toggle_time: 0.0
+    submodules:
+      biquad0:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad1:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad2:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad3:
+        properties:
+          filter_type: allpass
+        submodules: {}
+  delay_filter1:
+    properties:
+      ac_coupling: true
+      constant: 0.0
+      delay: 0.0
+      gain: 1.0
+      input_select: 0
+      output_select: 6  # apply 6 filters
+      preamp_gain: 1
+      toggle_delay: 0.001
+      toggle_time: 0.0
+    submodules:
+      biquad0:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad1:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad2:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad3:
+        properties:
+          filter_type: allpass
+        submodules: {}
+  delay_filter2:
+    properties:
+      ac_coupling: true
+      constant: 0.0
+      delay: 0.0
+      gain: 1.0
+      input_select: 0
+      output_select: 6  # apply 6 filters
+      preamp_gain: 1
+      toggle_delay: 0.001
+      toggle_time: 0.0
+    submodules:
+      biquad0:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad1:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad2:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad3:
+        properties:
+          filter_type: allpass
+        submodules: {}
+  delay_filter3:
+    properties:
+      ac_coupling: true
+      constant: 0.0
+      delay: 0.0
+      gain: 1.0
+      input_select: 0
+      output_select: 6  # apply 6 filters
+      preamp_gain: 1
+      toggle_delay: 0.001
+      toggle_time: 0.0
+    submodules:
+      biquad0:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad1:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad2:
+        properties:
+          filter_type: allpass
+        submodules: {}
+      biquad3:
+        properties:
+          filter_type: allpass
+        submodules: {}
+  sum0:
+    properties:
+      add0: true
+      add1: false
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}
+  sum1:
+    properties:
+      add0: false
+      add1: true
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}
+  wavegen:
+    properties:
+      amplitude: 0.1
+      frequency: 100000.0
+    submodules: {}

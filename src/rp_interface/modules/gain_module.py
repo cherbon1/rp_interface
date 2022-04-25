@@ -15,6 +15,9 @@ class GainModule(RedPitayaModule):
     multiplies a signal by a range of -1 to 1 while the coarse gain bitshifts the
     output signal to multiply by powers of 2.
     '''
+    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _submodules = []
+
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  fine_gain_register: Union[Register, MuxedRegister],
