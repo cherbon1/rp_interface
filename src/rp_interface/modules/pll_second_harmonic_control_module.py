@@ -23,10 +23,9 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
                  second_harmonic_register: Union[Register, MuxedRegister],
                  alpha_register: Union[Register, MuxedRegister],
                  frequency_register: Union[Register, MuxedRegister],
-                 fs: float,
-                 apply_defaults: bool = False
+                 fs: float
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'second_harmonic': True,
@@ -65,9 +64,6 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
             write_data=lambda val: int(np.exp(-2*np.pi*val / (125e6/1024)) * 2**17 - 1e-9),
             read_data=lambda reg: 0 if reg == 0 else -(125e6/1024) * np.log(reg / 2**17) / (2*np.pi)
         )
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def second_harmonic(self):

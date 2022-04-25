@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from abc import ABC, abstractmethod
 from typing import Union, List, Dict
 import yaml
@@ -17,9 +18,6 @@ class RedPitayaModule(ABC):
     Defines a combination of controls and modules that are considered one entity on
     the red pitaya image.
 
-    default_values is a dict of the form: {'name': value}
-    e.g. {'gain': 1, 'channel': 0}
-
     This is an abstract base class, and defines the following abstract properties:
     - self._properties: A dict of controls that should be registered as properties
         (dict of the form {'name': 'submodule_name.control_name.value'}).
@@ -28,20 +26,15 @@ class RedPitayaModule(ABC):
         These should already be instance attributes, and this list is only used to keep track of them.
     '''
     def __init__(self,
-                 red_pitaya: Union[RedPitaya, str],
-                 apply_defaults: bool = False
+                 red_pitaya: Union[RedPitaya, str]
                  ):
         if isinstance(red_pitaya, str):
             red_pitaya = RedPitaya(host=red_pitaya)
         if not isinstance(red_pitaya, RedPitaya):
             raise ValueError('Invalid red_pitaya parameter {}'.format(red_pitaya))
         self.rp = red_pitaya
-        self.default_values = None
 
         self._attach_properties()
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     @abstractmethod
@@ -64,16 +57,6 @@ class RedPitayaModule(ABC):
             setattr(self, property_name, property_value)
         for module_name, module_dict in input_dict['submodules'].items():
             getattr(self, module_name).set_settings_dict(module_dict)
-
-    def apply_defaults(self):
-        if self.default_values is None:
-            log.warning('No default values specified')
-            return
-        for name, value in self.default_values.items():
-            if hasattr(self, name):
-                setattr(self, name, value)
-            else:
-                raise KeyError(f'Unknown attribute {name} for {self.__class__.__name__}')
 
     def _attach_properties(self) -> None:
         '''
@@ -126,11 +109,12 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
                  load_bitfile: bool = False,
                  apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         if load_bitfile:
             self.load_bitfile()
 
+        self.defaults_file = ''
         if apply_defaults:
             self.apply_defaults()
 
@@ -141,3 +125,17 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
 
     def load_bitfile(self):
         self.rp.load_bitfile(self.bitfile.full_path)
+
+    def apply_defaults(self):
+        # defaults live in bitfile directory
+        self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
+        if not hasattr(self, 'defaults_file'):
+            raise RuntimeError("Can't apply defaults, no defaults_file defined")
+
+        defaults_full_path = os.path.join(self.defaults_directory, self.defaults_file)
+
+        if not os.path.isfile(defaults_full_path):
+            raise RuntimeError("Can't apply defaults, file {} doesn't exist".format(defaults_full_path))
+
+        self.load_settings(defaults_full_path)
+

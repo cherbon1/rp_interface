@@ -59,9 +59,8 @@ class DelayFilterModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
                  gpio_read_address: str,
-                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'preamp_gain': 1.,
@@ -82,10 +81,7 @@ class DelayFilterModule(RedPitayaModule):
         self._define_register_locations()
         self._define_biquad_register_locations()
         self._define_controls()
-        self._define_biquads(apply_defaults=apply_defaults)
-
-        if apply_defaults:
-            self.apply_defaults()
+        self._define_biquads()
 
     def _define_register_locations(self):
         '''
@@ -342,7 +338,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
-    def _define_biquads(self, apply_defaults=False):
+    def _define_biquads(self):
         '''
         A method that defines all biquad filter modules of a filter block
         Called in __init__, but separated out for readability
@@ -351,28 +347,24 @@ class DelayFilterModule(RedPitayaModule):
             red_pitaya=self.rp,
             biquad_registers=self._biquad0_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad1 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad1_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad2 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad2_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
         self.biquad3 = BiquadFilterModule(
             red_pitaya=self.rp,
             biquad_registers=self._biquad3_registers,
             fs=self.fs_biquad,
-            apply_defaults=apply_defaults
         )
 
     def refresh_dc_block(self):

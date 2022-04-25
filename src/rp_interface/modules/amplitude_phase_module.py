@@ -20,15 +20,9 @@ class AmplitudePhaseModule(RedPitayaModule):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  wa_register: Union[Register, MuxedRegister],
-                 wb_register: Union[Register, MuxedRegister],
-                 apply_defaults: bool = False
+                 wb_register: Union[Register, MuxedRegister]
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
-
-        self.default_values = {
-            'a': 1.,
-            'phi': 0.
-        }
+        super().__init__(red_pitaya=red_pitaya)
 
         self._wa_register = wa_register
         self._wb_register = wb_register
@@ -52,9 +46,6 @@ class AmplitudePhaseModule(RedPitayaModule):
             write_data=lambda val: int(2**(self._wb_register.n_bits-1) * val - 1e-9),
             read_data=lambda reg: reg/2**(self._wb_register.n_bits-1)
         )
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def a(self):

@@ -38,10 +38,9 @@ class AOMControlModule(RedPitayaModule):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  gpio_write_address: str,
-                 gpio_read_address: str,
-                 apply_defaults: bool = False
+                 gpio_read_address: str
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
                 'feedback_gain': 0.01,
@@ -56,9 +55,6 @@ class AOMControlModule(RedPitayaModule):
 
         self._define_register_locations()
         self._define_controls()
-
-        if apply_defaults:
-            self.apply_defaults()
 
     def _define_register_locations(self):
         '''
@@ -209,16 +205,6 @@ class AOMControlModule(RedPitayaModule):
             write_data=lambda val: int(val * 2 ** self._feedback_gain_register.n_bits - 1e-9),
             read_data=lambda reg: reg / 2 ** self._feedback_gain_register.n_bits,
         )
-
-        # red_pitaya: Union[RedPitaya, str],
-        # register: Union[Register, MuxedRegister],
-        # name: str,
-        # dtype: utils.DataType = utils.DataType.UNSIGNED_INT,
-        # in_range: Callable = None,
-        # write_data: Callable = None,
-        # read_data: Callable = None,
-        # default_value: Any = None,
-        # apply_default: bool = False)
 
     def __str__(self):
         return ("AOM Control:\n"

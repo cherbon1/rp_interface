@@ -75,13 +75,11 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
 
         self._define_register_locations()
         self._define_controls()
-        self._define_modules(apply_defaults=apply_defaults)
+        self._define_modules()
 
+        self.defaults_file = 'paul_trap_feedback_controller_defaults.yaml'
         if apply_defaults:
             self.apply_defaults()
-            # Custom default setting that lives outside of defaults dictionary
-            self.sum1.add0 = False
-            self.sum1.add1 = True
 
     def _define_register_locations(self):
         '''
@@ -266,7 +264,7 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2 ** (self._constant_register.n_bits - 1),
         )
 
-    def _define_modules(self, apply_defaults=False):
+    def _define_modules(self):
         sum_input_names = {
             0: 'In0',
             1: 'In1',
@@ -281,7 +279,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -290,7 +287,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -299,35 +295,30 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             gpio_write_address=self._aom_control_gpio_write_address,
             gpio_read_address=self._aom_control_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter0 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter0_gpio_write_address,
             gpio_read_address=self._delay_filter0_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter1 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter1_gpio_write_address,
             gpio_read_address=self._delay_filter1_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter2 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter2_gpio_write_address,
             gpio_read_address=self._delay_filter2_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.delay_filter3 = DelayFilterModule(
             red_pitaya=self.rp,
             gpio_write_address=self._delay_filter3_gpio_write_address,
             gpio_read_address=self._delay_filter3_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.wavegen = WavegenModule(
@@ -336,7 +327,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
             fine_gain_register=self._wavegen_fine_gain_register,
             coarse_gain_register=self._wavegen_coarse_gain_register,
             fs=self.fs,
-            apply_defaults=apply_defaults,
         )
 
     def trigger_now(self):

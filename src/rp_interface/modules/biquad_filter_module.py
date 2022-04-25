@@ -166,9 +166,8 @@ class BiquadFilterModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  biquad_registers: BiquadFilterRegisters = None,
                  fs: float = 125e6 / 2 ** 3,
-                 apply_defaults: bool = False
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'filter_type': FilterType.ALLPASS
@@ -187,9 +186,6 @@ class BiquadFilterModule(RedPitayaModule):
         self._filter_type = FilterType.UNKNOWN
         self._frequency = None
         self._q_factor = None
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def filter_type(self):

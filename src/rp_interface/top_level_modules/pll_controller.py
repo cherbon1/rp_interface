@@ -65,8 +65,9 @@ class PLLController(RedPitayaTopLevelModule):
 
         self._define_register_locations()
         self._define_controls()
-        self._define_modules(apply_defaults=apply_defaults)
+        self._define_modules()
 
+        self.defaults_file = 'pll_controller_defaults.yaml'
         if apply_defaults:
             self.apply_defaults()
 
@@ -200,7 +201,7 @@ class PLLController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2**(self._constant1_register.n_bits-1),
         )
 
-    def _define_modules(self, apply_defaults=False):
+    def _define_modules(self):
         sum_input_names = {
             0: 'In0',
             1: 'In1',
@@ -215,7 +216,6 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum0_add_select_register,
             divide_by_register=self._sum0_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -224,7 +224,6 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             add_select_register=self._sum1_add_select_register,
             divide_by_register=self._sum1_divide_by_register,
-            apply_defaults=apply_defaults,
             adder_width=8,
             input_names=sum_input_names
         )
@@ -233,28 +232,24 @@ class PLLController(RedPitayaTopLevelModule):
             red_pitaya=self.rp,
             gpio_write_address=self._pll0_gpio_write_address,
             gpio_read_address=self._pll0_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll1 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll1_gpio_write_address,
             gpio_read_address=self._pll1_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll2 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll2_gpio_write_address,
             gpio_read_address=self._pll2_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
         self.pll3 = PLLModule(
             red_pitaya=self.rp,
             gpio_write_address=self._pll3_gpio_write_address,
             gpio_read_address=self._pll3_gpio_read_address,
-            apply_defaults=apply_defaults
         )
 
     def __str__(self):
@@ -276,8 +271,8 @@ class PLLController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    pc = PLLController('red-pitaya-26.ee.ethz.ch', load_bitfile=False, apply_defaults=False)
-    pc.save_settings('test.yaml', overwrite=True)
+    pc = PLLController('red-pitaya-26.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
+    # pc.save_settings('test.yaml', overwrite=True)
 
     # print(pc)
     # pc.pll0.kp = 1

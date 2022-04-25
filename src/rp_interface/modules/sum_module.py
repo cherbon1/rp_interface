@@ -35,11 +35,10 @@ class SumModule(RedPitayaModule):
                  red_pitaya: Union[RedPitaya, str],
                  add_select_register: Union[Register, MuxedRegister],
                  divide_by_register: Union[Register, MuxedRegister],
-                 apply_defaults: bool = False,
                  adder_width: int = None,
                  input_names: List = None
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             # 'add0': True,  # The rest of the adder should in principle start out false
@@ -90,9 +89,6 @@ class SumModule(RedPitayaModule):
             if property_name not in self._properties:
                 self._properties[property_name] = property_path
         self._attach_properties()  # redefine controls
-
-        if apply_defaults:
-            self.apply_defaults()
 
     def _define_add_select_register_locations(self):
         '''

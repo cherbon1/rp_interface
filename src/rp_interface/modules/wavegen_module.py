@@ -23,10 +23,9 @@ class WavegenModule(RedPitayaModule):
                  frequency_register: Union[Register, MuxedRegister],
                  fine_gain_register: Union[Register, MuxedRegister],
                  coarse_gain_register: Union[Register, MuxedRegister],
-                 fs: float,
-                 apply_defaults: bool = False
+                 fs: float
                  ):
-        super().__init__(red_pitaya=red_pitaya, apply_defaults=False)
+        super().__init__(red_pitaya=red_pitaya)
 
         self.default_values = {
             'frequency': 100e3,
@@ -53,9 +52,6 @@ class WavegenModule(RedPitayaModule):
             fine_gain_register=self._fine_gain_register,
             coarse_gain_register=self._coarse_gain_register
         )
-
-        if apply_defaults:
-            self.apply_defaults()
 
     @property
     def _raw_amplitude(self):
