@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class Register:
     '''
-    Describes the contents of a regular register of an AXI-GPIO block.
+    Describes a location of a regular register of an AXI-GPIO block.
     '''
     gpio_address: str
     n_bits: int = 32

@@ -7,10 +7,10 @@ log = logging.getLogger(__name__)
 
 class DataType(Enum):
     '''
-    An Enum class to keep track of the different data types implemented here.
+    An Enum class to keep track of the different data types we can write to a red_pitaya_register
     bin and bits differ slightly
     bin is the output of `bin(number)`, e.g. bin(5) would be '0b101'
-    bits is a string of 0s and 1s (i.e. the same thing without th leading '0b')
+    bits is a string of 0s and 1s (i.e. the same thing without the leading '0b')
 
     Check for the data type with e.g.
     DataType.SIGNED_INT.equals(value)

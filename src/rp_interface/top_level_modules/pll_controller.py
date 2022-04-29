@@ -4,7 +4,7 @@ from rp_interface.modules.pll_module import PLLModule
 from rp_interface.modules.sum_module import SumModule
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_bitfile import Bitfile
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaTopLevelModule
 from rp_interface.red_pitaya_register import MuxedRegister
 from rp_interface.utils import DataType
@@ -34,11 +34,11 @@ class PLLController(RedPitayaTopLevelModule):
     '''
     # Bitfile is a class attribute that will override the abstract class bitfile property
     bitfile = Bitfile('pll_controller.bit')
-    _properties = {
-            'output0_select': '_output0_select_control.value',
-            'output1_select': '_output1_select_control.value',
-            'constant0': '_constant0_control.value',
-            'constant1': '_constant1_control.value',
+    _parameters = {
+            'output0_select': '_output0_select_parameter.value',
+            'output1_select': '_output1_select_parameter.value',
+            'constant0': '_constant0_parameter.value',
+            'constant1': '_constant1_parameter.value',
         }
     _submodules = [
         'sum0',
@@ -52,7 +52,8 @@ class PLLController(RedPitayaTopLevelModule):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  load_bitfile: bool = False,
-                 apply_defaults: bool = False
+                 apply_defaults: bool = False,
+                 make_gui: bool = False
                  ):
         super().__init__(red_pitaya=red_pitaya, load_bitfile=load_bitfile, apply_defaults=False)
 
@@ -64,12 +65,16 @@ class PLLController(RedPitayaTopLevelModule):
         self.fs = 31.25e6
 
         self._define_register_locations()
-        self._define_controls()
+        self._define_parameters()
         self._define_modules()
 
         self.defaults_file = 'pll_controller_defaults.yaml'
         if apply_defaults:
             self.apply_defaults()
+
+        self.gui_config_file = 'pll_controller_gui_config.yaml'
+        if make_gui:
+            self._make_gui()
 
     def _define_register_locations(self):
         '''
@@ -150,7 +155,7 @@ class PLLController(RedPitayaTopLevelModule):
             n_bits=14
         )
 
-    def _define_controls(self):
+    def _define_parameters(self):
         '''
         A method that defines all controls required here
         Called in __init__, but separated out for readability
@@ -165,7 +170,7 @@ class PLLController(RedPitayaTopLevelModule):
             6: 'Sum 0',
             7: 'Sum 1'
         }
-        self._output0_select_control = RedPitayaControl(
+        self._output0_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._output0_select_register,
             name='Output 0 select',
@@ -173,7 +178,7 @@ class PLLController(RedPitayaTopLevelModule):
             in_range=lambda val: (0 <= val <= 7)
         )
 
-        self._output1_select_control = RedPitayaControl(
+        self._output1_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._output1_select_register,
             name='Output 1 select',
@@ -181,7 +186,7 @@ class PLLController(RedPitayaTopLevelModule):
             in_range=lambda val: (0 <= val <= 7)
         )
 
-        self._constant0_control = RedPitayaControl(
+        self._constant0_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._constant0_register,
             name='Constant 0',
@@ -191,7 +196,7 @@ class PLLController(RedPitayaTopLevelModule):
             read_data=lambda reg: reg / 2**(self._constant0_register.n_bits-1),
         )
 
-        self._constant1_control = RedPitayaControl(
+        self._constant1_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._constant1_register,
             name='Constant 1',
@@ -253,8 +258,8 @@ class PLLController(RedPitayaTopLevelModule):
         )
 
     def __str__(self):
-        output_sel_no0 = self._output0_select_control.value
-        output_sel_no1 = self._output1_select_control.value
+        output_sel_no0 = self._output0_select_parameter.value
+        output_sel_no1 = self._output1_select_parameter.value
         # Define strings
         return ("PLL controller\n"
                 "  Output 0: {output0_select_name} ({output0_select_number})\n"
@@ -271,8 +276,13 @@ class PLLController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
-    pc = PLLController('red-pitaya-26.ee.ethz.ch', load_bitfile=False, apply_defaults=True)
-    # pc.save_settings('test.yaml', overwrite=True)
+    pc = PLLController('red-pitaya-26.ee.ethz.ch',
+                       load_bitfile=False,
+                       apply_defaults=False,
+                       make_gui=True)
+
+    pc.show_gui()
+
 
     # print(pc)
     # pc.pll0.kp = 1

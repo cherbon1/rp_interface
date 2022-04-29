@@ -5,7 +5,7 @@ import numpy as np
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 
 
@@ -14,7 +14,7 @@ class AmplitudePhaseModule(RedPitayaModule):
     Defines an interface to wa and wb registers (think x and y), and exposes a and phi parameters, the amplitude
     and phase of the reference signal
     '''
-    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _parameters = {}  # Don't define any properties for this module, this will be handled by its parent module
     _submodules = []
 
     def __init__(self,
@@ -27,7 +27,7 @@ class AmplitudePhaseModule(RedPitayaModule):
         self._wa_register = wa_register
         self._wb_register = wb_register
 
-        self._wa_control = RedPitayaControl(
+        self._wa_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._wa_register,
             name='w_a',
@@ -37,7 +37,7 @@ class AmplitudePhaseModule(RedPitayaModule):
             read_data=lambda reg: reg/2**(self._wa_register.n_bits-1)
         )
 
-        self._wb_control = RedPitayaControl(
+        self._wb_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._wb_register,
             name='w_b',
@@ -49,26 +49,26 @@ class AmplitudePhaseModule(RedPitayaModule):
 
     @property
     def a(self):
-        return float(np.sqrt(self._wb_control.value ** 2 + self._wa_control.value ** 2))
+        return float(np.sqrt(self._wb_parameter.value ** 2 + self._wa_parameter.value ** 2))
 
     @property
     def phi(self):
         # In degrees
-        return float(np.arctan2(self._wb_control.value, self._wa_control.value) / np.pi * 180)
+        return float(np.arctan2(self._wb_parameter.value, self._wa_parameter.value) / np.pi * 180)
 
     @a.setter
     def a(self, value):
         a = value
         phi = self.phi / 180 * np.pi
-        self._wa_control.value = a * np.cos(phi)
-        self._wb_control.value = a * np.sin(phi)
+        self._wa_parameter.value = a * np.cos(phi)
+        self._wb_parameter.value = a * np.sin(phi)
 
     @phi.setter
     def phi(self, value):
         a = self.a
         phi = value / 180 * np.pi
-        self._wa_control.value = a * np.cos(phi)
-        self._wb_control.value = a * np.sin(phi)
+        self._wa_parameter.value = a * np.cos(phi)
+        self._wb_parameter.value = a * np.sin(phi)
 
     def __str__(self):
         return ("Amplitude-phase module:\n"

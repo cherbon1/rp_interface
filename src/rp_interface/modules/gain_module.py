@@ -5,7 +5,7 @@ import numpy as np
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 
 
@@ -15,7 +15,7 @@ class GainModule(RedPitayaModule):
     multiplies a signal by a range of -1 to 1 while the coarse gain bitshifts the
     output signal to multiply by powers of 2.
     '''
-    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _parameters = {}  # Don't define any properties for this module, this will be handled by its parent module
     _submodules = []
 
     def __init__(self,
@@ -30,7 +30,7 @@ class GainModule(RedPitayaModule):
         self._fine_gain_register = fine_gain_register
         self._coarse_gain_register = coarse_gain_register
 
-        self._fine_gain_control = RedPitayaControl(
+        self._fine_gain_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._fine_gain_register,
             name='Fine gain',
@@ -44,7 +44,7 @@ class GainModule(RedPitayaModule):
         # Will often be larger than what's required
         max_coarse_gain = int(2 ** (2**self._coarse_gain_register.n_bits - 1))
 
-        self._coarse_gain_control = RedPitayaControl(
+        self._coarse_gain_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._coarse_gain_register,
             name='Coarse gain',
@@ -56,7 +56,7 @@ class GainModule(RedPitayaModule):
 
     @property
     def gain(self):
-        return self._fine_gain_control.value * self._coarse_gain_control.value
+        return self._fine_gain_parameter.value * self._coarse_gain_parameter.value
 
     @gain.setter
     def gain(self, value):
@@ -64,5 +64,5 @@ class GainModule(RedPitayaModule):
         while not (-1 <= value <= 1):
             value /= 2.
             divider *= 2
-        self._fine_gain_control.value = value
-        self._coarse_gain_control.value = divider
+        self._fine_gain_parameter.value = value
+        self._coarse_gain_parameter.value = divider

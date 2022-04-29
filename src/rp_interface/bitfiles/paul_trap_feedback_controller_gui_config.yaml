@@ -1,0 +1,814 @@
+name: paul_trap_feedback_controller
+type: group
+children:
+- name: trigger_delay
+  path: _trigger_delay_parameter.value
+  type: float
+  limits: [0, 0.5368709]
+  units: s
+  siPrefix: true
+- name: output0_select
+  path: _output0_select_parameter.value
+  type: list
+  limits:
+    In 0: 0
+    In 1: 1
+    AOM control: 2
+    Sum 0: 3
+    Sum 1: 4
+    Filter 0: 5
+    Trigger out: 6
+    Constant: 7
+- name: output1_select
+  path: _output1_select_parameter.value
+  type: list
+  limits:
+    In 0: 0
+    In 1: 1
+    AOM control: 2
+    Sum 0: 3
+    Sum 1: 4
+    Filter 0: 5
+    Trigger out: 6
+    Constant: 7
+- name: constant
+  path: _constant_parameter.value
+  type: float
+  limits: [-1, 1]
+  units: V
+  siPrefix: true
+- name: trigger_mode
+  path: _trigger_mode_parameter.value
+  type: list
+  limits: {local: 0, external: 1}
+- name: sum0
+  type: group
+  children:
+  - name: divide_by
+    path: _divide_by_parameter.value
+    type: int
+    limits: [1, 8]
+  - name: In0
+    path: _add0_parameter.value
+    type: bool
+  - name: In1
+    path: _add1_parameter.value
+    type: bool
+  - name: delay_filter0
+    path: _add2_parameter.value
+    type: bool
+  - name: delay_filter1
+    path: _add3_parameter.value
+    type: bool
+  - name: delay_filter2
+    path: _add4_parameter.value
+    type: bool
+  - name: delay_filter3
+    path: _add5_parameter.value
+    type: bool
+  - name: wavegen
+    path: _add6_parameter.value
+    type: bool
+  - name: constant
+    path: _add7_parameter.value
+    type: bool
+- name: sum1
+  type: group
+  children:
+  - name: divide_by
+    path: _divide_by_parameter.value
+    type: int
+    limits: [1, 8]
+  - name: In0
+    path: _add0_parameter.value
+    type: bool
+  - name: In1
+    path: _add1_parameter.value
+    type: bool
+  - name: delay_filter0
+    path: _add2_parameter.value
+    type: bool
+  - name: delay_filter1
+    path: _add3_parameter.value
+    type: bool
+  - name: delay_filter2
+    path: _add4_parameter.value
+    type: bool
+  - name: delay_filter3
+    path: _add5_parameter.value
+    type: bool
+  - name: wavegen
+    path: _add6_parameter.value
+    type: bool
+  - name: constant
+    path: _add7_parameter.value
+    type: bool
+- name: aom_control
+  type: group
+  children:
+  - name: input_select
+    path: _input_select_parameter.value
+    type: list
+    limits: {In 0: 0, In 1: 1}
+  - name: trap_enable
+    path: _trap_enable_parameter.value
+    type: bool
+  - name: trap_toggle_delay
+    path: _trap_toggle_delay_parameter.value
+    type: float
+    units: s
+    siPrefix: true
+    limits: [0, 0.5368709]
+  - name: trap_toggle_time
+    path: _trap_toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: feedback_enable
+    path: _feedback_enable_parameter.value
+    type: bool
+  - name: feedback_toggle_delay
+    path: _feedback_toggle_delay_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: feedback_toggle_time
+    path: _feedback_toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: feedback_gain
+    path: _feedback_gain_parameter.value
+    type: float
+    limits: [0, 1]
+- name: delay_filter0
+  type: group
+  children:
+  - name: input_select
+    path: _input_select_parameter.value
+    type: list
+    limits:
+      In 0: 0
+      In 1: 1
+  - name: ac_coupling
+    path: _ac_coupling_parameter.value
+    type: bool
+  - name: delay
+    path: _delay_parameter.value
+    type: float
+    limits: [0, 1.048568e-3]
+    units: s
+    siPrefix: true
+  - name: output_select
+    path: _output_select_parameter.value
+    type: list
+    limits:
+      No filters: 0
+      1 filter: 1
+      2 filters: 2
+      3 filters: 3
+      4 filters: 4
+      5 filters: 5
+      6 filters: 6
+      Constant: 7
+  - name: gain
+    path: _gain_module.gain
+    type: float
+    limits: [-1e6, 1e6]
+  - name: preamp_gain
+    path: _preamp_gain_parameter.value
+    type: int
+    limits: [1, 32768]
+  - name: toggle_delay
+    path: _toggle_delay_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: toggle_time
+    path: _toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: constant
+    path: _constant_parameter.value
+    type: float
+    limits: [-1, 1]
+    units: V
+    siPrefix: true
+  - name: biquad0
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad1
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad2
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad3
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+- name: delay_filter1
+  type: group
+  children:
+  - name: input_select
+    path: _input_select_parameter.value
+    type: list
+    limits:
+      In 0: 0
+      In 1: 1
+  - name: ac_coupling
+    path: _ac_coupling_parameter.value
+    type: bool
+  - name: delay
+    path: _delay_parameter.value
+    type: float
+    limits: [0, 1.048568e-3]
+    units: s
+    siPrefix: true
+  - name: output_select
+    path: _output_select_parameter.value
+    type: list
+    limits:
+      No filters: 0
+      1 filter: 1
+      2 filters: 2
+      3 filters: 3
+      4 filters: 4
+      5 filters: 5
+      6 filters: 6
+      Constant: 7
+  - name: gain
+    path: _gain_module.gain
+    type: float
+    limits: [-1e6, 1e6]
+  - name: preamp_gain
+    path: _preamp_gain_parameter.value
+    type: int
+    limits: [1, 32768]
+  - name: toggle_delay
+    path: _toggle_delay_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: toggle_time
+    path: _toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: constant
+    path: _constant_parameter.value
+    type: float
+    limits: [-1, 1]
+    units: V
+    siPrefix: true
+  - name: biquad0
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad1
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad2
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad3
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+- name: delay_filter2
+  type: group
+  children:
+  - name: input_select
+    path: _input_select_parameter.value
+    type: list
+    limits:
+      In 0: 0
+      In 1: 1
+  - name: ac_coupling
+    path: _ac_coupling_parameter.value
+    type: bool
+  - name: delay
+    path: _delay_parameter.value
+    type: float
+    limits: [0, 1.048568e-3]
+    units: s
+    siPrefix: true
+  - name: output_select
+    path: _output_select_parameter.value
+    type: list
+    limits:
+      No filters: 0
+      1 filter: 1
+      2 filters: 2
+      3 filters: 3
+      4 filters: 4
+      5 filters: 5
+      6 filters: 6
+      Constant: 7
+  - name: gain
+    path: _gain_module.gain
+    type: float
+    limits: [-1e6, 1e6]
+  - name: preamp_gain
+    path: _preamp_gain_parameter.value
+    type: int
+    limits: [1, 32768]
+  - name: toggle_delay
+    path: _toggle_delay_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: toggle_time
+    path: _toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: constant
+    path: _constant_parameter.value
+    type: float
+    limits: [-1, 1]
+    units: V
+    siPrefix: true
+  - name: biquad0
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad1
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad2
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad3
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+- name: delay_filter3
+  type: group
+  children:
+  - name: input_select
+    path: _input_select_parameter.value
+    type: list
+    limits:
+      In 0: 0
+      In 1: 1
+  - name: ac_coupling
+    path: _ac_coupling_parameter.value
+    type: bool
+  - name: delay
+    path: _delay_parameter.value
+    type: float
+    limits: [0, 1.048568e-3]
+    units: s
+    siPrefix: true
+  - name: output_select
+    path: _output_select_parameter.value
+    type: list
+    limits:
+      No filters: 0
+      1 filter: 1
+      2 filters: 2
+      3 filters: 3
+      4 filters: 4
+      5 filters: 5
+      6 filters: 6
+      Constant: 7
+  - name: gain
+    path: _gain_module.gain
+    type: float
+    limits: [-1e6, 1e6]
+  - name: preamp_gain
+    path: _preamp_gain_parameter.value
+    type: int
+    limits: [1, 32768]
+  - name: toggle_delay
+    path: _toggle_delay_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: toggle_time
+    path: _toggle_time_parameter.value
+    type: float
+    limits: [0, 0.5368709]
+    units: s
+    siPrefix: true
+  - name: constant
+    path: _constant_parameter.value
+    type: float
+    limits: [-1, 1]
+    units: V
+    siPrefix: true
+  - name: biquad0
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad1
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad2
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+  - name: biquad3
+    type: group
+    children:
+    - name: filter_type
+      path: filter_type
+      type: list
+      limits:
+        unknown: unknown
+        lowpass: lowpass
+        2nd order lowpass: llowpass
+        resonant lowpass: rlowpass
+        highpass: highpass
+        2nd order highpass: hhighpass
+        resonant highpass: rhighpass
+        bandpass: bandpass
+        notch: notch
+        allpass: allpass
+    - name: frequency
+      path: frequency
+      type: float
+      limits: [1, 15.625e6]
+      units: Hz
+      siPrefix: true
+    - name: q_factor
+      path: q_factor
+      type: float
+      limits: [1e-6, 1e6]
+- name: wavegen
+  type: group
+  children:
+  - name: frequency
+    path: _frequency_parameter.value
+    type: float
+    limits: [0, 62.5e6]
+    units: Hz
+    siPrefix: true
+  - name: amplitude
+    path: _raw_amplitude
+    type: float
