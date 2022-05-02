@@ -70,12 +70,6 @@ class PaulTrapFeedbackController(RedPitayaTopLevelModule):
                  ):
         super().__init__(red_pitaya=red_pitaya, load_bitfile=load_bitfile, apply_defaults=False)
 
-        self.default_values = {
-            'output0_select': 0,
-            'output1_select': 1,
-            'trigger_mode': 0  # default to local trigger
-        }
-
         self.fs = 125e6
 
         self._define_register_locations()

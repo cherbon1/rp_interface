@@ -81,8 +81,17 @@ Each delay filter modules only exposes 4 biquad filter modules while 6 are progr
   - `add1`
   - `add2`
   - `add3`
+  - `add4`
+  - `add5`
+  - `add6`
+  - `add7`
   - `divide_by`
   - `sum_input_names`
+
+
+- `WavegenModule`
+  - `frequency`
+  - `amplitude`
 
 ### Usage example
 

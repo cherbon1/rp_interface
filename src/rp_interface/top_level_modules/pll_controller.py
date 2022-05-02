@@ -57,11 +57,6 @@ class PLLController(RedPitayaTopLevelModule):
                  ):
         super().__init__(red_pitaya=red_pitaya, load_bitfile=load_bitfile, apply_defaults=False)
 
-        self.default_values = {
-            'output0_select': 0,
-            'output1_select': 1,
-        }
-
         self.fs = 31.25e6
 
         self._define_register_locations()

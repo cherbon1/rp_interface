@@ -15,17 +15,19 @@ log = logging.getLogger(__name__)
 
 def make_gui_item(parent_object, config_dict):
     '''
-    Makes a
+    Makes a parameter object (works both on groups and single parameters
     '''
-    # Handle config options that need it
-    if 'children' in config_dict:
+    # Most options from config dict can be passed on to Parameter.create() as is, but
+    # some need special attention. Treat those here.
+    if 'children' in config_dict:  # Object is a group
         this_object = getattr(parent_object, config_dict['name'])
         config_dict['children'] = [make_gui_item(this_object, subdict) for subdict in config_dict['children']]
+        config_dict['expanded'] = False  # Collapse groups by default
 
     # If there's a path, compute a value and store path separately from dict
     # because the callback needs to be handled separately after param creation
     path = None
-    if 'path' in config_dict:
+    if 'path' in config_dict:  # Object is a parameter
         path = config_dict['path']
         del config_dict['path']
         config_dict['value'] = utils.rgetattr(parent_object, path)
@@ -50,6 +52,9 @@ def generate_rp_module_gui_config_dict(name: str, rp_module: Any) -> Dict:
     Outputs a dict with options for defining a pyqtgraph.Parameter for the given RedPitayaModule.
     This function only spits out a best-guess. The precise implementation
     can and should be tweaked
+
+    name is the top level name of the param tree
+    rp_module is the RedPitayaModule instance to be used
     '''
     children = []
     for param_name, param_path in rp_module._parameters.items():

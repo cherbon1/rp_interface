@@ -41,11 +41,19 @@ class RedPitayaModule(ABC):
     @property
     @abstractmethod
     def _parameters(self) -> Dict[str, str]:
+        '''
+        Dictionary of parameters that will be exposed for this module. Dict is of the form:
+        {'parameter_name': 'parameter_path'}
+        '''
         ...
 
     @property
     @abstractmethod
     def _submodules(self) -> List[str]:
+        '''
+        List of submodules that will be exposed for this module.
+        Of the form: ['submodule_name']
+        '''
         ...
 
     def get_settings_dict(self) -> Dict:
@@ -118,6 +126,14 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
                  apply_defaults: bool = False,
                  make_gui: bool = False
                  ):
+        '''
+        load_bitfile: Whether the bitfile should be flashed to the red pitaya. This will interrupt the current
+            output of the red pitaya board and reset its configuration
+        apply_defaults: Whether the settings of the red pitaya board should be changed to match the defaults config file
+        make_gui: Whether the GUI elements should be generated or not. If you plan to interact with this red pitaya via
+            the GUI, set this to "true" and call show_gui() to display it. If you only plan to use the API, set to
+            "false" to save some memory
+        '''
         super().__init__(red_pitaya=red_pitaya)
 
         if load_bitfile:
@@ -141,7 +157,7 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
 
     def apply_defaults(self):
         # defaults live in bitfile directory
-        self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
+        self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config')
         if not hasattr(self, 'defaults_file'):
             raise RuntimeError("Can't apply defaults, no defaults_file defined")
 
@@ -169,7 +185,7 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         by user if necessary) and makes a parameter tree
         '''
         # Get GUI settings file full path (in bitfile directory)
-        self.gui_config_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
+        self.gui_config_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config')
         if not hasattr(self, 'defaults_file'):
             raise RuntimeError("Can't apply defaults, no defaults_file defined")
 

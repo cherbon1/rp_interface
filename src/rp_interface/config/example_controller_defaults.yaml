@@ -1,0 +1,30 @@
+properties:
+  gain: 1.0
+  input_select: 0
+  output0_select: 0
+  output1_select: 1
+submodules:
+  sum0:
+    properties:
+      add0: false
+      add1: false
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}
+  sum1:
+    properties:
+      add0: false
+      add1: false
+      add2: false
+      add3: false
+      add4: false
+      add5: false
+      add6: false
+      add7: false
+      divide_by: 1
+    submodules: {}
