@@ -83,7 +83,9 @@ example.save_settings('./my_new_default_settings.yaml')
 from rp_interface.gui_utils import generate_rp_module_gui_config_file
 generate_rp_module_gui_config_file('./my_new_gui_config.yaml', 'Example Red Pitaya', example)
 # Then:
-# - open and edit this file to match your desired settings. There are usually quite a few things to change (e.g. change the parameter type for multiplexers, rename inputs for sum modules, ...). Look at other gui_config files for examples 
+# - open and edit this file to match your desired settings. There are usually quite a few things to change
+#     (e.g. change the parameter type for multiplexers, rename inputs for sum modules, ...).
+#     Look at other gui_config files for examples 
 # - move it to the config directory
 # - rename it to match example_controller.gui_config_file
 ```

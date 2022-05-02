@@ -67,7 +67,48 @@ Here's a brief description of how the different parts of `rp_interface` are brok
 
 
 #### Defining defaults for a new interface
-After creating a `RedPitayaTopLevelModule`, call: `your_module.save_settings('filename.yaml')` to generate a config file. Adjust the settings as desired, copy this file to the `config` directory, and add the file name to your class.
+After creating a `RedPitayaTopLevelModule`, call: `your_module.save_settings('filename.yaml')` to generate a config file. Adjust the settings as desired, copy this file to the `config` directory, and add the file name to your class:
+
+```python3
+from rp_interface.top_level_modules import ExampleController
+
+# Generate an instance of your class, without applying defaults or making gui
+example = ExampleController(
+    'red-pitaya-00.ee.ethz.ch',
+    load_bitfile=True,
+    apply_defaults=False,
+    make_gui=False
+)
+
+# Define a new defaults file
+example.save_settings('./my_new_default_settings.yaml')
+# Then:
+# - open and edit this file to match your desired settings
+# - move it to the config directory
+# - rename it to match example_controller.defaults_file
+```
 
 #### Defining a gui for a new interface
 After creating the `RedPitayaTopLevelModule`, call: `rp_interface.gui_utils.generate_rp_module_gui_config_file('my_gui_config.yaml', 'my_module_name', my_module)` to generate a config file for the GUI. The default GUI settings assume that almost every input is a float, and doesn't set any limits on the inputs. Look at other examples in the `config` directory to see what options are available. Tweak the settings as desired, copy this file to the `config` directory, and add the file name to your class.
+
+```python3
+from rp_interface.top_level_modules import ExampleController
+
+# Generate an instance of your class, without applying defaults or making gui
+example = ExampleController(
+    'red-pitaya-00.ee.ethz.ch',
+    load_bitfile=True,
+    apply_defaults=False,
+    make_gui=False
+)
+
+# Define a new gui_config file
+from rp_interface.gui_utils import generate_rp_module_gui_config_file
+generate_rp_module_gui_config_file('./my_new_gui_config.yaml', 'Example Red Pitaya', example)
+# Then:
+# - open and edit this file to match your desired settings. There are usually quite a few things to change
+#     (e.g. change the parameter type for multiplexers, rename inputs for sum modules, ...).
+#     Look at other gui_config files for examples 
+# - move it to the config directory
+# - rename it to match example_controller.gui_config_file
+```
