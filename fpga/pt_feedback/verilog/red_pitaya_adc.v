@@ -57,15 +57,15 @@ module red_pitaya_adc #
 
   always @(posedge int_clk)
   begin
-    int_dat_a_reg <= adc_dat_a_i;
-    int_dat_b_reg <= adc_dat_b_i;
+    int_dat_a_reg <= {adc_dat_a_i[ADC_DATA_WIDTH-1], ~adc_dat_a_i[ADC_DATA_WIDTH-2:0]};
+    int_dat_b_reg <= {adc_dat_b_i[ADC_DATA_WIDTH-1], ~adc_dat_b_i[ADC_DATA_WIDTH-2:0]};
   end
 
   assign adc_clk = int_clk;
 
   assign adc_csn = 1'b1;
   
-  assign adc_dat_a_o = {int_dat_a_reg[ADC_DATA_WIDTH-1], ~int_dat_a_reg[ADC_DATA_WIDTH-2:0]};
-  assign adc_dat_b_o = {int_dat_b_reg[ADC_DATA_WIDTH-1], ~int_dat_b_reg[ADC_DATA_WIDTH-2:0]};
+  assign adc_dat_a_o = int_dat_a_reg;
+  assign adc_dat_b_o = int_dat_b_reg;
 
 endmodule

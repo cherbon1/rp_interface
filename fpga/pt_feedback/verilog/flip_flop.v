@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: Eric Bonvin
+// Engineer: 
 // 
-// Create Date: 11/16/2021 01:17:41 PM
+// Create Date: 04/07/2022 06:11:25 PM
 // Design Name: 
-// Module Name: two_way_mux
+// Module Name: flip_flop
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,43 +20,29 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module mux_2x1_internal #(
+module flip_flop#(
     parameter WIDTH = 16
-) (
+)(
     input clk_i,
     input rst_ni,
-    
-    input sel_i,
-    
-    input [WIDTH-1:0] in0_i,
-    input [WIDTH-1:0] in1_i,
-    
-    output [WIDTH-1:0] out_o
+    input [WIDTH-1:0] data_i,
+    output [WIDTH-1:0] data_o
     );
-
+    
 // declare signals
-reg [WIDTH-1:0] out_d, out_q;
+reg [WIDTH-1:0] data_q;
 
-// connect wires
-assign out_o = out_q;
-
-// combinatorial block
-always @* begin
-    case(sel_i)
-        0       : out_d = in0_i;
-        1       : out_d = in1_i;
-        default : out_d = in0_i;
-    endcase
-end
+// connect outputs
+assign data_o = data_q;
 
 // sequential block
 always @(posedge clk_i or negedge rst_ni) begin
     if (~rst_ni) begin
-        out_q <= 0;
+        data_q <= 0;
     end else begin
-        out_q <= out_d;
+        data_q <= data_i;
     end
-    
 end
-    
+
+
 endmodule
