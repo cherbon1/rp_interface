@@ -3,7 +3,7 @@
 
 This example project defines a simple bitfile, and a corresponding Python interface. Use this as a starting point to define your own project. Here's a figure showing the block diagram in Vivado:
 
-[//]: # (<img src="./example_project_diagram.png" alt="my_image" width="600"/>)
+<img src="./example_project_diagram.png" alt="my_image" width="500"/>
 
 The interface to this bitfile is defined in `example_controller.py`.
 

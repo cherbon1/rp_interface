@@ -1,0 +1,1 @@
+This project was created by Felix, mostly in VHDL, and later modified by Eric, mostly in Verilog. I would advise against using this as a starting point for a new project, because it is quite messy and confusing.
