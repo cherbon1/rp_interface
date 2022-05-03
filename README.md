@@ -15,6 +15,11 @@ pip install git+https://gitlab.ethz.ch/ebonvin/rp_interface.git
 
 For upgrading, use the following options `--force-reinstall --no-deps`. Simply using `--upgrade` won't work because this option only compares the version number, and version numbers aren't automatically bumped here.
 
+The package also depends on `pyqtgraph` and requires a version of `Qt` to be installed. Install both with e.g.:
+```shell
+pip install pyqtgraph PyQt5
+```
+
 ### Adding a new interface
 Add your bitfile to the `bitfiles` directory. Create a new class in the `top_level_modules` directory that inherits from `rp_interface.red_pitaya_module.RedPitayaTopLevelModule`.
 
