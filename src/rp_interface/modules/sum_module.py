@@ -5,7 +5,7 @@ import numpy as np
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 
 
@@ -26,8 +26,8 @@ class SumModule(RedPitayaModule):
     # This one's slightly awkward because not all sum modules will be identical
     # Instead, grow the controls dict as much as necessary at every init
     # and overload get_settings_dict() to only read as far as necessary
-    _properties = {
-        'divide_by': '_divide_by_control.value'
+    _parameters = {
+        'divide_by': '_divide_by_parameter.value'
     }
     _submodules = []
 
@@ -69,9 +69,9 @@ class SumModule(RedPitayaModule):
             raise RuntimeError('Register is too small for adder_width {}'.format(self.adder_width))
 
         self._define_add_select_register_locations()
-        self._define_add_select_controls()
+        self._define_add_select_parameters()
 
-        self._divide_by_control = RedPitayaControl(
+        self._divide_by_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._divide_by_register,
             name='Divide by',
@@ -82,12 +82,12 @@ class SumModule(RedPitayaModule):
         )
 
         # grow the controls dict as required:
-        # add elements of the form  {'add0': '_add0_control.value'}
+        # add elements of the form  {'add0': '_add0_parameter.value'}
         for i in range(self.adder_width):
             property_name = 'add{}'.format(i)
-            property_path = '_add{}_control.value'.format(i)
-            if property_name not in self._properties:
-                self._properties[property_name] = property_path
+            property_path = '_add{}_parameter.value'.format(i)
+            if property_name not in self._parameters:
+                self._parameters[property_name] = property_path
         self._attach_properties()  # redefine controls
 
     def _define_add_select_register_locations(self):
@@ -105,15 +105,15 @@ class SumModule(RedPitayaModule):
             )
             setattr(self, attr_name, reg)
 
-    def _define_add_select_controls(self):
+    def _define_add_select_parameters(self):
         '''
         Defines controls
         '''
         for i in range(self.adder_width):
-            control_attr_name = '_add{}_control'.format(i)
+            control_attr_name = '_add{}_parameter'.format(i)
             register_attr_name = '_add{}_register'.format(i)
             register = getattr(self, register_attr_name)
-            control = RedPitayaControl(
+            control = RedPitayaParameter(
                 red_pitaya=self.rp,
                 register=register,
                 name='Add {} enable'.format(i),
@@ -124,7 +124,7 @@ class SumModule(RedPitayaModule):
     def get_settings_dict(self) -> Dict:
         properties_dict = {'divide_by': getattr(self, 'divide_by')}
 
-        # add elements of the form  {'add0': '_add0_control.value'}
+        # add elements of the form  {'add0': '_add0_parameter.value'}
         for i in range(self.adder_width):
             property_name = 'add{}'.format(i)
             properties_dict[property_name] = getattr(self, property_name)
@@ -148,11 +148,11 @@ class SumModule(RedPitayaModule):
         added_inputs = [name for name, enable in zip(self.input_names.values(), self.add_select_list) if enable]
         if len(added_inputs) == 0:
             return "no output"
-        if self._divide_by_control.value == 1:
+        if self._divide_by_parameter.value == 1:
             return ' + '.join(added_inputs)
         return "({add_string})/{divide_by}".format(
             add_string=' + '.join(added_inputs),
-            divide_by=self._divide_by_control.value
+            divide_by=self._divide_by_parameter.value
         )
 
     def __repr__(self):

@@ -5,7 +5,7 @@ from rp_interface.modules.gain_module import GainModule
 from rp_interface.modules.pll_second_harmonic_control_module import PLLSecondHarmonicControlModule
 from rp_interface.red_pitaya_module import RedPitayaModule
 from rp_interface.red_pitaya import RedPitaya
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_register import MuxedRegister
 from rp_interface.utils import DataType
 
@@ -38,21 +38,21 @@ class PLLModule(RedPitayaModule):
         - 6 -> N.C.
         - 7 -> N.C.
     '''
-    _properties = {
-            'input_select': '_input_select_control.value',
-            'second_harmonic': '_pll_second_harmonic_control_module.second_harmonic',
-            'frequency': '_pll_second_harmonic_control_module.frequency',
+    _parameters = {
+            'input_select': '_input_select_parameter.value',
+            'second_harmonic': '_pll_second_harmonic_parameter_module.second_harmonic',
+            'frequency': '_pll_second_harmonic_parameter_module.frequency',
             'a': '_amplitude_phase_module.a',
             'phi': '_amplitude_phase_module.phi',
-            'demodulator_bandwidth': '_pll_second_harmonic_control_module.demodulator_bandwidth',
-            'order': '_order_control.value',
-            'pid_enable': '_pid_enable_control.value',
-            'pid_bandwidth': '_pid_bandwidth_control.value',
-            'kp': '_kp_control.value',
-            'ki': '_ki_control.value',
-            'output_select': '_output_select_control.value',
+            'demodulator_bandwidth': '_pll_second_harmonic_parameter_module.demodulator_bandwidth',
+            'order': '_order_parameter.value',
+            'pid_enable': '_pid_enable_parameter.value',
+            'pid_bandwidth': '_pid_bandwidth_parameter.value',
+            'kp': '_kp_parameter.value',
+            'ki': '_ki_parameter.value',
+            'output_select': '_output_select_parameter.value',
             'gain': '_gain_module.gain',
-            'constant': '_constant_control.value',
+            'constant': '_constant_parameter.value',
         }
     _submodules = []
 
@@ -84,7 +84,7 @@ class PLLModule(RedPitayaModule):
         self.fs = 31.25e6
 
         self._define_register_locations()
-        self._define_controls()
+        self._define_parameters()
 
     def _define_register_locations(self):
         '''
@@ -214,13 +214,13 @@ class PLLModule(RedPitayaModule):
             is_shared=False
         )
 
-    def _define_controls(self):
+    def _define_parameters(self):
         '''
         A method that defines all controls of a filter block (except for biquad filter modules)
         Called in __init__, but separated out for readability
         '''
         self.input_select_names = {0: 'In 0', 1: 'In 1'}
-        self._input_select_control = RedPitayaControl(
+        self._input_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._input_select_register,
             name='Input select',
@@ -228,7 +228,7 @@ class PLLModule(RedPitayaModule):
             in_range=lambda val: (0 <= val <= 1),
         )
 
-        self._pid_enable_control = RedPitayaControl(
+        self._pid_enable_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._pid_enable_register,
             name='PID enable',
@@ -241,7 +241,7 @@ class PLLModule(RedPitayaModule):
             wb_register=self._wb_register
         )
 
-        self._kp_control = RedPitayaControl(
+        self._kp_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._kp_register,
             name='k_p',
@@ -250,7 +250,7 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg/2**10
         )
 
-        self._ki_control = RedPitayaControl(
+        self._ki_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._ki_register,
             name='k_i',
@@ -259,7 +259,7 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg/2**10
         )
 
-        self._pid_bandwidth_control = RedPitayaControl(
+        self._pid_bandwidth_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._pid_bandwidth_register,
             name='PID bandwidth',
@@ -269,7 +269,7 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**26 * self.fs
         )
 
-        self._order_control = RedPitayaControl(
+        self._order_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._order_register,
             name='Order',
@@ -291,7 +291,7 @@ class PLLModule(RedPitayaModule):
             7: 'N.C.'
         }
 
-        self._output_select_control = RedPitayaControl(
+        self._output_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._output_select_register,
             name='Output select',
@@ -305,7 +305,7 @@ class PLLModule(RedPitayaModule):
             coarse_gain_register=self._coarse_gain_register,
         )
 
-        self._constant_control = RedPitayaControl(
+        self._constant_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._constant_register,
             name='Constant',
@@ -315,7 +315,7 @@ class PLLModule(RedPitayaModule):
             read_data=lambda reg: reg / 2**(self._constant_register.n_bits-1),
         )
 
-        self._pll_second_harmonic_control_module = PLLSecondHarmonicControlModule(
+        self._pll_second_harmonic_parameter_module = PLLSecondHarmonicControlModule(
             red_pitaya=self.rp,
             second_harmonic_register=self._second_harmonic_register,
             alpha_register=self._alpha_register,
@@ -324,8 +324,8 @@ class PLLModule(RedPitayaModule):
         )
 
     def __str__(self):
-        input_sel_no = self._input_select_control.value
-        output_sel_no = self._output_select_control.value
+        input_sel_no = self._input_select_parameter.value
+        output_sel_no = self._output_select_parameter.value
         return ("PLL module:\n"
                 "  Input: {input_select_name} ({input_sel_number}), 2nd harm.: {sec_harm}\n"
                 "  Demod: freq {freq:.2f}kHz, phase {phase:.1f}deg, bandwidth {demod_bw:.2f}kHz, order {order}\n"
@@ -333,15 +333,15 @@ class PLLModule(RedPitayaModule):
                 "  Output: {output_sel_name} ({output_sel_number}), gain {gain:.2f}").format(
             input_select_name=self.input_select_names[input_sel_no],
             input_sel_number=input_sel_no,
-            sec_harm=self._pll_second_harmonic_control_module.second_harmonic,
-            freq=self._pll_second_harmonic_control_module.frequency * 1e-3,
+            sec_harm=self._pll_second_harmonic_parameter_module.second_harmonic,
+            freq=self._pll_second_harmonic_parameter_module.frequency * 1e-3,
             phase=self._amplitude_phase_module.phi,
-            demod_bw=self._pll_second_harmonic_control_module.demodulator_bandwidth * 1e-3,
-            order=self._order_control.value,
-            pid_on='ON' if self._pid_enable_control.value else 'OFF',
-            kp=self._kp_control.value,
-            ki=self._ki_control.value,
-            pid_bw=self._pid_bandwidth_control.value * 1e-3,
+            demod_bw=self._pll_second_harmonic_parameter_module.demodulator_bandwidth * 1e-3,
+            order=self._order_parameter.value,
+            pid_on='ON' if self._pid_enable_parameter.value else 'OFF',
+            kp=self._kp_parameter.value,
+            ki=self._ki_parameter.value,
+            pid_bw=self._pid_bandwidth_parameter.value * 1e-3,
             output_sel_name=self.output_select_names[output_sel_no],
             output_sel_number=output_sel_no,
             gain=self._gain_module.gain,

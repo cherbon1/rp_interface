@@ -4,7 +4,7 @@ from rp_interface.modules.gain_module import GainModule
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 
 
@@ -12,8 +12,8 @@ class WavegenModule(RedPitayaModule):
     '''
     Defines an interface to a wavegen module (a dds compiler and a gain module)
     '''
-    _properties = {
-        'frequency': '_frequency_control.value',
+    _parameters = {
+        'frequency': '_frequency_parameter.value',
         'amplitude': '_raw_amplitude',
     }
     _submodules = []
@@ -37,7 +37,7 @@ class WavegenModule(RedPitayaModule):
         self._fine_gain_register = fine_gain_register
         self._coarse_gain_register = coarse_gain_register
 
-        self._frequency_control = RedPitayaControl(
+        self._frequency_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._frequency_register,
             name='Frequency',

@@ -4,7 +4,7 @@ import numpy as np
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 from rp_interface.modules.gain_module import GainModule
 from rp_interface.modules.biquad_filter_module import BiquadFilterRegisters, BiquadFilterModule
@@ -37,16 +37,16 @@ class DelayFilterModule(RedPitayaModule):
         - 7 -> constant
 
     '''
-    _properties = {
-            'input_select': '_input_select_control.value',
-            'ac_coupling': '_ac_coupling_control.value',
-            'delay': '_delay_control.value',
-            'output_select': '_output_select_control.value',
+    _parameters = {
+            'input_select': '_input_select_parameter.value',
+            'ac_coupling': '_ac_coupling_parameter.value',
+            'delay': '_delay_parameter.value',
+            'output_select': '_output_select_parameter.value',
             'gain': '_gain_module.gain',
-            'preamp_gain': '_preamp_gain_control.value',
-            'toggle_delay': '_toggle_delay_control.value',
-            'toggle_time': '_toggle_time_control.value',
-            'constant': '_constant_control.value',
+            'preamp_gain': '_preamp_gain_parameter.value',
+            'toggle_delay': '_toggle_delay_parameter.value',
+            'toggle_time': '_toggle_time_parameter.value',
+            'constant': '_constant_parameter.value',
         }
     _submodules = [
         'biquad0',
@@ -80,7 +80,7 @@ class DelayFilterModule(RedPitayaModule):
 
         self._define_register_locations()
         self._define_biquad_register_locations()
-        self._define_controls()
+        self._define_parameters()
         self._define_biquads()
 
     def _define_register_locations(self):
@@ -239,13 +239,13 @@ class DelayFilterModule(RedPitayaModule):
             n_bits=25
         )
 
-    def _define_controls(self):
+    def _define_parameters(self):
         '''
         A method that defines all controls of a filter block (except for biquad filter modules)
         Called in __init__, but separated out for readability
         '''
         self.input_select_names = {0: 'In 0', 1: 'In 1'}
-        self._input_select_control = RedPitayaControl(
+        self._input_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._input_select_register,
             name='Input select',
@@ -257,7 +257,7 @@ class DelayFilterModule(RedPitayaModule):
         # Will often be larger than what's required
         max_preamp_gain = int(2 ** (2**self._preamp_gain_register.n_bits - 1))
 
-        self._preamp_gain_control = RedPitayaControl(
+        self._preamp_gain_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._preamp_gain_register,
             name='Preamp gain',
@@ -267,14 +267,14 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: 2**reg
         )
 
-        self._ac_coupling_control = RedPitayaControl(
+        self._ac_coupling_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._ac_coupling_register,
             name='AC coupling',
             dtype=DataType.BOOL,
         )
 
-        self._delay_control = RedPitayaControl(
+        self._delay_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._delay_register,
             name='Delay',
@@ -294,7 +294,7 @@ class DelayFilterModule(RedPitayaModule):
             6: '6 filters',
             7: 'Constant'
         }
-        self._output_select_control = RedPitayaControl(
+        self._output_select_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._output_select_register,
             name='Output select',
@@ -308,7 +308,7 @@ class DelayFilterModule(RedPitayaModule):
             coarse_gain_register=self._coarse_gain_register,
         )
 
-        self._toggle_delay_control = RedPitayaControl(
+        self._toggle_delay_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._toggle_delay_cycles_register,
             name='Toggle delay',
@@ -318,7 +318,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self._toggle_time_control = RedPitayaControl(
+        self._toggle_time_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._toggle_cycles_register,
             name='Toggle time',
@@ -328,7 +328,7 @@ class DelayFilterModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs_delay,
         )
 
-        self._constant_control = RedPitayaControl(
+        self._constant_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._constant_register,
             name='Constant',
@@ -393,20 +393,20 @@ class DelayFilterModule(RedPitayaModule):
         #     6: '6 filters',
         #     7: 'Constant'
         # }
-        output_no = self._output_select_control.value
+        output_no = self._output_select_parameter.value
         if output_no == 7:
-            return 'Constant: {}V'.format(self._constant_control.value)
+            return 'Constant: {}V'.format(self._constant_parameter.value)
 
         biquads = [self.biquad0, self.biquad1, self.biquad2, self.biquad3, self.biquad2, self.biquad3]
         biquad_string = ' -> '.join([biquads[i].__str__() for i in range(output_no)])
 
         return ('Input {input_no}, {ac_coupling}-coupled -> preamp gain {preamp_gain}x -> {delay:.1f}us delay '
                 '({freq:.2f}kHz) -> {biquad_string} -> gain {gain:.2f}x').format(
-            input_no=self._input_select_control.value,
-            ac_coupling='ac' if self._ac_coupling_control.value else 'dc',
-            preamp_gain=self._preamp_gain_control.value,
-            delay=self._delay_control.value * 1e6,
-            freq=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
+            input_no=self._input_select_parameter.value,
+            ac_coupling='ac' if self._ac_coupling_parameter.value else 'dc',
+            preamp_gain=self._preamp_gain_parameter.value,
+            delay=self._delay_parameter.value * 1e6,
+            freq=0 if self._delay_parameter.value == 0 else 1/4/self._delay_parameter.value*1e-3,
             biquad_string=biquad_string if biquad_string else 'no filter',
             gain=self._gain_module.gain,
         )
@@ -422,17 +422,17 @@ class DelayFilterModule(RedPitayaModule):
                          "  Preamp gain: {preamp_gain}, Gain: {gain:.2f}\n"
                          "  Delay: {delay:.2f}us (freq: {frequency:.2f}kHz)\n"
                          "  Output toggle: {toggle_time:.2f}us (delay {delay_time:.2f}us)").format(
-            input_select_name=self.input_select_names[self._input_select_control.value],
-            input_sel_number=self._input_select_control.value,
-            output_select_name=self.output_select_names[self._output_select_control.value],
-            output_sel_number=self._output_select_control.value,
-            ac_coupling='AC' if self._ac_coupling_control.value else 'DC',
-            delay=self._delay_control.value*1e6,
-            frequency=0 if self._delay_control.value == 0 else 1/4/self._delay_control.value*1e-3,
-            preamp_gain=self._preamp_gain_control.value,
+            input_select_name=self.input_select_names[self._input_select_parameter.value],
+            input_sel_number=self._input_select_parameter.value,
+            output_select_name=self.output_select_names[self._output_select_parameter.value],
+            output_sel_number=self._output_select_parameter.value,
+            ac_coupling='AC' if self._ac_coupling_parameter.value else 'DC',
+            delay=self._delay_parameter.value*1e6,
+            frequency=0 if self._delay_parameter.value == 0 else 1/4/self._delay_parameter.value*1e-3,
+            preamp_gain=self._preamp_gain_parameter.value,
             gain=self._gain_module.gain,
-            toggle_time=self._toggle_time_control.value*1e6,
-            delay_time=self._toggle_delay_control.value*1e6,
+            toggle_time=self._toggle_time_parameter.value*1e6,
+            delay_time=self._toggle_delay_parameter.value*1e6,
         )
         return "\n".join([main_body_str, biquad0_str, biquad1_str, biquad2_str, biquad3_str])
 

@@ -5,3 +5,4 @@ paramiko==2.10.3
 numpy==1.22.3
 scipy==1.8.0
 PyYAML==6.0
+pyqtgraph==0.12.4

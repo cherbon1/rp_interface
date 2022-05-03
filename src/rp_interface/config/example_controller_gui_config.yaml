@@ -1,0 +1,97 @@
+name: Example Red Pitaya
+type: group
+children:
+- name: output0_select
+  path: _output0_select_parameter.value
+  type: list
+  limits:
+    In 0: 0
+    In 1: 1
+    Sum 0: 2
+    Sum 1: 3
+    Out 4: 4
+    Out 5: 5
+    Out 6: 6
+    Out 7: 7
+- name: output1_select
+  path: _output1_select_parameter.value
+  type: list
+  limits:
+    In 0: 0
+    In 1: 1
+    Sum 0: 2
+    Sum 1: 3
+    Out 4: 4
+    Out 5: 5
+    Out 6: 6
+    Out 7: 7
+- name: input_select
+  path: _input_select_parameter.value
+  type: list
+  limits:
+    In 0: 0
+    In 1: 1
+- name: gain
+  path: _gain_module.gain
+  type: float
+  limits: [-1e6, 1e6]
+- name: sum0
+  type: group
+  children:
+  - name: divide_by
+    path: _divide_by_parameter.value
+    type: float
+  - name: In0
+    path: _add0_parameter.value
+    type: bool
+  - name: In1
+    path: _add1_parameter.value
+    type: bool
+  - name: Gain block
+    path: _add2_parameter.value
+    type: bool
+  - name: add3
+    path: _add3_parameter.value
+    type: bool
+  - name: add4
+    path: _add4_parameter.value
+    type: bool
+  - name: add5
+    path: _add5_parameter.value
+    type: bool
+  - name: add6
+    path: _add6_parameter.value
+    type: bool
+  - name: add7
+    path: _add7_parameter.value
+    type: bool
+- name: sum1
+  type: group
+  children:
+  - name: divide_by
+    path: _divide_by_parameter.value
+    type: float
+  - name: In0
+    path: _add0_parameter.value
+    type: bool
+  - name: In1
+    path: _add1_parameter.value
+    type: bool
+  - name: Gain block
+    path: _add2_parameter.value
+    type: bool
+  - name: add3
+    path: _add3_parameter.value
+    type: bool
+  - name: add4
+    path: _add4_parameter.value
+    type: bool
+  - name: add5
+    path: _add5_parameter.value
+    type: bool
+  - name: add6
+    path: _add6_parameter.value
+    type: bool
+  - name: add7
+    path: _add7_parameter.value
+    type: bool

@@ -4,9 +4,13 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from typing import Union, List, Dict
-import yaml
 
-from rp_interface import utils
+import yaml
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtWidgets
+from pyqtgraph.parametertree import ParameterTree, Parameter
+
+from rp_interface import utils, gui_utils
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_bitfile import Bitfile
 
@@ -15,19 +19,17 @@ log = logging.getLogger(__name__)
 
 class RedPitayaModule(ABC):
     '''
-    Defines a combination of controls and modules that are considered one entity on
+    Defines a combination of parameters and modules that are considered one entity on
     the red pitaya image.
 
     This is an abstract base class, and defines the following abstract properties:
-    - self._properties: A dict of controls that should be registered as properties
-        (dict of the form {'name': 'submodule_name.control_name.value'}).
+    - self._parameters: A dict of parameters that should be registered as properties
+        (dict of the form {'name': 'submodule_name.parameter_name.value'}).
         These will be registered as properties with getters and setters to directly access these objects.
     - self._submodules: A list of submodules (string of submodule instance name)
         These should already be instance attributes, and this list is only used to keep track of them.
     '''
-    def __init__(self,
-                 red_pitaya: Union[RedPitaya, str]
-                 ):
+    def __init__(self, red_pitaya: Union[RedPitaya, str]):
         if isinstance(red_pitaya, str):
             red_pitaya = RedPitaya(host=red_pitaya)
         if not isinstance(red_pitaya, RedPitaya):
@@ -38,17 +40,25 @@ class RedPitayaModule(ABC):
 
     @property
     @abstractmethod
-    def _properties(self) -> Dict[str, str]:
+    def _parameters(self) -> Dict[str, str]:
+        '''
+        Dictionary of parameters that will be exposed for this module. Dict is of the form:
+        {'parameter_name': 'parameter_path'}
+        '''
         ...
 
     @property
     @abstractmethod
     def _submodules(self) -> List[str]:
+        '''
+        List of submodules that will be exposed for this module.
+        Of the form: ['submodule_name']
+        '''
         ...
 
     def get_settings_dict(self) -> Dict:
         return {
-            'properties': {property_name: getattr(self, property_name) for property_name in self._properties},
+            'properties': {property_name: getattr(self, property_name) for property_name in self._parameters},
             'submodules': {submodule: getattr(self, submodule).get_settings_dict() for submodule in self._submodules}
         }
 
@@ -58,23 +68,29 @@ class RedPitayaModule(ABC):
         for module_name, module_dict in input_dict['submodules'].items():
             getattr(self, module_name).set_settings_dict(module_dict)
 
+    def get_settings_string(self) -> str:
+        return yaml.dump(self.get_settings_dict(), default_flow_style=True)
+
+    def set_settings_string(self, input_string: str) -> None:
+        self.set_settings_dict(yaml.safe_load(input_string))
+
     def _attach_properties(self) -> None:
         '''
-        attach every property in self._properties to its class
+        attach every property in self._parameters to its class
         This will make e.g. Module.input_mux = 4 behave the same as Module.input_mux_control.value = 4
         '''
-        # _properties is e.g. {'input_mux': '_input_mux_control.value'}
+        # _parameters is e.g. {'input_mux': '_input_mux_control.value'}
         # since a property gets attached to the class and not the instance, this is the only way I could come up with
         # to avoid talking to an object of another instance of the class, but is slightly less elegant because
-        # a RedPitayaControl object is not enough to define it's 'value' attribute as a property.
-        for property_name, property_path in self._properties.items():
+        # a RedPitayaParameter object is not enough to define it's 'value' attribute as a property.
+        for property_name, property_path in self._parameters.items():
             setattr(self.__class__, property_name, utils.define_property(property_path))
 
     def copy_settings(self, other):
         # Copies all defined properties from one red pitaya module instance to another
         if not isinstance(other, self.__class__):
             raise RuntimeError('copy_settings: other instance must also be of type: {}'.format(self.__class__.__name__))
-        for property_name in self._properties.keys():
+        for property_name in self._parameters.keys():
             setattr(self, property_name, utils.rgetattr(other, property_name))
         for submodule in self._submodules:
             getattr(self, submodule).copy_settings(getattr(other, submodule))
@@ -107,8 +123,17 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
     def __init__(self,
                  red_pitaya: Union[RedPitaya, str],
                  load_bitfile: bool = False,
-                 apply_defaults: bool = False
+                 apply_defaults: bool = False,
+                 make_gui: bool = False
                  ):
+        '''
+        load_bitfile: Whether the bitfile should be flashed to the red pitaya. This will interrupt the current
+            output of the red pitaya board and reset its configuration
+        apply_defaults: Whether the settings of the red pitaya board should be changed to match the defaults config file
+        make_gui: Whether the GUI elements should be generated or not. If you plan to interact with this red pitaya via
+            the GUI, set this to "true" and call show_gui() to display it. If you only plan to use the API, set to
+            "false" to save some memory
+        '''
         super().__init__(red_pitaya=red_pitaya)
 
         if load_bitfile:
@@ -117,6 +142,10 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         self.defaults_file = ''
         if apply_defaults:
             self.apply_defaults()
+
+        self.gui_config_file = ''
+        if make_gui:
+            self._make_gui()
 
     @property
     @abstractmethod
@@ -128,7 +157,7 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
 
     def apply_defaults(self):
         # defaults live in bitfile directory
-        self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'bitfiles')
+        self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config')
         if not hasattr(self, 'defaults_file'):
             raise RuntimeError("Can't apply defaults, no defaults_file defined")
 
@@ -138,4 +167,58 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
             raise RuntimeError("Can't apply defaults, file {} doesn't exist".format(defaults_full_path))
 
         self.load_settings(defaults_full_path)
+
+    # ==============================
+    # ==== GUI-related methods =====
+    # ==============================
+    def show_gui(self):
+        if not hasattr(self, 'win'):
+            raise RuntimeError("GUI hasn't been created, call self._make_gui() first")
+        self.win.show()
+        pg.exec()
+        # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
+        self.win.activateWindow()
+
+
+    def _make_gui(self):
+        '''
+        Reads in a gui config file (that should be generated via _generate_rp_module_gui_config_file and modified
+        by user if necessary) and makes a parameter tree
+        '''
+        # Get GUI settings file full path (in bitfile directory)
+        self.gui_config_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config')
+        if not hasattr(self, 'defaults_file'):
+            raise RuntimeError("Can't apply defaults, no defaults_file defined")
+
+        gui_config_full_path = os.path.join(self.gui_config_directory, self.gui_config_file)
+
+        if not os.path.isfile(gui_config_full_path):
+            raise RuntimeError("Can't apply defaults, file {} doesn't exist".format(gui_config_full_path))
+
+        #
+        # Make the pyqtgraph app and load settings
+        app = pg.mkQApp(self.__class__.__name__ + ' GUI')
+
+        with open(gui_config_full_path, 'r') as f:
+            config_dict = yaml.load(f, Loader=yaml.FullLoader)
+        # my_params = gui_utils.make_gui_item(self, config_dict)
+
+        # Top level must be a group, with children
+        if 'children' not in config_dict or config_dict['type'] != 'group':
+            raise ValueError('Top level item must be a group')
+        config_dict['children'] = [gui_utils.make_gui_item(self, subdict) for subdict in config_dict['children']]
+
+        my_params = Parameter.create(**config_dict)
+
+        self.t = ParameterTree()
+        self.t.setParameters(my_params, showTop=True)
+        self.t.setWindowTitle(config_dict['name'])
+
+        self.win = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout()
+        self.win.setLayout(layout)
+
+        layout.addWidget(self.t, 0, 0, 1, 1)
+
+        self.win.show()
 

@@ -5,7 +5,7 @@ import numpy as np
 from rp_interface.utils import DataType
 from rp_interface.red_pitaya import RedPitaya
 from rp_interface.red_pitaya_register import Register, MuxedRegister
-from rp_interface.red_pitaya_control import RedPitayaControl
+from rp_interface.red_pitaya_parameter import RedPitayaParameter
 from rp_interface.red_pitaya_module import RedPitayaModule
 
 
@@ -15,7 +15,7 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
     closely interconnected. This module handles the interaction between those controls.
     The demodulator_bandwidth control is set via the alpha register
     '''
-    _properties = {}  # Don't define any properties for this module, this will be handled by its parent module
+    _parameters = {}  # Don't define any properties for this module, this will be handled by its parent module
     _submodules = []
     
     def __init__(self,
@@ -38,14 +38,14 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
         self._alpha_register = alpha_register
         self._frequency_register = frequency_register
 
-        self._second_harmonic_control = RedPitayaControl(
+        self._second_harmonic_control = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._second_harmonic_register,
             name='Second harmonic',
             dtype=DataType.BOOL,
         )
 
-        self._frequency_control = RedPitayaControl(
+        self._frequency_control = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._frequency_register,
             name='frequency',
@@ -56,7 +56,7 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
         )
 
         # alpha = exp(-2*np.pi*demodulator_bandwidth/sample_freq) with sample_freq = 125e6/2**10 = 122.07 kHz
-        self._demodulator_bandwidth_control = RedPitayaControl(
+        self._demodulator_bandwidth_control = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._alpha_register,
             name='demodulator bandwidth',

@@ -159,7 +159,7 @@ class BiquadFilterModule(RedPitayaModule):
     # I'm not quite sure how to handle this module
     # For now, keep properties and submodules empty, and overload the copy_settings,
     # get_settings_dict and set_settings_dict methods.
-    _properties = {}
+    _parameters = {}
     _submodules = []
 
     def __init__(self,
@@ -184,8 +184,8 @@ class BiquadFilterModule(RedPitayaModule):
 
         # Define parameters
         self._filter_type = FilterType.UNKNOWN
-        self._frequency = None
-        self._q_factor = None
+        self._frequency = 100e3
+        self._q_factor = 10
 
     @property
     def filter_type(self):
@@ -193,10 +193,12 @@ class BiquadFilterModule(RedPitayaModule):
 
     @filter_type.setter
     def filter_type(self, value: FilterType):
-        # raise RuntimeError("Can't set filter type directly, use BiquadFilter.apply_filter_settings() instead")
-        self.apply_filter_settings(filter_type=value,
-                                   frequency=self.frequency,
-                                   q_factor=self.q_factor)
+        if isinstance(value, str):
+            self._filter_type = FilterType(value)
+        else:
+            self._filter_type = value
+
+        self.apply_filter_settings()
 
     @property
     def frequency(self):
@@ -204,10 +206,8 @@ class BiquadFilterModule(RedPitayaModule):
 
     @frequency.setter
     def frequency(self, value: float):
-        # raise RuntimeError("Can't set frequency directly, use BiquadFilter.apply_filter_settings() instead")
-        self.apply_filter_settings(filter_type=self.filter_type,
-                                   frequency=value,
-                                   q_factor=self.q_factor)
+        self._frequency = value
+        self.apply_filter_settings()
 
     @property
     def q_factor(self):
@@ -215,10 +215,8 @@ class BiquadFilterModule(RedPitayaModule):
 
     @q_factor.setter
     def q_factor(self, value: float):
-        # raise RuntimeError("Can't set q_factor directly, use BiquadFilter.apply_filter_settings() instead")
-        self.apply_filter_settings(filter_type=self.filter_type,
-                                   frequency=self.frequency,
-                                   q_factor=value)
+        self._q_factor = value
+        self.apply_filter_settings()
 
     @property
     def biquad_coefficients(self):
@@ -375,23 +373,27 @@ class BiquadFilterModule(RedPitayaModule):
         return BiquadFilterCoefficients(b[0], b[1], b[2], a[1], a[2])
 
     def apply_filter_settings(self,
-                              filter_type: FilterType,
+                              filter_type: FilterType = None,
                               frequency: float = None,
                               q_factor: float = None
                               ):
         '''
         Computes and applies filter settings
         '''
-        # Calculate coeffs
-        biquad_coeffs = self.calculate_biquad_coefficients(filter_type, frequency, q_factor)
+        # Use current values if no new ones are specified
+        if filter_type is None:
+            filter_type = self.filter_type
+        if frequency is None:
+            frequency = self.frequency
+        if q_factor is None:
+            q_factor = self.q_factor
 
-        # Once coeffs are successful, store values
-        if isinstance(filter_type, str):
-            self._filter_type = FilterType(filter_type)
-        else:
-            self._filter_type = filter_type
-        self._frequency = frequency
-        self._q_factor = q_factor
+        # Calculate coeffs. If it fails, set filter type to unknown
+        try:
+            biquad_coeffs = self.calculate_biquad_coefficients(filter_type, frequency, q_factor)
+        except KeyError as e:
+            self._filter_type = FilterType.UNKNOWN
+            raise e
 
         # Apply settings and refresh filter
         self.write_biquad_coefficients(biquad_coeffs)

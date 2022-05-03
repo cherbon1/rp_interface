@@ -186,7 +186,6 @@ class RedPitaya:
         commands = [
             '/opt/redpitaya/bin/monitor {} {}'.format(address, int(buffer_bits, 2)),
             '/opt/redpitaya/bin/monitor {} {}'.format(address, int(write_bits, 2)),
-            # 'sleep 0.01',
             '/opt/redpitaya/bin/monitor {} {}'.format(address, int(buffer_bits, 2))
         ]
         self.exec_multiple_commands(commands)
@@ -199,7 +198,6 @@ class RedPitaya:
         '''
         commands = [
             '/opt/redpitaya/bin/monitor {} {}'.format(write_address, int(read_query_bits, 2)),
-            # 'sleep 0.01',  # sleep for 10ms
             '/opt/redpitaya/bin/monitor {}'.format(read_address)
         ]
         hex_value = self.exec_multiple_commands(commands)[0]

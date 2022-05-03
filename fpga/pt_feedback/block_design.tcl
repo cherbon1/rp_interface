@@ -40,7 +40,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# GPIO_trigger_pulse, bram_delay_line, bram_delay_line, coarse_gain_and_limiter, coarse_gain_and_limiter, conditional_adder_4x2, decimate, decimate, edge_detector, red_pitaya_adc, coarse_gain_and_limiter, optical_trap_dc, optical_trap_feedback, mux_2x1, mux_8x2, red_pitaya_dac, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux
+# GPIO_trigger_pulse, bram_delay_line, bram_delay_line, coarse_gain_and_limiter, coarse_gain_and_limiter, conditional_adder_8x2, decimate, decimate, edge_detector, flip_flop, flip_flop, mux_2x1, red_pitaya_adc, coarse_gain_and_limiter, optical_trap_dc, optical_trap_feedback, mux_2x1, mux_8x2, red_pitaya_dac, coarse_gain_and_limiter, fine_gain, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, biquad_filter, coarse_gain_and_limiter, coarse_gain_and_limiter, fine_delay_line, fine_gain, mux_2x1_with_valid, mux_2x1_with_valid, mux_8x1, triggered_gate, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_mux, GPIO_super_mux
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -138,7 +138,6 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:util_ds_buf:2.2\
-xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:xlconstant:1.1\
 xilinx.com:ip:processing_system7:5.5\
 xilinx.com:ip:proc_sys_reset:5.0\
@@ -146,6 +145,8 @@ xilinx.com:ip:c_addsub:12.0\
 xilinx.com:ip:mult_gen:12.0\
 xilinx.com:ip:xlslice:1.0\
 xilinx.com:ip:clk_wiz:6.0\
+xilinx.com:ip:dds_compiler:6.0\
+xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:axi_gpio:2.0\
 "
 
@@ -177,10 +178,13 @@ bram_delay_line\
 bram_delay_line\
 coarse_gain_and_limiter\
 coarse_gain_and_limiter\
-conditional_adder_4x2\
+conditional_adder_8x2\
 decimate\
 decimate\
 edge_detector\
+flip_flop\
+flip_flop\
+mux_2x1\
 red_pitaya_adc\
 coarse_gain_and_limiter\
 optical_trap_dc\
@@ -188,11 +192,16 @@ optical_trap_feedback\
 mux_2x1\
 mux_8x2\
 red_pitaya_dac\
+coarse_gain_and_limiter\
+fine_gain\
 biquad_filter\
 biquad_filter\
 biquad_filter\
 biquad_filter\
 biquad_filter\
+biquad_filter\
+biquad_filter\
+coarse_gain_and_limiter\
 coarse_gain_and_limiter\
 fine_delay_line\
 fine_gain\
@@ -205,6 +214,9 @@ biquad_filter\
 biquad_filter\
 biquad_filter\
 biquad_filter\
+biquad_filter\
+biquad_filter\
+coarse_gain_and_limiter\
 coarse_gain_and_limiter\
 fine_delay_line\
 fine_gain\
@@ -217,6 +229,9 @@ biquad_filter\
 biquad_filter\
 biquad_filter\
 biquad_filter\
+biquad_filter\
+biquad_filter\
+coarse_gain_and_limiter\
 coarse_gain_and_limiter\
 fine_delay_line\
 fine_gain\
@@ -229,6 +244,9 @@ biquad_filter\
 biquad_filter\
 biquad_filter\
 biquad_filter\
+biquad_filter\
+biquad_filter\
+coarse_gain_and_limiter\
 coarse_gain_and_limiter\
 fine_delay_line\
 fine_gain\
@@ -289,688 +307,13 @@ if { $bCheckIPsPassed != 1 } {
 ##################################################################
 
 
-# Hierarchical cell: multi_GPIO_4
-proc create_hier_cell_multi_GPIO_4 { parentCell nameHier } {
-
-  variable script_folder
-
-  if { $parentCell eq "" || $nameHier eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_4() - Empty argument(s)!"}
-     return
-  }
-
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
-
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
-
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
-
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-  # Create cell and set as current instance
-  set hier_obj [create_bd_cell -type hier $nameHier]
-  current_bd_instance $hier_obj
-
-  # Create interface pins
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
-
-
-  # Create pins
-  create_bd_pin -dir I clk_i
-  create_bd_pin -dir O -from 0 -to 0 data0_o
-  create_bd_pin -dir O -from 24 -to 0 data0_o1
-  create_bd_pin -dir O -from 24 -to 0 data0_o2
-  create_bd_pin -dir O -from 2 -to 0 data0_o3
-  create_bd_pin -dir O -from 24 -to 0 data1_o
-  create_bd_pin -dir O -from 24 -to 0 data1_o1
-  create_bd_pin -dir O -from 24 -to 0 data1_o2
-  create_bd_pin -dir O -from 0 -to 0 data2_o
-  create_bd_pin -dir O -from 24 -to 0 data2_o1
-  create_bd_pin -dir O -from 24 -to 0 data2_o2
-  create_bd_pin -dir O -from 4 -to 0 data2_o3
-  create_bd_pin -dir O -from 16 -to 0 data3_o
-  create_bd_pin -dir O -from 24 -to 0 data3_o1
-  create_bd_pin -dir O -from 24 -to 0 data3_o2
-  create_bd_pin -dir O -from 25 -to 0 data3_o3
-  create_bd_pin -dir O -from 24 -to 0 data4_o
-  create_bd_pin -dir O -from 24 -to 0 data4_o1
-  create_bd_pin -dir O -from 24 -to 0 data4_o2
-  create_bd_pin -dir O -from 25 -to 0 data4_o3
-  create_bd_pin -dir O -from 24 -to 0 data5_o
-  create_bd_pin -dir O -from 24 -to 0 data5_o1
-  create_bd_pin -dir O -from 24 -to 0 data5_o2
-  create_bd_pin -dir O -from 4 -to 0 data5_o3
-  create_bd_pin -dir O -from 24 -to 0 data6_o
-  create_bd_pin -dir O -from 24 -to 0 data6_o1
-  create_bd_pin -dir O -from 24 -to 0 data6_o2
-  create_bd_pin -dir O -from 25 -to 0 data6_o3
-  create_bd_pin -dir O -from 24 -to 0 data7_o
-  create_bd_pin -dir O -from 24 -to 0 data7_o1
-  create_bd_pin -dir O -from 24 -to 0 data7_o2
-  create_bd_pin -dir I -type clk s_axi_aclk
-  create_bd_pin -dir I -type rst s_axi_aresetn
-
-  # Create instance: GPIO_mux_0, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_0
-  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.DATA_WIDTH_0 {1} \
-   CONFIG.DATA_WIDTH_1 {3} \
-   CONFIG.DATA_WIDTH_2 {1} \
-   CONFIG.DATA_WIDTH_3 {17} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_0
-
-  # Create instance: GPIO_mux_1, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_1
-  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_1 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {1} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_1
-
-  # Create instance: GPIO_mux_2, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_2
-  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_2 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {2} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_2
-
-  # Create instance: GPIO_mux_3, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_3
-  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_3 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {3} \
-   CONFIG.DATA_WIDTH_0 {3} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {5} \
-   CONFIG.DATA_WIDTH_5 {5} \
-   CONFIG.DATA_WIDTH_6 {26} \
- ] $GPIO_mux_3
-
-  # Create instance: GPIO_super_mux_0, and set properties
-  set block_name GPIO_super_mux
-  set block_cell_name GPIO_super_mux_0
-  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_super_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
-  # Create instance: axi_gpio_4, and set properties
-  set axi_gpio_4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_4 ]
-  set_property -dict [ list \
-   CONFIG.C_ALL_INPUTS {0} \
-   CONFIG.C_ALL_INPUTS_2 {1} \
-   CONFIG.C_ALL_OUTPUTS {1} \
-   CONFIG.C_IS_DUAL {1} \
- ] $axi_gpio_4
-
-  # Create interface connections
-  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_4/S_AXI]
-
-  # Create port connections
-  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
-  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
-  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
-  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
-  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
-  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
-  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
-  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
-  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
-  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
-  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
-  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
-  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
-  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
-  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
-  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
-  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
-  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
-  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
-  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
-  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
-  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
-  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
-  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
-  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
-  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
-  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
-  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
-  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
-  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
-  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
-  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
-  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
-  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
-  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_4/gpio2_io_i]
-  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_4/gpio_io_o]
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_4/s_axi_aresetn]
-  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_4/s_axi_aclk]
-
-  # Restore current instance
-  current_bd_instance $oldCurInst
-}
-
-# Hierarchical cell: multi_GPIO_3
-proc create_hier_cell_multi_GPIO_3 { parentCell nameHier } {
-
-  variable script_folder
-
-  if { $parentCell eq "" || $nameHier eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_3() - Empty argument(s)!"}
-     return
-  }
-
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
-
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
-
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
-
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-  # Create cell and set as current instance
-  set hier_obj [create_bd_cell -type hier $nameHier]
-  current_bd_instance $hier_obj
-
-  # Create interface pins
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
-
-
-  # Create pins
-  create_bd_pin -dir I clk_i
-  create_bd_pin -dir O -from 0 -to 0 data0_o
-  create_bd_pin -dir O -from 24 -to 0 data0_o1
-  create_bd_pin -dir O -from 24 -to 0 data0_o2
-  create_bd_pin -dir O -from 2 -to 0 data0_o3
-  create_bd_pin -dir O -from 24 -to 0 data1_o
-  create_bd_pin -dir O -from 24 -to 0 data1_o1
-  create_bd_pin -dir O -from 24 -to 0 data1_o2
-  create_bd_pin -dir O -from 0 -to 0 data2_o
-  create_bd_pin -dir O -from 24 -to 0 data2_o1
-  create_bd_pin -dir O -from 24 -to 0 data2_o2
-  create_bd_pin -dir O -from 4 -to 0 data2_o3
-  create_bd_pin -dir O -from 16 -to 0 data3_o
-  create_bd_pin -dir O -from 24 -to 0 data3_o1
-  create_bd_pin -dir O -from 24 -to 0 data3_o2
-  create_bd_pin -dir O -from 25 -to 0 data3_o3
-  create_bd_pin -dir O -from 24 -to 0 data4_o
-  create_bd_pin -dir O -from 24 -to 0 data4_o1
-  create_bd_pin -dir O -from 24 -to 0 data4_o2
-  create_bd_pin -dir O -from 25 -to 0 data4_o3
-  create_bd_pin -dir O -from 24 -to 0 data5_o
-  create_bd_pin -dir O -from 24 -to 0 data5_o1
-  create_bd_pin -dir O -from 24 -to 0 data5_o2
-  create_bd_pin -dir O -from 4 -to 0 data5_o3
-  create_bd_pin -dir O -from 24 -to 0 data6_o
-  create_bd_pin -dir O -from 24 -to 0 data6_o1
-  create_bd_pin -dir O -from 24 -to 0 data6_o2
-  create_bd_pin -dir O -from 25 -to 0 data6_o3
-  create_bd_pin -dir O -from 24 -to 0 data7_o
-  create_bd_pin -dir O -from 24 -to 0 data7_o1
-  create_bd_pin -dir O -from 24 -to 0 data7_o2
-  create_bd_pin -dir I -type clk s_axi_aclk
-  create_bd_pin -dir I -type rst s_axi_aresetn
-
-  # Create instance: GPIO_mux_0, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_0
-  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.DATA_WIDTH_0 {1} \
-   CONFIG.DATA_WIDTH_1 {3} \
-   CONFIG.DATA_WIDTH_2 {1} \
-   CONFIG.DATA_WIDTH_3 {17} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_0
-
-  # Create instance: GPIO_mux_1, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_1
-  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_1 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {1} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_1
-
-  # Create instance: GPIO_mux_2, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_2
-  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_2 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {2} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_2
-
-  # Create instance: GPIO_mux_3, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_3
-  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_3 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {3} \
-   CONFIG.DATA_WIDTH_0 {3} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {5} \
-   CONFIG.DATA_WIDTH_5 {5} \
-   CONFIG.DATA_WIDTH_6 {26} \
- ] $GPIO_mux_3
-
-  # Create instance: GPIO_super_mux_0, and set properties
-  set block_name GPIO_super_mux
-  set block_cell_name GPIO_super_mux_0
-  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_super_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
-  # Create instance: axi_gpio_3, and set properties
-  set axi_gpio_3 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_3 ]
-  set_property -dict [ list \
-   CONFIG.C_ALL_INPUTS {0} \
-   CONFIG.C_ALL_INPUTS_2 {1} \
-   CONFIG.C_ALL_OUTPUTS {1} \
-   CONFIG.C_IS_DUAL {1} \
- ] $axi_gpio_3
-
-  # Create interface connections
-  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_3/S_AXI]
-
-  # Create port connections
-  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
-  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
-  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
-  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
-  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
-  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
-  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
-  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
-  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
-  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
-  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
-  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
-  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
-  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
-  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
-  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
-  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
-  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
-  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
-  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
-  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
-  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
-  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
-  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
-  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
-  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
-  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
-  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
-  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
-  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
-  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
-  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
-  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
-  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
-  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_3/gpio2_io_i]
-  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_3/gpio_io_o]
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_3/s_axi_aresetn]
-  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_3/s_axi_aclk]
-
-  # Restore current instance
-  current_bd_instance $oldCurInst
-}
-
-# Hierarchical cell: multi_GPIO_2
-proc create_hier_cell_multi_GPIO_2 { parentCell nameHier } {
-
-  variable script_folder
-
-  if { $parentCell eq "" || $nameHier eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_2() - Empty argument(s)!"}
-     return
-  }
-
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
-
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
-
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
-
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-  # Create cell and set as current instance
-  set hier_obj [create_bd_cell -type hier $nameHier]
-  current_bd_instance $hier_obj
-
-  # Create interface pins
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
-
-
-  # Create pins
-  create_bd_pin -dir I clk_i
-  create_bd_pin -dir O -from 0 -to 0 data0_o
-  create_bd_pin -dir O -from 24 -to 0 data0_o1
-  create_bd_pin -dir O -from 24 -to 0 data0_o2
-  create_bd_pin -dir O -from 2 -to 0 data0_o3
-  create_bd_pin -dir O -from 24 -to 0 data1_o
-  create_bd_pin -dir O -from 24 -to 0 data1_o1
-  create_bd_pin -dir O -from 24 -to 0 data1_o2
-  create_bd_pin -dir O -from 0 -to 0 data2_o
-  create_bd_pin -dir O -from 24 -to 0 data2_o1
-  create_bd_pin -dir O -from 24 -to 0 data2_o2
-  create_bd_pin -dir O -from 4 -to 0 data2_o3
-  create_bd_pin -dir O -from 16 -to 0 data3_o
-  create_bd_pin -dir O -from 24 -to 0 data3_o1
-  create_bd_pin -dir O -from 24 -to 0 data3_o2
-  create_bd_pin -dir O -from 25 -to 0 data3_o3
-  create_bd_pin -dir O -from 24 -to 0 data4_o
-  create_bd_pin -dir O -from 24 -to 0 data4_o1
-  create_bd_pin -dir O -from 24 -to 0 data4_o2
-  create_bd_pin -dir O -from 25 -to 0 data4_o3
-  create_bd_pin -dir O -from 24 -to 0 data5_o
-  create_bd_pin -dir O -from 24 -to 0 data5_o1
-  create_bd_pin -dir O -from 24 -to 0 data5_o2
-  create_bd_pin -dir O -from 4 -to 0 data5_o3
-  create_bd_pin -dir O -from 24 -to 0 data6_o
-  create_bd_pin -dir O -from 24 -to 0 data6_o1
-  create_bd_pin -dir O -from 24 -to 0 data6_o2
-  create_bd_pin -dir O -from 25 -to 0 data6_o3
-  create_bd_pin -dir O -from 24 -to 0 data7_o
-  create_bd_pin -dir O -from 24 -to 0 data7_o1
-  create_bd_pin -dir O -from 24 -to 0 data7_o2
-  create_bd_pin -dir I -type clk s_axi_aclk
-  create_bd_pin -dir I -type rst s_axi_aresetn
-
-  # Create instance: GPIO_mux_0, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_0
-  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.DATA_WIDTH_0 {1} \
-   CONFIG.DATA_WIDTH_1 {3} \
-   CONFIG.DATA_WIDTH_2 {1} \
-   CONFIG.DATA_WIDTH_3 {17} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_0
-
-  # Create instance: GPIO_mux_1, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_1
-  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_1 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {1} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_1
-
-  # Create instance: GPIO_mux_2, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_2
-  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_2 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {2} \
-   CONFIG.DATA_WIDTH_0 {25} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {25} \
-   CONFIG.DATA_WIDTH_3 {25} \
-   CONFIG.DATA_WIDTH_4 {25} \
-   CONFIG.DATA_WIDTH_5 {25} \
-   CONFIG.DATA_WIDTH_6 {25} \
-   CONFIG.DATA_WIDTH_7 {25} \
- ] $GPIO_mux_2
-
-  # Create instance: GPIO_mux_3, and set properties
-  set block_name GPIO_mux
-  set block_cell_name GPIO_mux_3
-  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_mux_3 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-    set_property -dict [ list \
-   CONFIG.ADDRESS_PREFIX {3} \
-   CONFIG.DATA_WIDTH_0 {3} \
-   CONFIG.DATA_WIDTH_1 {25} \
-   CONFIG.DATA_WIDTH_2 {5} \
-   CONFIG.DATA_WIDTH_5 {5} \
-   CONFIG.DATA_WIDTH_6 {26} \
- ] $GPIO_mux_3
-
-  # Create instance: GPIO_super_mux_0, and set properties
-  set block_name GPIO_super_mux
-  set block_cell_name GPIO_super_mux_0
-  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $GPIO_super_mux_0 eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
-  # Create instance: axi_gpio_2, and set properties
-  set axi_gpio_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_2 ]
-  set_property -dict [ list \
-   CONFIG.C_ALL_INPUTS {0} \
-   CONFIG.C_ALL_INPUTS_2 {1} \
-   CONFIG.C_ALL_OUTPUTS {1} \
-   CONFIG.C_IS_DUAL {1} \
- ] $axi_gpio_2
-
-  # Create interface connections
-  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_2/S_AXI]
-
-  # Create port connections
-  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
-  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
-  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
-  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
-  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
-  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
-  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
-  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
-  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
-  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
-  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
-  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
-  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
-  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
-  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
-  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
-  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
-  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
-  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
-  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
-  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
-  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
-  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
-  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
-  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
-  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
-  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
-  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
-  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
-  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
-  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
-  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
-  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
-  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
-  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_2/gpio2_io_i]
-  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_2/gpio_io_o]
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_2/s_axi_aresetn]
-  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_2/s_axi_aclk]
-
-  # Restore current instance
-  current_bd_instance $oldCurInst
-}
-
 # Hierarchical cell: multi_GPIO_1
-proc create_hier_cell_multi_GPIO_1 { parentCell nameHier } {
+proc create_hier_cell_multi_GPIO_1_3 { parentCell nameHier } {
 
   variable script_folder
 
   if { $parentCell eq "" || $nameHier eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_1() - Empty argument(s)!"}
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_1_3() - Empty argument(s)!"}
      return
   }
 
@@ -1011,6 +354,7 @@ proc create_hier_cell_multi_GPIO_1 { parentCell nameHier } {
   create_bd_pin -dir O -from 24 -to 0 data1_o
   create_bd_pin -dir O -from 24 -to 0 data1_o1
   create_bd_pin -dir O -from 24 -to 0 data1_o2
+  create_bd_pin -dir O -from 3 -to 0 data1_o3
   create_bd_pin -dir O -from 0 -to 0 data2_o
   create_bd_pin -dir O -from 24 -to 0 data2_o1
   create_bd_pin -dir O -from 24 -to 0 data2_o2
@@ -1049,7 +393,7 @@ proc create_hier_cell_multi_GPIO_1 { parentCell nameHier } {
    }
     set_property -dict [ list \
    CONFIG.DATA_WIDTH_0 {1} \
-   CONFIG.DATA_WIDTH_1 {3} \
+   CONFIG.DATA_WIDTH_1 {4} \
    CONFIG.DATA_WIDTH_2 {1} \
    CONFIG.DATA_WIDTH_3 {17} \
    CONFIG.DATA_WIDTH_4 {25} \
@@ -1146,6 +490,688 @@ proc create_hier_cell_multi_GPIO_1 { parentCell nameHier } {
 
   # Create port connections
   connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
+  connect_bd_net -net GPIO_mux_0_data1_o [get_bd_pins data1_o3] [get_bd_pins GPIO_mux_0/data1_o]
+  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
+  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
+  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
+  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
+  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
+  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
+  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
+  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
+  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
+  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
+  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
+  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
+  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
+  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
+  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
+  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
+  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
+  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
+  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
+  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
+  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
+  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
+  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
+  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
+  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
+  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
+  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
+  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
+  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
+  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
+  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
+  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
+  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
+  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_1/gpio2_io_i]
+  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_1/gpio_io_o]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_1/s_axi_aresetn]
+  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_1/s_axi_aclk]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+# Hierarchical cell: multi_GPIO_1
+proc create_hier_cell_multi_GPIO_1_2 { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_1_2() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
+
+
+  # Create pins
+  create_bd_pin -dir I clk_i
+  create_bd_pin -dir O -from 0 -to 0 data0_o
+  create_bd_pin -dir O -from 24 -to 0 data0_o1
+  create_bd_pin -dir O -from 24 -to 0 data0_o2
+  create_bd_pin -dir O -from 2 -to 0 data0_o3
+  create_bd_pin -dir O -from 24 -to 0 data1_o
+  create_bd_pin -dir O -from 24 -to 0 data1_o1
+  create_bd_pin -dir O -from 24 -to 0 data1_o2
+  create_bd_pin -dir O -from 3 -to 0 data1_o3
+  create_bd_pin -dir O -from 0 -to 0 data2_o
+  create_bd_pin -dir O -from 24 -to 0 data2_o1
+  create_bd_pin -dir O -from 24 -to 0 data2_o2
+  create_bd_pin -dir O -from 4 -to 0 data2_o3
+  create_bd_pin -dir O -from 16 -to 0 data3_o
+  create_bd_pin -dir O -from 24 -to 0 data3_o1
+  create_bd_pin -dir O -from 24 -to 0 data3_o2
+  create_bd_pin -dir O -from 25 -to 0 data3_o3
+  create_bd_pin -dir O -from 24 -to 0 data4_o
+  create_bd_pin -dir O -from 24 -to 0 data4_o1
+  create_bd_pin -dir O -from 24 -to 0 data4_o2
+  create_bd_pin -dir O -from 25 -to 0 data4_o3
+  create_bd_pin -dir O -from 24 -to 0 data5_o
+  create_bd_pin -dir O -from 24 -to 0 data5_o1
+  create_bd_pin -dir O -from 24 -to 0 data5_o2
+  create_bd_pin -dir O -from 4 -to 0 data5_o3
+  create_bd_pin -dir O -from 24 -to 0 data6_o
+  create_bd_pin -dir O -from 24 -to 0 data6_o1
+  create_bd_pin -dir O -from 24 -to 0 data6_o2
+  create_bd_pin -dir O -from 25 -to 0 data6_o3
+  create_bd_pin -dir O -from 24 -to 0 data7_o
+  create_bd_pin -dir O -from 24 -to 0 data7_o1
+  create_bd_pin -dir O -from 24 -to 0 data7_o2
+  create_bd_pin -dir I -type clk s_axi_aclk
+  create_bd_pin -dir I -type rst s_axi_aresetn
+
+  # Create instance: GPIO_mux_0, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_0
+  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.DATA_WIDTH_0 {1} \
+   CONFIG.DATA_WIDTH_1 {4} \
+   CONFIG.DATA_WIDTH_2 {1} \
+   CONFIG.DATA_WIDTH_3 {17} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_0
+
+  # Create instance: GPIO_mux_1, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_1
+  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_1 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {1} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_1
+
+  # Create instance: GPIO_mux_2, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_2
+  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_2 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {2} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_2
+
+  # Create instance: GPIO_mux_3, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_3
+  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_3 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {3} \
+   CONFIG.DATA_WIDTH_0 {3} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {5} \
+   CONFIG.DATA_WIDTH_5 {5} \
+   CONFIG.DATA_WIDTH_6 {26} \
+ ] $GPIO_mux_3
+
+  # Create instance: GPIO_super_mux_0, and set properties
+  set block_name GPIO_super_mux
+  set block_cell_name GPIO_super_mux_0
+  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_super_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
+  # Create instance: axi_gpio_1, and set properties
+  set axi_gpio_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_1 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_INPUTS {0} \
+   CONFIG.C_ALL_INPUTS_2 {1} \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_IS_DUAL {1} \
+ ] $axi_gpio_1
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_1/S_AXI]
+
+  # Create port connections
+  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
+  connect_bd_net -net GPIO_mux_0_data1_o [get_bd_pins data1_o3] [get_bd_pins GPIO_mux_0/data1_o]
+  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
+  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
+  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
+  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
+  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
+  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
+  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
+  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
+  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
+  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
+  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
+  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
+  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
+  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
+  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
+  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
+  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
+  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
+  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
+  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
+  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
+  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
+  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
+  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
+  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
+  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
+  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
+  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
+  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
+  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
+  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
+  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
+  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
+  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_1/gpio2_io_i]
+  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_1/gpio_io_o]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_1/s_axi_aresetn]
+  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_1/s_axi_aclk]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+# Hierarchical cell: multi_GPIO_1
+proc create_hier_cell_multi_GPIO_1_1 { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_1_1() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
+
+
+  # Create pins
+  create_bd_pin -dir I clk_i
+  create_bd_pin -dir O -from 0 -to 0 data0_o
+  create_bd_pin -dir O -from 24 -to 0 data0_o1
+  create_bd_pin -dir O -from 24 -to 0 data0_o2
+  create_bd_pin -dir O -from 2 -to 0 data0_o3
+  create_bd_pin -dir O -from 24 -to 0 data1_o
+  create_bd_pin -dir O -from 24 -to 0 data1_o1
+  create_bd_pin -dir O -from 24 -to 0 data1_o2
+  create_bd_pin -dir O -from 3 -to 0 data1_o3
+  create_bd_pin -dir O -from 0 -to 0 data2_o
+  create_bd_pin -dir O -from 24 -to 0 data2_o1
+  create_bd_pin -dir O -from 24 -to 0 data2_o2
+  create_bd_pin -dir O -from 4 -to 0 data2_o3
+  create_bd_pin -dir O -from 16 -to 0 data3_o
+  create_bd_pin -dir O -from 24 -to 0 data3_o1
+  create_bd_pin -dir O -from 24 -to 0 data3_o2
+  create_bd_pin -dir O -from 25 -to 0 data3_o3
+  create_bd_pin -dir O -from 24 -to 0 data4_o
+  create_bd_pin -dir O -from 24 -to 0 data4_o1
+  create_bd_pin -dir O -from 24 -to 0 data4_o2
+  create_bd_pin -dir O -from 25 -to 0 data4_o3
+  create_bd_pin -dir O -from 24 -to 0 data5_o
+  create_bd_pin -dir O -from 24 -to 0 data5_o1
+  create_bd_pin -dir O -from 24 -to 0 data5_o2
+  create_bd_pin -dir O -from 4 -to 0 data5_o3
+  create_bd_pin -dir O -from 24 -to 0 data6_o
+  create_bd_pin -dir O -from 24 -to 0 data6_o1
+  create_bd_pin -dir O -from 24 -to 0 data6_o2
+  create_bd_pin -dir O -from 25 -to 0 data6_o3
+  create_bd_pin -dir O -from 24 -to 0 data7_o
+  create_bd_pin -dir O -from 24 -to 0 data7_o1
+  create_bd_pin -dir O -from 24 -to 0 data7_o2
+  create_bd_pin -dir I -type clk s_axi_aclk
+  create_bd_pin -dir I -type rst s_axi_aresetn
+
+  # Create instance: GPIO_mux_0, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_0
+  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.DATA_WIDTH_0 {1} \
+   CONFIG.DATA_WIDTH_1 {4} \
+   CONFIG.DATA_WIDTH_2 {1} \
+   CONFIG.DATA_WIDTH_3 {17} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_0
+
+  # Create instance: GPIO_mux_1, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_1
+  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_1 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {1} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_1
+
+  # Create instance: GPIO_mux_2, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_2
+  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_2 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {2} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_2
+
+  # Create instance: GPIO_mux_3, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_3
+  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_3 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {3} \
+   CONFIG.DATA_WIDTH_0 {3} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {5} \
+   CONFIG.DATA_WIDTH_5 {5} \
+   CONFIG.DATA_WIDTH_6 {26} \
+ ] $GPIO_mux_3
+
+  # Create instance: GPIO_super_mux_0, and set properties
+  set block_name GPIO_super_mux
+  set block_cell_name GPIO_super_mux_0
+  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_super_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
+  # Create instance: axi_gpio_1, and set properties
+  set axi_gpio_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_1 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_INPUTS {0} \
+   CONFIG.C_ALL_INPUTS_2 {1} \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_IS_DUAL {1} \
+ ] $axi_gpio_1
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_1/S_AXI]
+
+  # Create port connections
+  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
+  connect_bd_net -net GPIO_mux_0_data1_o [get_bd_pins data1_o3] [get_bd_pins GPIO_mux_0/data1_o]
+  connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
+  connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
+  connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
+  connect_bd_net -net GPIO_mux_0_data5_o [get_bd_pins data5_o] [get_bd_pins GPIO_mux_0/data5_o]
+  connect_bd_net -net GPIO_mux_0_data6_o [get_bd_pins data6_o] [get_bd_pins GPIO_mux_0/data6_o]
+  connect_bd_net -net GPIO_mux_0_data7_o [get_bd_pins data7_o] [get_bd_pins GPIO_mux_0/data7_o]
+  connect_bd_net -net GPIO_mux_0_gpio2_o [get_bd_pins GPIO_mux_0/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_0_i]
+  connect_bd_net -net GPIO_mux_1_data0_o [get_bd_pins data0_o1] [get_bd_pins GPIO_mux_1/data0_o]
+  connect_bd_net -net GPIO_mux_1_data1_o [get_bd_pins data1_o1] [get_bd_pins GPIO_mux_1/data1_o]
+  connect_bd_net -net GPIO_mux_1_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_1/data2_o]
+  connect_bd_net -net GPIO_mux_1_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_1/data3_o]
+  connect_bd_net -net GPIO_mux_1_data4_o [get_bd_pins data4_o1] [get_bd_pins GPIO_mux_1/data4_o]
+  connect_bd_net -net GPIO_mux_1_data5_o [get_bd_pins data5_o1] [get_bd_pins GPIO_mux_1/data5_o]
+  connect_bd_net -net GPIO_mux_1_data6_o [get_bd_pins data6_o1] [get_bd_pins GPIO_mux_1/data6_o]
+  connect_bd_net -net GPIO_mux_1_data7_o [get_bd_pins data7_o1] [get_bd_pins GPIO_mux_1/data7_o]
+  connect_bd_net -net GPIO_mux_1_gpio2_o [get_bd_pins GPIO_mux_1/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_1_i]
+  connect_bd_net -net GPIO_mux_2_data0_o [get_bd_pins data0_o2] [get_bd_pins GPIO_mux_2/data0_o]
+  connect_bd_net -net GPIO_mux_2_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_2/data1_o]
+  connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_2/data2_o]
+  connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o2] [get_bd_pins GPIO_mux_2/data3_o]
+  connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
+  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
+  connect_bd_net -net GPIO_mux_2_data6_o [get_bd_pins data6_o2] [get_bd_pins GPIO_mux_2/data6_o]
+  connect_bd_net -net GPIO_mux_2_data7_o [get_bd_pins data7_o2] [get_bd_pins GPIO_mux_2/data7_o]
+  connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
+  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o3] [get_bd_pins GPIO_mux_3/data0_o]
+  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o] [get_bd_pins GPIO_mux_3/data1_o]
+  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o3] [get_bd_pins GPIO_mux_3/data2_o]
+  connect_bd_net -net GPIO_mux_3_data3_o [get_bd_pins data3_o3] [get_bd_pins GPIO_mux_3/data3_o]
+  connect_bd_net -net GPIO_mux_3_data4_o [get_bd_pins data4_o3] [get_bd_pins GPIO_mux_3/data4_o]
+  connect_bd_net -net GPIO_mux_3_data5_o [get_bd_pins data5_o3] [get_bd_pins GPIO_mux_3/data5_o]
+  connect_bd_net -net GPIO_mux_3_data6_o [get_bd_pins data6_o3] [get_bd_pins GPIO_mux_3/data6_o]
+  connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
+  connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_1/gpio2_io_i]
+  connect_bd_net -net axi_gpio_1_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_1/gpio_io_o]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins GPIO_mux_0/clk_i] [get_bd_pins GPIO_mux_1/clk_i] [get_bd_pins GPIO_mux_2/clk_i] [get_bd_pins GPIO_mux_3/clk_i] [get_bd_pins GPIO_super_mux_0/clk_i]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins s_axi_aresetn] [get_bd_pins GPIO_mux_0/rst_ni] [get_bd_pins GPIO_mux_1/rst_ni] [get_bd_pins GPIO_mux_2/rst_ni] [get_bd_pins GPIO_mux_3/rst_ni] [get_bd_pins GPIO_super_mux_0/rst_ni] [get_bd_pins axi_gpio_1/s_axi_aresetn]
+  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_1/s_axi_aclk]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+# Hierarchical cell: multi_GPIO_1
+proc create_hier_cell_multi_GPIO_1 { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_multi_GPIO_1() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
+
+
+  # Create pins
+  create_bd_pin -dir I clk_i
+  create_bd_pin -dir O -from 0 -to 0 data0_o
+  create_bd_pin -dir O -from 24 -to 0 data0_o1
+  create_bd_pin -dir O -from 24 -to 0 data0_o2
+  create_bd_pin -dir O -from 2 -to 0 data0_o3
+  create_bd_pin -dir O -from 24 -to 0 data1_o
+  create_bd_pin -dir O -from 24 -to 0 data1_o1
+  create_bd_pin -dir O -from 24 -to 0 data1_o2
+  create_bd_pin -dir O -from 3 -to 0 data1_o3
+  create_bd_pin -dir O -from 0 -to 0 data2_o
+  create_bd_pin -dir O -from 24 -to 0 data2_o1
+  create_bd_pin -dir O -from 24 -to 0 data2_o2
+  create_bd_pin -dir O -from 4 -to 0 data2_o3
+  create_bd_pin -dir O -from 16 -to 0 data3_o
+  create_bd_pin -dir O -from 24 -to 0 data3_o1
+  create_bd_pin -dir O -from 24 -to 0 data3_o2
+  create_bd_pin -dir O -from 25 -to 0 data3_o3
+  create_bd_pin -dir O -from 24 -to 0 data4_o
+  create_bd_pin -dir O -from 24 -to 0 data4_o1
+  create_bd_pin -dir O -from 24 -to 0 data4_o2
+  create_bd_pin -dir O -from 25 -to 0 data4_o3
+  create_bd_pin -dir O -from 24 -to 0 data5_o
+  create_bd_pin -dir O -from 24 -to 0 data5_o1
+  create_bd_pin -dir O -from 24 -to 0 data5_o2
+  create_bd_pin -dir O -from 4 -to 0 data5_o3
+  create_bd_pin -dir O -from 24 -to 0 data6_o
+  create_bd_pin -dir O -from 24 -to 0 data6_o1
+  create_bd_pin -dir O -from 24 -to 0 data6_o2
+  create_bd_pin -dir O -from 25 -to 0 data6_o3
+  create_bd_pin -dir O -from 24 -to 0 data7_o
+  create_bd_pin -dir O -from 24 -to 0 data7_o1
+  create_bd_pin -dir O -from 24 -to 0 data7_o2
+  create_bd_pin -dir I -type clk s_axi_aclk
+  create_bd_pin -dir I -type rst s_axi_aresetn
+
+  # Create instance: GPIO_mux_0, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_0
+  if { [catch {set GPIO_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.DATA_WIDTH_0 {1} \
+   CONFIG.DATA_WIDTH_1 {4} \
+   CONFIG.DATA_WIDTH_2 {1} \
+   CONFIG.DATA_WIDTH_3 {17} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_0
+
+  # Create instance: GPIO_mux_1, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_1
+  if { [catch {set GPIO_mux_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_1 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {1} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_1
+
+  # Create instance: GPIO_mux_2, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_2
+  if { [catch {set GPIO_mux_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_2 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {2} \
+   CONFIG.DATA_WIDTH_0 {25} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {25} \
+   CONFIG.DATA_WIDTH_3 {25} \
+   CONFIG.DATA_WIDTH_4 {25} \
+   CONFIG.DATA_WIDTH_5 {25} \
+   CONFIG.DATA_WIDTH_6 {25} \
+   CONFIG.DATA_WIDTH_7 {25} \
+ ] $GPIO_mux_2
+
+  # Create instance: GPIO_mux_3, and set properties
+  set block_name GPIO_mux
+  set block_cell_name GPIO_mux_3
+  if { [catch {set GPIO_mux_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_mux_3 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.ADDRESS_PREFIX {3} \
+   CONFIG.DATA_WIDTH_0 {3} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {5} \
+   CONFIG.DATA_WIDTH_5 {5} \
+   CONFIG.DATA_WIDTH_6 {26} \
+ ] $GPIO_mux_3
+
+  # Create instance: GPIO_super_mux_0, and set properties
+  set block_name GPIO_super_mux
+  set block_cell_name GPIO_super_mux_0
+  if { [catch {set GPIO_super_mux_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $GPIO_super_mux_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
+  # Create instance: axi_gpio_1, and set properties
+  set axi_gpio_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_1 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_INPUTS {0} \
+   CONFIG.C_ALL_INPUTS_2 {1} \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_IS_DUAL {1} \
+ ] $axi_gpio_1
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_gpio_1/S_AXI]
+
+  # Create port connections
+  connect_bd_net -net GPIO_mux_0_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_0/data0_o]
+  connect_bd_net -net GPIO_mux_0_data1_o [get_bd_pins data1_o3] [get_bd_pins GPIO_mux_0/data1_o]
   connect_bd_net -net GPIO_mux_0_data2_o [get_bd_pins data2_o] [get_bd_pins GPIO_mux_0/data2_o]
   connect_bd_net -net GPIO_mux_0_data3_o [get_bd_pins data3_o] [get_bd_pins GPIO_mux_0/data3_o]
   connect_bd_net -net GPIO_mux_0_data4_o [get_bd_pins data4_o] [get_bd_pins GPIO_mux_0/data4_o]
@@ -1229,21 +1255,25 @@ proc create_hier_cell_multi_GPIO_0 { parentCell nameHier } {
 
   # Create pins
   create_bd_pin -dir I clk_i
+  create_bd_pin -dir O -from 25 -to 0 data0_o
   create_bd_pin -dir O -from 16 -to 0 data0_o1
   create_bd_pin -dir O -from 1 -to 0 data0_o2
   create_bd_pin -dir O -from 0 -to 0 data1_o
   create_bd_pin -dir O -from 2 -to 0 data1_o1
+  create_bd_pin -dir O -from 24 -to 0 data1_o2
   create_bd_pin -dir O -from 0 -to 0 data2_o
   create_bd_pin -dir O -from 2 -to 0 data2_o1
+  create_bd_pin -dir O -from 1 -to 0 data2_o2
   create_bd_pin -dir O -from 25 -to 0 data3_o
   create_bd_pin -dir O -from 25 -to 0 data3_o1
   create_bd_pin -dir O -from 25 -to 0 data4_o
   create_bd_pin -dir O -from 13 -to 0 data4_o1
   create_bd_pin -dir O -from 0 -to 0 data4_o2
   create_bd_pin -dir O -from 0 -to 0 data5_o
-  create_bd_pin -dir O -from 3 -to 0 data5_o1
+  create_bd_pin -dir O -from 7 -to 0 data5_o1
+  create_bd_pin -dir O -from 0 -to 0 data5_o2
   create_bd_pin -dir O -from 25 -to 0 data6_o
-  create_bd_pin -dir O -from 3 -to 0 data6_o1
+  create_bd_pin -dir O -from 7 -to 0 data6_o1
   create_bd_pin -dir O -from 25 -to 0 data7_o
   create_bd_pin -dir O -from 1 -to 0 data7_o1
   create_bd_pin -dir I -type clk s_axi_aclk
@@ -1287,8 +1317,8 @@ proc create_hier_cell_multi_GPIO_0 { parentCell nameHier } {
    CONFIG.DATA_WIDTH_2 {26} \
    CONFIG.DATA_WIDTH_3 {26} \
    CONFIG.DATA_WIDTH_4 {14} \
-   CONFIG.DATA_WIDTH_5 {4} \
-   CONFIG.DATA_WIDTH_6 {4} \
+   CONFIG.DATA_WIDTH_5 {8} \
+   CONFIG.DATA_WIDTH_6 {8} \
    CONFIG.DATA_WIDTH_7 {2} \
  ] $GPIO_mux_1
 
@@ -1309,7 +1339,7 @@ proc create_hier_cell_multi_GPIO_0 { parentCell nameHier } {
    CONFIG.DATA_WIDTH_2 {3} \
    CONFIG.DATA_WIDTH_3 {26} \
    CONFIG.DATA_WIDTH_4 {1} \
-   CONFIG.DATA_WIDTH_5 {24} \
+   CONFIG.DATA_WIDTH_5 {1} \
    CONFIG.DATA_WIDTH_6 {24} \
    CONFIG.DATA_WIDTH_7 {24} \
  ] $GPIO_mux_2
@@ -1326,9 +1356,10 @@ proc create_hier_cell_multi_GPIO_0 { parentCell nameHier } {
    }
     set_property -dict [ list \
    CONFIG.ADDRESS_PREFIX {3} \
-   CONFIG.DATA_WIDTH_0 {3} \
-   CONFIG.DATA_WIDTH_1 {1} \
-   CONFIG.DATA_WIDTH_2 {1} \
+   CONFIG.DATA_WIDTH_0 {26} \
+   CONFIG.DATA_WIDTH_1 {25} \
+   CONFIG.DATA_WIDTH_2 {2} \
+   CONFIG.DATA_WIDTH_3 {25} \
  ] $GPIO_mux_3
 
   # Create instance: GPIO_super_mux_0, and set properties
@@ -1374,7 +1405,11 @@ proc create_hier_cell_multi_GPIO_0 { parentCell nameHier } {
   connect_bd_net -net GPIO_mux_2_data2_o [get_bd_pins data2_o1] [get_bd_pins GPIO_mux_2/data2_o]
   connect_bd_net -net GPIO_mux_2_data3_o [get_bd_pins data3_o1] [get_bd_pins GPIO_mux_2/data3_o]
   connect_bd_net -net GPIO_mux_2_data4_o [get_bd_pins data4_o2] [get_bd_pins GPIO_mux_2/data4_o]
+  connect_bd_net -net GPIO_mux_2_data5_o [get_bd_pins data5_o2] [get_bd_pins GPIO_mux_2/data5_o]
   connect_bd_net -net GPIO_mux_2_gpio2_o [get_bd_pins GPIO_mux_2/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_2_i]
+  connect_bd_net -net GPIO_mux_3_data0_o [get_bd_pins data0_o] [get_bd_pins GPIO_mux_3/data0_o]
+  connect_bd_net -net GPIO_mux_3_data1_o [get_bd_pins data1_o2] [get_bd_pins GPIO_mux_3/data1_o]
+  connect_bd_net -net GPIO_mux_3_data2_o [get_bd_pins data2_o2] [get_bd_pins GPIO_mux_3/data2_o]
   connect_bd_net -net GPIO_mux_3_gpio2_o [get_bd_pins GPIO_mux_3/gpio2_o] [get_bd_pins GPIO_super_mux_0/gpio2_3_i]
   connect_bd_net -net GPIO_super_mux_0_gpio2_o [get_bd_pins GPIO_super_mux_0/gpio2_o] [get_bd_pins axi_gpio_0/gpio2_io_i]
   connect_bd_net -net axi_gpio_0_gpio_io_o [get_bd_pins GPIO_mux_0/gpio1_i] [get_bd_pins GPIO_mux_1/gpio1_i] [get_bd_pins GPIO_mux_2/gpio1_i] [get_bd_pins GPIO_mux_3/gpio1_i] [get_bd_pins GPIO_super_mux_0/gpio1_i] [get_bd_pins axi_gpio_0/gpio_io_o]
@@ -1515,6 +1550,55 @@ proc create_hier_cell_filter_block_3 { parentCell nameHier } {
    CONFIG.OUTPUT_WIDTH {35} \
  ] $biquad_filter_3
 
+  # Create instance: biquad_filter_4, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_4
+  if { [catch {set biquad_filter_4 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_4 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_4
+
+  # Create instance: biquad_filter_5, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_5
+  if { [catch {set biquad_filter_5 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_5 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_5
+
+  # Create instance: coarse_gain_and_limi_0, and set properties
+  set block_name coarse_gain_and_limiter
+  set block_cell_name coarse_gain_and_limi_0
+  if { [catch {set coarse_gain_and_limi_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $coarse_gain_and_limi_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.INPUT_WIDTH {17} \
+   CONFIG.MAX_LOG2_GAIN {15} \
+   CONFIG.OUTPUT_WIDTH {17} \
+   CONFIG.WIDTH_LOG2_GAIN {4} \
+ ] $coarse_gain_and_limi_0
+
   # Create instance: coarse_gain_and_limi_1, and set properties
   set block_name coarse_gain_and_limiter
   set block_cell_name coarse_gain_and_limi_1
@@ -1582,8 +1666,8 @@ proc create_hier_cell_filter_block_3 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {25} \
  ] $minus_0p99
 
-  # Create instance: multi_GPIO_4
-  create_hier_cell_multi_GPIO_4 $hier_obj multi_GPIO_4
+  # Create instance: multi_GPIO_1
+  create_hier_cell_multi_GPIO_1_3 $hier_obj multi_GPIO_1
 
   # Create instance: mux_2x1_with_valid_0, and set properties
   set block_name mux_2x1_with_valid
@@ -1676,13 +1760,6 @@ proc create_hier_cell_filter_block_3 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {9} \
  ] $xlconstant_3
 
-  # Create instance: xlconstant_4, and set properties
-  set xlconstant_4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_4 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {35} \
- ] $xlconstant_4
-
   # Create instance: xlslice_0, and set properties
   set xlslice_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0 ]
   set_property -dict [ list \
@@ -1733,79 +1810,84 @@ proc create_hier_cell_filter_block_3 { parentCell nameHier } {
  ] $zero
 
   # Create interface connections
-  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_4/S_AXI]
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_1/S_AXI]
 
   # Create port connections
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_4/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
-  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in3_i]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins biquad_filter_4/clk_i] [get_bd_pins biquad_filter_5/clk_i] [get_bd_pins coarse_gain_and_limi_0/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_1/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
+  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in1_i]
   connect_bd_net -net biquad_filter_0_data_valid_o [get_bd_pins biquad_filter_0/data_valid_o] [get_bd_pins biquad_filter_1/data_valid_i]
   connect_bd_net -net biquad_filter_1_data_o [get_bd_pins biquad_filter_1/data_o] [get_bd_pins biquad_filter_2/data_i] [get_bd_pins mux_8x1_0/in2_i]
   connect_bd_net -net biquad_filter_1_data_valid_o [get_bd_pins biquad_filter_1/data_valid_o] [get_bd_pins biquad_filter_2/data_valid_i]
-  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in1_i]
+  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in3_i]
   connect_bd_net -net biquad_filter_2_data_valid_o [get_bd_pins biquad_filter_2/data_valid_o] [get_bd_pins biquad_filter_3/data_valid_i]
-  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins mux_8x1_0/in0_i]
+  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins biquad_filter_4/data_i] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net biquad_filter_3_data_valid_o [get_bd_pins biquad_filter_3/data_valid_o] [get_bd_pins biquad_filter_4/data_valid_i]
   connect_bd_net -net biquad_filter_4_data_o [get_bd_pins DC_Block_IIR/data_o] [get_bd_pins mux_2x1_with_valid_1/in1_i]
+  connect_bd_net -net biquad_filter_4_data_o1 [get_bd_pins biquad_filter_4/data_o] [get_bd_pins biquad_filter_5/data_i] [get_bd_pins mux_8x1_0/in5_i]
   connect_bd_net -net biquad_filter_4_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid1_i]
+  connect_bd_net -net biquad_filter_4_data_valid_o1 [get_bd_pins biquad_filter_4/data_valid_o] [get_bd_pins biquad_filter_5/data_valid_i]
+  connect_bd_net -net biquad_filter_5_data_o [get_bd_pins biquad_filter_5/data_o] [get_bd_pins mux_8x1_0/in6_i]
   connect_bd_net -net bram_delay_line_0_data0_o [get_bd_pins in0_i] [get_bd_pins mux_2x1_with_valid_0/in0_i]
   connect_bd_net -net bram_delay_line_0_data_valid0_o [get_bd_pins data_valid0_i] [get_bd_pins mux_2x1_with_valid_0/data_valid0_i]
   connect_bd_net -net bram_delay_line_1_data0_o [get_bd_pins in1_i] [get_bd_pins mux_2x1_with_valid_0/in1_i]
   connect_bd_net -net bram_delay_line_1_data_valid0_o [get_bd_pins data_valid1_i] [get_bd_pins mux_2x1_with_valid_0/data_valid1_i]
   connect_bd_net -net coarse_gain_and_limi_1_data_o [get_bd_pins coarse_gain_and_limi_1/data_o] [get_bd_pins triggered_gate_0/data_i]
-  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in0_i]
   connect_bd_net -net delay_LSB_Dout [get_bd_pins delay_LSB/Dout] [get_bd_pins fine_delay_line_0/delay_i]
   connect_bd_net -net delay_MSB_Dout [get_bd_pins delay_MSB] [get_bd_pins delay_MSB/Dout]
   connect_bd_net -net edge_detector_0_pe_o [get_bd_pins trig_i] [get_bd_pins triggered_gate_0/trig_i]
-  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins fine_delay_line_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins coarse_gain_and_limi_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net fine_delay_line_0_data_o [get_bd_pins coarse_gain_and_limi_0/data_i] [get_bd_pins fine_delay_line_0/data_o]
   connect_bd_net -net fine_delay_line_0_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_i] [get_bd_pins fine_delay_line_0/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid0_i]
   connect_bd_net -net fine_gain_0_data_o [get_bd_pins coarse_gain_and_limi_1/data_i] [get_bd_pins fine_gain_0/data_o]
   connect_bd_net -net minus_0p99_dout [get_bd_pins DC_Block_IIR/a1_i] [get_bd_pins DC_Block_IIR/b1_i] [get_bd_pins minus_0p99/dout]
-  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_4/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
-  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_4/data0_o1]
-  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins multi_GPIO_4/data0_o2]
-  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_4/data0_o3] [get_bd_pins mux_8x1_0/select_i]
-  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_4/data1_o]
-  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_4/data1_o1]
-  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins multi_GPIO_4/data1_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_4/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
-  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_4/data2_o1]
-  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins multi_GPIO_4/data2_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_4/data2_o3]
-  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_4/data3_o]
-  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_4/data3_o1]
-  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins multi_GPIO_4/data3_o2]
-  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_4/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_4/data4_o]
-  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_4/data4_o1]
-  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins multi_GPIO_4/data4_o2]
-  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_4/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_4/data5_o]
-  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_4/data5_o1]
-  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins multi_GPIO_4/data5_o2]
-  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_4/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
-  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_4/data6_o]
-  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins multi_GPIO_4/data6_o1]
-  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins multi_GPIO_4/data6_o2]
-  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_4/data6_o3] [get_bd_pins xlconcat_2/In1]
-  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_4/data7_o]
-  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins multi_GPIO_4/data7_o1]
-  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins multi_GPIO_4/data7_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_1/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
+  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_1/data0_o1]
+  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins biquad_filter_4/b0_i] [get_bd_pins multi_GPIO_1/data0_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_1/data0_o3] [get_bd_pins mux_8x1_0/select_i]
+  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_1/data1_o]
+  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_1/data1_o1]
+  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins biquad_filter_4/b1_i] [get_bd_pins multi_GPIO_1/data1_o2]
+  connect_bd_net -net multi_GPIO_1_data1_o3 [get_bd_pins coarse_gain_and_limi_0/log2_gain_i] [get_bd_pins multi_GPIO_1/data1_o3]
+  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_1/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
+  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_1/data2_o1]
+  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins biquad_filter_4/b2_i] [get_bd_pins multi_GPIO_1/data2_o2]
+  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_1/data2_o3]
+  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_1/data3_o]
+  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_1/data3_o1]
+  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins biquad_filter_5/a1_i] [get_bd_pins multi_GPIO_1/data3_o2]
+  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_1/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_1/data4_o]
+  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_1/data4_o1]
+  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins biquad_filter_5/a2_i] [get_bd_pins multi_GPIO_1/data4_o2]
+  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_1/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_1/data5_o]
+  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_1/data5_o1]
+  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins biquad_filter_5/b0_i] [get_bd_pins multi_GPIO_1/data5_o2]
+  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_1/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
+  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_1/data6_o]
+  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins biquad_filter_4/a1_i] [get_bd_pins multi_GPIO_1/data6_o1]
+  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins biquad_filter_5/b1_i] [get_bd_pins multi_GPIO_1/data6_o2]
+  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_1/data6_o3] [get_bd_pins xlconcat_2/In1]
+  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_1/data7_o]
+  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins biquad_filter_4/a2_i] [get_bd_pins multi_GPIO_1/data7_o1]
+  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins biquad_filter_5/b2_i] [get_bd_pins multi_GPIO_1/data7_o2]
   connect_bd_net -net mux_2x1_with_valid_0_data_valid_o [get_bd_pins fine_delay_line_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_0/data_valid_o]
   connect_bd_net -net mux_2x1_with_valid_0_out_o [get_bd_pins fine_delay_line_0/data_i] [get_bd_pins mux_2x1_with_valid_0/out_o]
   connect_bd_net -net mux_2x1_with_valid_1_data_valid_o [get_bd_pins biquad_filter_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_1/data_valid_o]
   connect_bd_net -net mux_8x1_0_out_o [get_bd_pins fine_gain_0/data_i] [get_bd_pins mux_8x1_0/out_o]
   connect_bd_net -net plus_0p99_dout [get_bd_pins DC_Block_IIR/b0_i] [get_bd_pins plus_0p99/dout]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_4/s_axi_aclk]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_4/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_1/s_axi_aclk]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins biquad_filter_4/rst_ni] [get_bd_pins biquad_filter_5/rst_ni] [get_bd_pins coarse_gain_and_limi_0/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_1/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
   connect_bd_net -net triggered_gate_0_data_o [get_bd_pins data_o] [get_bd_pins triggered_gate_0/data_o]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins mux_2x1_with_valid_1/in0_i] [get_bd_pins xlconcat_0/dout]
   connect_bd_net -net xlconcat_2_dout [get_bd_pins mux_8x1_0/in7_i] [get_bd_pins xlconcat_2/dout]
   connect_bd_net -net xlconstant_2_dout [get_bd_pins xlconcat_0/In0] [get_bd_pins xlconstant_2/dout]
   connect_bd_net -net xlconstant_3_dout [get_bd_pins xlconcat_2/In0] [get_bd_pins xlconstant_3/dout]
-  connect_bd_net -net xlconstant_4_dout [get_bd_pins mux_8x1_0/in5_i] [get_bd_pins mux_8x1_0/in6_i] [get_bd_pins xlconstant_4/dout]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins biquad_filter_0/reinit_i] [get_bd_pins xlslice_0/Dout]
   connect_bd_net -net xlslice_1_Dout [get_bd_pins biquad_filter_1/reinit_i] [get_bd_pins xlslice_1/Dout]
-  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins xlslice_2/Dout]
-  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins xlslice_3/Dout]
+  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins biquad_filter_4/reinit_i] [get_bd_pins xlslice_2/Dout]
+  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins biquad_filter_5/reinit_i] [get_bd_pins xlslice_3/Dout]
   connect_bd_net -net xlslice_4_Dout [get_bd_pins DC_Block_IIR/reinit_i] [get_bd_pins xlslice_4/Dout]
   connect_bd_net -net zero_dout [get_bd_pins DC_Block_IIR/a2_i] [get_bd_pins DC_Block_IIR/b2_i] [get_bd_pins zero/dout]
 
@@ -1942,6 +2024,55 @@ proc create_hier_cell_filter_block_2 { parentCell nameHier } {
    CONFIG.OUTPUT_WIDTH {35} \
  ] $biquad_filter_3
 
+  # Create instance: biquad_filter_4, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_4
+  if { [catch {set biquad_filter_4 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_4 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_4
+
+  # Create instance: biquad_filter_5, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_5
+  if { [catch {set biquad_filter_5 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_5 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_5
+
+  # Create instance: coarse_gain_and_limi_0, and set properties
+  set block_name coarse_gain_and_limiter
+  set block_cell_name coarse_gain_and_limi_0
+  if { [catch {set coarse_gain_and_limi_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $coarse_gain_and_limi_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.INPUT_WIDTH {17} \
+   CONFIG.MAX_LOG2_GAIN {15} \
+   CONFIG.OUTPUT_WIDTH {17} \
+   CONFIG.WIDTH_LOG2_GAIN {4} \
+ ] $coarse_gain_and_limi_0
+
   # Create instance: coarse_gain_and_limi_1, and set properties
   set block_name coarse_gain_and_limiter
   set block_cell_name coarse_gain_and_limi_1
@@ -2009,8 +2140,8 @@ proc create_hier_cell_filter_block_2 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {25} \
  ] $minus_0p99
 
-  # Create instance: multi_GPIO_3
-  create_hier_cell_multi_GPIO_3 $hier_obj multi_GPIO_3
+  # Create instance: multi_GPIO_1
+  create_hier_cell_multi_GPIO_1_2 $hier_obj multi_GPIO_1
 
   # Create instance: mux_2x1_with_valid_0, and set properties
   set block_name mux_2x1_with_valid
@@ -2103,13 +2234,6 @@ proc create_hier_cell_filter_block_2 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {9} \
  ] $xlconstant_3
 
-  # Create instance: xlconstant_4, and set properties
-  set xlconstant_4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_4 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {35} \
- ] $xlconstant_4
-
   # Create instance: xlslice_0, and set properties
   set xlslice_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0 ]
   set_property -dict [ list \
@@ -2160,79 +2284,84 @@ proc create_hier_cell_filter_block_2 { parentCell nameHier } {
  ] $zero
 
   # Create interface connections
-  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_3/S_AXI]
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_1/S_AXI]
 
   # Create port connections
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_3/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
-  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in3_i]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins biquad_filter_4/clk_i] [get_bd_pins biquad_filter_5/clk_i] [get_bd_pins coarse_gain_and_limi_0/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_1/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
+  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in1_i]
   connect_bd_net -net biquad_filter_0_data_valid_o [get_bd_pins biquad_filter_0/data_valid_o] [get_bd_pins biquad_filter_1/data_valid_i]
   connect_bd_net -net biquad_filter_1_data_o [get_bd_pins biquad_filter_1/data_o] [get_bd_pins biquad_filter_2/data_i] [get_bd_pins mux_8x1_0/in2_i]
   connect_bd_net -net biquad_filter_1_data_valid_o [get_bd_pins biquad_filter_1/data_valid_o] [get_bd_pins biquad_filter_2/data_valid_i]
-  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in1_i]
+  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in3_i]
   connect_bd_net -net biquad_filter_2_data_valid_o [get_bd_pins biquad_filter_2/data_valid_o] [get_bd_pins biquad_filter_3/data_valid_i]
-  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins mux_8x1_0/in0_i]
+  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins biquad_filter_4/data_i] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net biquad_filter_3_data_valid_o [get_bd_pins biquad_filter_3/data_valid_o] [get_bd_pins biquad_filter_4/data_valid_i]
   connect_bd_net -net biquad_filter_4_data_o [get_bd_pins DC_Block_IIR/data_o] [get_bd_pins mux_2x1_with_valid_1/in1_i]
+  connect_bd_net -net biquad_filter_4_data_o1 [get_bd_pins biquad_filter_4/data_o] [get_bd_pins biquad_filter_5/data_i] [get_bd_pins mux_8x1_0/in5_i]
   connect_bd_net -net biquad_filter_4_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid1_i]
+  connect_bd_net -net biquad_filter_4_data_valid_o1 [get_bd_pins biquad_filter_4/data_valid_o] [get_bd_pins biquad_filter_5/data_valid_i]
+  connect_bd_net -net biquad_filter_5_data_o [get_bd_pins biquad_filter_5/data_o] [get_bd_pins mux_8x1_0/in6_i]
   connect_bd_net -net bram_delay_line_0_data0_o [get_bd_pins in0_i] [get_bd_pins mux_2x1_with_valid_0/in0_i]
   connect_bd_net -net bram_delay_line_0_data_valid0_o [get_bd_pins data_valid0_i] [get_bd_pins mux_2x1_with_valid_0/data_valid0_i]
   connect_bd_net -net bram_delay_line_1_data0_o [get_bd_pins in1_i] [get_bd_pins mux_2x1_with_valid_0/in1_i]
   connect_bd_net -net bram_delay_line_1_data_valid0_o [get_bd_pins data_valid1_i] [get_bd_pins mux_2x1_with_valid_0/data_valid1_i]
   connect_bd_net -net coarse_gain_and_limi_1_data_o [get_bd_pins coarse_gain_and_limi_1/data_o] [get_bd_pins triggered_gate_0/data_i]
-  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in0_i]
   connect_bd_net -net delay_LSB_Dout [get_bd_pins delay_LSB/Dout] [get_bd_pins fine_delay_line_0/delay_i]
   connect_bd_net -net delay_MSB_Dout [get_bd_pins delay_MSB] [get_bd_pins delay_MSB/Dout]
   connect_bd_net -net edge_detector_0_pe_o [get_bd_pins trig_i] [get_bd_pins triggered_gate_0/trig_i]
-  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins fine_delay_line_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins coarse_gain_and_limi_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net fine_delay_line_0_data_o [get_bd_pins coarse_gain_and_limi_0/data_i] [get_bd_pins fine_delay_line_0/data_o]
   connect_bd_net -net fine_delay_line_0_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_i] [get_bd_pins fine_delay_line_0/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid0_i]
   connect_bd_net -net fine_gain_0_data_o [get_bd_pins coarse_gain_and_limi_1/data_i] [get_bd_pins fine_gain_0/data_o]
   connect_bd_net -net minus_0p99_dout [get_bd_pins DC_Block_IIR/a1_i] [get_bd_pins DC_Block_IIR/b1_i] [get_bd_pins minus_0p99/dout]
-  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_3/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
-  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_3/data0_o1]
-  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins multi_GPIO_3/data0_o2]
-  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_3/data0_o3] [get_bd_pins mux_8x1_0/select_i]
-  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_3/data1_o]
-  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_3/data1_o1]
-  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins multi_GPIO_3/data1_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_3/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
-  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_3/data2_o1]
-  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins multi_GPIO_3/data2_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_3/data2_o3]
-  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_3/data3_o]
-  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_3/data3_o1]
-  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins multi_GPIO_3/data3_o2]
-  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_3/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_3/data4_o]
-  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_3/data4_o1]
-  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins multi_GPIO_3/data4_o2]
-  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_3/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_3/data5_o]
-  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_3/data5_o1]
-  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins multi_GPIO_3/data5_o2]
-  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_3/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
-  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_3/data6_o]
-  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins multi_GPIO_3/data6_o1]
-  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins multi_GPIO_3/data6_o2]
-  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_3/data6_o3] [get_bd_pins xlconcat_2/In1]
-  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_3/data7_o]
-  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins multi_GPIO_3/data7_o1]
-  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins multi_GPIO_3/data7_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_1/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
+  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_1/data0_o1]
+  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins biquad_filter_4/b0_i] [get_bd_pins multi_GPIO_1/data0_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_1/data0_o3] [get_bd_pins mux_8x1_0/select_i]
+  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_1/data1_o]
+  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_1/data1_o1]
+  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins biquad_filter_4/b1_i] [get_bd_pins multi_GPIO_1/data1_o2]
+  connect_bd_net -net multi_GPIO_1_data1_o3 [get_bd_pins coarse_gain_and_limi_0/log2_gain_i] [get_bd_pins multi_GPIO_1/data1_o3]
+  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_1/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
+  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_1/data2_o1]
+  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins biquad_filter_4/b2_i] [get_bd_pins multi_GPIO_1/data2_o2]
+  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_1/data2_o3]
+  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_1/data3_o]
+  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_1/data3_o1]
+  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins biquad_filter_5/a1_i] [get_bd_pins multi_GPIO_1/data3_o2]
+  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_1/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_1/data4_o]
+  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_1/data4_o1]
+  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins biquad_filter_5/a2_i] [get_bd_pins multi_GPIO_1/data4_o2]
+  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_1/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_1/data5_o]
+  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_1/data5_o1]
+  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins biquad_filter_5/b0_i] [get_bd_pins multi_GPIO_1/data5_o2]
+  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_1/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
+  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_1/data6_o]
+  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins biquad_filter_4/a1_i] [get_bd_pins multi_GPIO_1/data6_o1]
+  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins biquad_filter_5/b1_i] [get_bd_pins multi_GPIO_1/data6_o2]
+  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_1/data6_o3] [get_bd_pins xlconcat_2/In1]
+  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_1/data7_o]
+  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins biquad_filter_4/a2_i] [get_bd_pins multi_GPIO_1/data7_o1]
+  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins biquad_filter_5/b2_i] [get_bd_pins multi_GPIO_1/data7_o2]
   connect_bd_net -net mux_2x1_with_valid_0_data_valid_o [get_bd_pins fine_delay_line_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_0/data_valid_o]
   connect_bd_net -net mux_2x1_with_valid_0_out_o [get_bd_pins fine_delay_line_0/data_i] [get_bd_pins mux_2x1_with_valid_0/out_o]
   connect_bd_net -net mux_2x1_with_valid_1_data_valid_o [get_bd_pins biquad_filter_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_1/data_valid_o]
   connect_bd_net -net mux_8x1_0_out_o [get_bd_pins fine_gain_0/data_i] [get_bd_pins mux_8x1_0/out_o]
   connect_bd_net -net plus_0p99_dout [get_bd_pins DC_Block_IIR/b0_i] [get_bd_pins plus_0p99/dout]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_3/s_axi_aclk]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_3/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_1/s_axi_aclk]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins biquad_filter_4/rst_ni] [get_bd_pins biquad_filter_5/rst_ni] [get_bd_pins coarse_gain_and_limi_0/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_1/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
   connect_bd_net -net triggered_gate_0_data_o [get_bd_pins data_o] [get_bd_pins triggered_gate_0/data_o]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins mux_2x1_with_valid_1/in0_i] [get_bd_pins xlconcat_0/dout]
   connect_bd_net -net xlconcat_2_dout [get_bd_pins mux_8x1_0/in7_i] [get_bd_pins xlconcat_2/dout]
   connect_bd_net -net xlconstant_2_dout [get_bd_pins xlconcat_0/In0] [get_bd_pins xlconstant_2/dout]
   connect_bd_net -net xlconstant_3_dout [get_bd_pins xlconcat_2/In0] [get_bd_pins xlconstant_3/dout]
-  connect_bd_net -net xlconstant_4_dout [get_bd_pins mux_8x1_0/in5_i] [get_bd_pins mux_8x1_0/in6_i] [get_bd_pins xlconstant_4/dout]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins biquad_filter_0/reinit_i] [get_bd_pins xlslice_0/Dout]
   connect_bd_net -net xlslice_1_Dout [get_bd_pins biquad_filter_1/reinit_i] [get_bd_pins xlslice_1/Dout]
-  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins xlslice_2/Dout]
-  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins xlslice_3/Dout]
+  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins biquad_filter_4/reinit_i] [get_bd_pins xlslice_2/Dout]
+  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins biquad_filter_5/reinit_i] [get_bd_pins xlslice_3/Dout]
   connect_bd_net -net xlslice_4_Dout [get_bd_pins DC_Block_IIR/reinit_i] [get_bd_pins xlslice_4/Dout]
   connect_bd_net -net zero_dout [get_bd_pins DC_Block_IIR/a2_i] [get_bd_pins DC_Block_IIR/b2_i] [get_bd_pins zero/dout]
 
@@ -2369,6 +2498,55 @@ proc create_hier_cell_filter_block_1 { parentCell nameHier } {
    CONFIG.OUTPUT_WIDTH {35} \
  ] $biquad_filter_3
 
+  # Create instance: biquad_filter_4, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_4
+  if { [catch {set biquad_filter_4 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_4 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_4
+
+  # Create instance: biquad_filter_5, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_5
+  if { [catch {set biquad_filter_5 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_5 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_5
+
+  # Create instance: coarse_gain_and_limi_0, and set properties
+  set block_name coarse_gain_and_limiter
+  set block_cell_name coarse_gain_and_limi_0
+  if { [catch {set coarse_gain_and_limi_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $coarse_gain_and_limi_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.INPUT_WIDTH {17} \
+   CONFIG.MAX_LOG2_GAIN {15} \
+   CONFIG.OUTPUT_WIDTH {17} \
+   CONFIG.WIDTH_LOG2_GAIN {4} \
+ ] $coarse_gain_and_limi_0
+
   # Create instance: coarse_gain_and_limi_1, and set properties
   set block_name coarse_gain_and_limiter
   set block_cell_name coarse_gain_and_limi_1
@@ -2436,8 +2614,8 @@ proc create_hier_cell_filter_block_1 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {25} \
  ] $minus_0p99
 
-  # Create instance: multi_GPIO_2
-  create_hier_cell_multi_GPIO_2 $hier_obj multi_GPIO_2
+  # Create instance: multi_GPIO_1
+  create_hier_cell_multi_GPIO_1_1 $hier_obj multi_GPIO_1
 
   # Create instance: mux_2x1_with_valid_0, and set properties
   set block_name mux_2x1_with_valid
@@ -2530,13 +2708,6 @@ proc create_hier_cell_filter_block_1 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {9} \
  ] $xlconstant_3
 
-  # Create instance: xlconstant_4, and set properties
-  set xlconstant_4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_4 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {35} \
- ] $xlconstant_4
-
   # Create instance: xlslice_0, and set properties
   set xlslice_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0 ]
   set_property -dict [ list \
@@ -2587,79 +2758,84 @@ proc create_hier_cell_filter_block_1 { parentCell nameHier } {
  ] $zero
 
   # Create interface connections
-  connect_bd_intf_net -intf_net S_AXI_1 [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_2/S_AXI]
+  connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_1/S_AXI]
 
   # Create port connections
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_2/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
-  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in3_i]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins biquad_filter_4/clk_i] [get_bd_pins biquad_filter_5/clk_i] [get_bd_pins coarse_gain_and_limi_0/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_1/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
+  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in1_i]
   connect_bd_net -net biquad_filter_0_data_valid_o [get_bd_pins biquad_filter_0/data_valid_o] [get_bd_pins biquad_filter_1/data_valid_i]
   connect_bd_net -net biquad_filter_1_data_o [get_bd_pins biquad_filter_1/data_o] [get_bd_pins biquad_filter_2/data_i] [get_bd_pins mux_8x1_0/in2_i]
   connect_bd_net -net biquad_filter_1_data_valid_o [get_bd_pins biquad_filter_1/data_valid_o] [get_bd_pins biquad_filter_2/data_valid_i]
-  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in1_i]
+  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in3_i]
   connect_bd_net -net biquad_filter_2_data_valid_o [get_bd_pins biquad_filter_2/data_valid_o] [get_bd_pins biquad_filter_3/data_valid_i]
-  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins mux_8x1_0/in0_i]
+  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins biquad_filter_4/data_i] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net biquad_filter_3_data_valid_o [get_bd_pins biquad_filter_3/data_valid_o] [get_bd_pins biquad_filter_4/data_valid_i]
   connect_bd_net -net biquad_filter_4_data_o [get_bd_pins DC_Block_IIR/data_o] [get_bd_pins mux_2x1_with_valid_1/in1_i]
+  connect_bd_net -net biquad_filter_4_data_o1 [get_bd_pins biquad_filter_4/data_o] [get_bd_pins biquad_filter_5/data_i] [get_bd_pins mux_8x1_0/in5_i]
   connect_bd_net -net biquad_filter_4_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid1_i]
+  connect_bd_net -net biquad_filter_4_data_valid_o1 [get_bd_pins biquad_filter_4/data_valid_o] [get_bd_pins biquad_filter_5/data_valid_i]
+  connect_bd_net -net biquad_filter_5_data_o [get_bd_pins biquad_filter_5/data_o] [get_bd_pins mux_8x1_0/in6_i]
   connect_bd_net -net bram_delay_line_0_data0_o [get_bd_pins in0_i] [get_bd_pins mux_2x1_with_valid_0/in0_i]
   connect_bd_net -net bram_delay_line_0_data_valid0_o [get_bd_pins data_valid0_i] [get_bd_pins mux_2x1_with_valid_0/data_valid0_i]
   connect_bd_net -net bram_delay_line_1_data0_o [get_bd_pins in1_i] [get_bd_pins mux_2x1_with_valid_0/in1_i]
   connect_bd_net -net bram_delay_line_1_data_valid0_o [get_bd_pins data_valid1_i] [get_bd_pins mux_2x1_with_valid_0/data_valid1_i]
   connect_bd_net -net coarse_gain_and_limi_1_data_o [get_bd_pins coarse_gain_and_limi_1/data_o] [get_bd_pins triggered_gate_0/data_i]
-  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in0_i]
   connect_bd_net -net delay_LSB_Dout [get_bd_pins delay_LSB/Dout] [get_bd_pins fine_delay_line_0/delay_i]
   connect_bd_net -net delay_MSB_Dout [get_bd_pins delay_MSB] [get_bd_pins delay_MSB/Dout]
   connect_bd_net -net edge_detector_0_pe_o [get_bd_pins trig_i] [get_bd_pins triggered_gate_0/trig_i]
-  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins fine_delay_line_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins coarse_gain_and_limi_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net fine_delay_line_0_data_o [get_bd_pins coarse_gain_and_limi_0/data_i] [get_bd_pins fine_delay_line_0/data_o]
   connect_bd_net -net fine_delay_line_0_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_i] [get_bd_pins fine_delay_line_0/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid0_i]
   connect_bd_net -net fine_gain_0_data_o [get_bd_pins coarse_gain_and_limi_1/data_i] [get_bd_pins fine_gain_0/data_o]
   connect_bd_net -net minus_0p99_dout [get_bd_pins DC_Block_IIR/a1_i] [get_bd_pins DC_Block_IIR/b1_i] [get_bd_pins minus_0p99/dout]
-  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_2/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
-  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_2/data0_o1]
-  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins multi_GPIO_2/data0_o2]
-  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_2/data0_o3] [get_bd_pins mux_8x1_0/select_i]
-  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_2/data1_o]
-  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_2/data1_o1]
-  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins multi_GPIO_2/data1_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_2/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
-  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_2/data2_o1]
-  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins multi_GPIO_2/data2_o2]
-  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_2/data2_o3]
-  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_2/data3_o]
-  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_2/data3_o1]
-  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins multi_GPIO_2/data3_o2]
-  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_2/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_2/data4_o]
-  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_2/data4_o1]
-  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins multi_GPIO_2/data4_o2]
-  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_2/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
-  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_2/data5_o]
-  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_2/data5_o1]
-  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins multi_GPIO_2/data5_o2]
-  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_2/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
-  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_2/data6_o]
-  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins multi_GPIO_2/data6_o1]
-  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins multi_GPIO_2/data6_o2]
-  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_2/data6_o3] [get_bd_pins xlconcat_2/In1]
-  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_2/data7_o]
-  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins multi_GPIO_2/data7_o1]
-  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins multi_GPIO_2/data7_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_1/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
+  connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_1/data0_o1]
+  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins biquad_filter_4/b0_i] [get_bd_pins multi_GPIO_1/data0_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_1/data0_o3] [get_bd_pins mux_8x1_0/select_i]
+  connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_1/data1_o]
+  connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_1/data1_o1]
+  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins biquad_filter_4/b1_i] [get_bd_pins multi_GPIO_1/data1_o2]
+  connect_bd_net -net multi_GPIO_1_data1_o3 [get_bd_pins coarse_gain_and_limi_0/log2_gain_i] [get_bd_pins multi_GPIO_1/data1_o3]
+  connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_1/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
+  connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_1/data2_o1]
+  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins biquad_filter_4/b2_i] [get_bd_pins multi_GPIO_1/data2_o2]
+  connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_1/data2_o3]
+  connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_1/data3_o]
+  connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_1/data3_o1]
+  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins biquad_filter_5/a1_i] [get_bd_pins multi_GPIO_1/data3_o2]
+  connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_1/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_1/data4_o]
+  connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_1/data4_o1]
+  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins biquad_filter_5/a2_i] [get_bd_pins multi_GPIO_1/data4_o2]
+  connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_1/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
+  connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_1/data5_o]
+  connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_1/data5_o1]
+  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins biquad_filter_5/b0_i] [get_bd_pins multi_GPIO_1/data5_o2]
+  connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_1/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
+  connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_1/data6_o]
+  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins biquad_filter_4/a1_i] [get_bd_pins multi_GPIO_1/data6_o1]
+  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins biquad_filter_5/b1_i] [get_bd_pins multi_GPIO_1/data6_o2]
+  connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_1/data6_o3] [get_bd_pins xlconcat_2/In1]
+  connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_1/data7_o]
+  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins biquad_filter_4/a2_i] [get_bd_pins multi_GPIO_1/data7_o1]
+  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins biquad_filter_5/b2_i] [get_bd_pins multi_GPIO_1/data7_o2]
   connect_bd_net -net mux_2x1_with_valid_0_data_valid_o [get_bd_pins fine_delay_line_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_0/data_valid_o]
   connect_bd_net -net mux_2x1_with_valid_0_out_o [get_bd_pins fine_delay_line_0/data_i] [get_bd_pins mux_2x1_with_valid_0/out_o]
   connect_bd_net -net mux_2x1_with_valid_1_data_valid_o [get_bd_pins biquad_filter_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_1/data_valid_o]
   connect_bd_net -net mux_8x1_0_out_o [get_bd_pins fine_gain_0/data_i] [get_bd_pins mux_8x1_0/out_o]
   connect_bd_net -net plus_0p99_dout [get_bd_pins DC_Block_IIR/b0_i] [get_bd_pins plus_0p99/dout]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_2/s_axi_aclk]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_2/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_1/s_axi_aclk]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins biquad_filter_4/rst_ni] [get_bd_pins biquad_filter_5/rst_ni] [get_bd_pins coarse_gain_and_limi_0/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_1/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
   connect_bd_net -net triggered_gate_0_data_o [get_bd_pins data_o] [get_bd_pins triggered_gate_0/data_o]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins mux_2x1_with_valid_1/in0_i] [get_bd_pins xlconcat_0/dout]
   connect_bd_net -net xlconcat_2_dout [get_bd_pins mux_8x1_0/in7_i] [get_bd_pins xlconcat_2/dout]
   connect_bd_net -net xlconstant_2_dout [get_bd_pins xlconcat_0/In0] [get_bd_pins xlconstant_2/dout]
   connect_bd_net -net xlconstant_3_dout [get_bd_pins xlconcat_2/In0] [get_bd_pins xlconstant_3/dout]
-  connect_bd_net -net xlconstant_4_dout [get_bd_pins mux_8x1_0/in5_i] [get_bd_pins mux_8x1_0/in6_i] [get_bd_pins xlconstant_4/dout]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins biquad_filter_0/reinit_i] [get_bd_pins xlslice_0/Dout]
   connect_bd_net -net xlslice_1_Dout [get_bd_pins biquad_filter_1/reinit_i] [get_bd_pins xlslice_1/Dout]
-  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins xlslice_2/Dout]
-  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins xlslice_3/Dout]
+  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins biquad_filter_4/reinit_i] [get_bd_pins xlslice_2/Dout]
+  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins biquad_filter_5/reinit_i] [get_bd_pins xlslice_3/Dout]
   connect_bd_net -net xlslice_4_Dout [get_bd_pins DC_Block_IIR/reinit_i] [get_bd_pins xlslice_4/Dout]
   connect_bd_net -net zero_dout [get_bd_pins DC_Block_IIR/a2_i] [get_bd_pins DC_Block_IIR/b2_i] [get_bd_pins zero/dout]
 
@@ -2795,6 +2971,55 @@ proc create_hier_cell_filter_block_0 { parentCell nameHier } {
    CONFIG.INPUT_WIDTH {35} \
    CONFIG.OUTPUT_WIDTH {35} \
  ] $biquad_filter_3
+
+  # Create instance: biquad_filter_4, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_4
+  if { [catch {set biquad_filter_4 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_4 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_4
+
+  # Create instance: biquad_filter_5, and set properties
+  set block_name biquad_filter
+  set block_cell_name biquad_filter_5
+  if { [catch {set biquad_filter_5 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $biquad_filter_5 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.COEFF_WIDTH {25} \
+   CONFIG.INPUT_WIDTH {35} \
+   CONFIG.OUTPUT_WIDTH {35} \
+ ] $biquad_filter_5
+
+  # Create instance: coarse_gain_and_limi_0, and set properties
+  set block_name coarse_gain_and_limiter
+  set block_cell_name coarse_gain_and_limi_0
+  if { [catch {set coarse_gain_and_limi_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $coarse_gain_and_limi_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.INPUT_WIDTH {17} \
+   CONFIG.MAX_LOG2_GAIN {15} \
+   CONFIG.OUTPUT_WIDTH {17} \
+   CONFIG.WIDTH_LOG2_GAIN {4} \
+ ] $coarse_gain_and_limi_0
 
   # Create instance: coarse_gain_and_limi_1, and set properties
   set block_name coarse_gain_and_limiter
@@ -2957,13 +3182,6 @@ proc create_hier_cell_filter_block_0 { parentCell nameHier } {
    CONFIG.CONST_WIDTH {9} \
  ] $xlconstant_3
 
-  # Create instance: xlconstant_4, and set properties
-  set xlconstant_4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_4 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {35} \
- ] $xlconstant_4
-
   # Create instance: xlslice_0, and set properties
   set xlslice_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0 ]
   set_property -dict [ list \
@@ -3017,78 +3235,213 @@ proc create_hier_cell_filter_block_0 { parentCell nameHier } {
   connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins S_AXI] [get_bd_intf_pins multi_GPIO_1/S_AXI]
 
   # Create port connections
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_1/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
-  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in3_i]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins clk_i] [get_bd_pins DC_Block_IIR/clk_i] [get_bd_pins biquad_filter_0/clk_i] [get_bd_pins biquad_filter_1/clk_i] [get_bd_pins biquad_filter_2/clk_i] [get_bd_pins biquad_filter_3/clk_i] [get_bd_pins biquad_filter_4/clk_i] [get_bd_pins biquad_filter_5/clk_i] [get_bd_pins coarse_gain_and_limi_0/clk_i] [get_bd_pins coarse_gain_and_limi_1/clk_i] [get_bd_pins fine_delay_line_0/clk_i] [get_bd_pins fine_gain_0/clk_i] [get_bd_pins multi_GPIO_1/clk_i] [get_bd_pins mux_2x1_with_valid_0/clk_i] [get_bd_pins mux_2x1_with_valid_1/clk_i] [get_bd_pins mux_8x1_0/clk_i] [get_bd_pins triggered_gate_0/clk_i]
+  connect_bd_net -net biquad_filter_0_data_o [get_bd_pins biquad_filter_0/data_o] [get_bd_pins biquad_filter_1/data_i] [get_bd_pins mux_8x1_0/in1_i]
   connect_bd_net -net biquad_filter_0_data_valid_o [get_bd_pins biquad_filter_0/data_valid_o] [get_bd_pins biquad_filter_1/data_valid_i]
   connect_bd_net -net biquad_filter_1_data_o [get_bd_pins biquad_filter_1/data_o] [get_bd_pins biquad_filter_2/data_i] [get_bd_pins mux_8x1_0/in2_i]
   connect_bd_net -net biquad_filter_1_data_valid_o [get_bd_pins biquad_filter_1/data_valid_o] [get_bd_pins biquad_filter_2/data_valid_i]
-  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in1_i]
+  connect_bd_net -net biquad_filter_2_data_o [get_bd_pins biquad_filter_2/data_o] [get_bd_pins biquad_filter_3/data_i] [get_bd_pins mux_8x1_0/in3_i]
   connect_bd_net -net biquad_filter_2_data_valid_o [get_bd_pins biquad_filter_2/data_valid_o] [get_bd_pins biquad_filter_3/data_valid_i]
-  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins mux_8x1_0/in0_i]
+  connect_bd_net -net biquad_filter_3_data_o [get_bd_pins biquad_filter_3/data_o] [get_bd_pins biquad_filter_4/data_i] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net biquad_filter_3_data_valid_o [get_bd_pins biquad_filter_3/data_valid_o] [get_bd_pins biquad_filter_4/data_valid_i]
   connect_bd_net -net biquad_filter_4_data_o [get_bd_pins DC_Block_IIR/data_o] [get_bd_pins mux_2x1_with_valid_1/in1_i]
+  connect_bd_net -net biquad_filter_4_data_o1 [get_bd_pins biquad_filter_4/data_o] [get_bd_pins biquad_filter_5/data_i] [get_bd_pins mux_8x1_0/in5_i]
   connect_bd_net -net biquad_filter_4_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid1_i]
+  connect_bd_net -net biquad_filter_4_data_valid_o1 [get_bd_pins biquad_filter_4/data_valid_o] [get_bd_pins biquad_filter_5/data_valid_i]
+  connect_bd_net -net biquad_filter_5_data_o [get_bd_pins biquad_filter_5/data_o] [get_bd_pins mux_8x1_0/in6_i]
   connect_bd_net -net bram_delay_line_0_data0_o [get_bd_pins in0_i] [get_bd_pins mux_2x1_with_valid_0/in0_i]
   connect_bd_net -net bram_delay_line_0_data_valid0_o [get_bd_pins data_valid0_i] [get_bd_pins mux_2x1_with_valid_0/data_valid0_i]
   connect_bd_net -net bram_delay_line_1_data0_o [get_bd_pins in1_i] [get_bd_pins mux_2x1_with_valid_0/in1_i]
   connect_bd_net -net bram_delay_line_1_data_valid0_o [get_bd_pins data_valid1_i] [get_bd_pins mux_2x1_with_valid_0/data_valid1_i]
   connect_bd_net -net coarse_gain_and_limi_1_data_o [get_bd_pins coarse_gain_and_limi_1/data_o] [get_bd_pins triggered_gate_0/data_i]
-  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in4_i]
+  connect_bd_net -net decimate_and_delay_0_data_o [get_bd_pins biquad_filter_0/data_i] [get_bd_pins mux_2x1_with_valid_1/out_o] [get_bd_pins mux_8x1_0/in0_i]
   connect_bd_net -net delay_LSB_Dout [get_bd_pins delay_LSB/Dout] [get_bd_pins fine_delay_line_0/delay_i]
   connect_bd_net -net delay_MSB_Dout [get_bd_pins delay_MSB] [get_bd_pins delay_MSB/Dout]
   connect_bd_net -net edge_detector_0_pe_o [get_bd_pins trig_i] [get_bd_pins triggered_gate_0/trig_i]
-  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins fine_delay_line_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net filter_input_mux_out_o [get_bd_pins DC_Block_IIR/data_i] [get_bd_pins coarse_gain_and_limi_0/data_o] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net fine_delay_line_0_data_o [get_bd_pins coarse_gain_and_limi_0/data_i] [get_bd_pins fine_delay_line_0/data_o]
   connect_bd_net -net fine_delay_line_0_data_valid_o [get_bd_pins DC_Block_IIR/data_valid_i] [get_bd_pins fine_delay_line_0/data_valid_o] [get_bd_pins mux_2x1_with_valid_1/data_valid0_i]
   connect_bd_net -net fine_gain_0_data_o [get_bd_pins coarse_gain_and_limi_1/data_i] [get_bd_pins fine_gain_0/data_o]
   connect_bd_net -net minus_0p99_dout [get_bd_pins DC_Block_IIR/a1_i] [get_bd_pins DC_Block_IIR/b1_i] [get_bd_pins minus_0p99/dout]
   connect_bd_net -net multi_GPIO_1_data0_o [get_bd_pins multi_GPIO_1/data0_o] [get_bd_pins mux_2x1_with_valid_0/sel_i]
   connect_bd_net -net multi_GPIO_1_data0_o1 [get_bd_pins biquad_filter_0/b2_i] [get_bd_pins multi_GPIO_1/data0_o1]
-  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins multi_GPIO_1/data0_o2]
+  connect_bd_net -net multi_GPIO_1_data0_o2 [get_bd_pins biquad_filter_2/b0_i] [get_bd_pins biquad_filter_4/b0_i] [get_bd_pins multi_GPIO_1/data0_o2]
   connect_bd_net -net multi_GPIO_1_data0_o3 [get_bd_pins multi_GPIO_1/data0_o3] [get_bd_pins mux_8x1_0/select_i]
   connect_bd_net -net multi_GPIO_1_data1_o [get_bd_pins fine_gain_0/gain_i] [get_bd_pins multi_GPIO_1/data1_o]
   connect_bd_net -net multi_GPIO_1_data1_o1 [get_bd_pins biquad_filter_1/a1_i] [get_bd_pins multi_GPIO_1/data1_o1]
-  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins multi_GPIO_1/data1_o2]
+  connect_bd_net -net multi_GPIO_1_data1_o2 [get_bd_pins biquad_filter_2/b1_i] [get_bd_pins biquad_filter_4/b1_i] [get_bd_pins multi_GPIO_1/data1_o2]
+  connect_bd_net -net multi_GPIO_1_data1_o3 [get_bd_pins coarse_gain_and_limi_0/log2_gain_i] [get_bd_pins multi_GPIO_1/data1_o3]
   connect_bd_net -net multi_GPIO_1_data2_o [get_bd_pins multi_GPIO_1/data2_o] [get_bd_pins mux_2x1_with_valid_1/sel_i]
   connect_bd_net -net multi_GPIO_1_data2_o1 [get_bd_pins biquad_filter_1/a2_i] [get_bd_pins multi_GPIO_1/data2_o1]
-  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins multi_GPIO_1/data2_o2]
+  connect_bd_net -net multi_GPIO_1_data2_o2 [get_bd_pins biquad_filter_2/b2_i] [get_bd_pins biquad_filter_4/b2_i] [get_bd_pins multi_GPIO_1/data2_o2]
   connect_bd_net -net multi_GPIO_1_data2_o3 [get_bd_pins coarse_gain_and_limi_1/log2_gain_i] [get_bd_pins multi_GPIO_1/data2_o3]
   connect_bd_net -net multi_GPIO_1_data3_o [get_bd_pins delay_LSB/Din] [get_bd_pins delay_MSB/Din] [get_bd_pins multi_GPIO_1/data3_o]
   connect_bd_net -net multi_GPIO_1_data3_o1 [get_bd_pins biquad_filter_1/b0_i] [get_bd_pins multi_GPIO_1/data3_o1]
-  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins multi_GPIO_1/data3_o2]
+  connect_bd_net -net multi_GPIO_1_data3_o2 [get_bd_pins biquad_filter_3/a1_i] [get_bd_pins biquad_filter_5/a1_i] [get_bd_pins multi_GPIO_1/data3_o2]
   connect_bd_net -net multi_GPIO_1_data3_o3 [get_bd_pins multi_GPIO_1/data3_o3] [get_bd_pins triggered_gate_0/delay_cycles_i]
   connect_bd_net -net multi_GPIO_1_data4_o [get_bd_pins biquad_filter_0/a1_i] [get_bd_pins multi_GPIO_1/data4_o]
   connect_bd_net -net multi_GPIO_1_data4_o1 [get_bd_pins biquad_filter_1/b1_i] [get_bd_pins multi_GPIO_1/data4_o1]
-  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins multi_GPIO_1/data4_o2]
+  connect_bd_net -net multi_GPIO_1_data4_o2 [get_bd_pins biquad_filter_3/a2_i] [get_bd_pins biquad_filter_5/a2_i] [get_bd_pins multi_GPIO_1/data4_o2]
   connect_bd_net -net multi_GPIO_1_data4_o3 [get_bd_pins multi_GPIO_1/data4_o3] [get_bd_pins triggered_gate_0/toggle_cycles_i]
   connect_bd_net -net multi_GPIO_1_data5_o [get_bd_pins biquad_filter_0/a2_i] [get_bd_pins multi_GPIO_1/data5_o]
   connect_bd_net -net multi_GPIO_1_data5_o1 [get_bd_pins biquad_filter_1/b2_i] [get_bd_pins multi_GPIO_1/data5_o1]
-  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins multi_GPIO_1/data5_o2]
+  connect_bd_net -net multi_GPIO_1_data5_o2 [get_bd_pins biquad_filter_3/b0_i] [get_bd_pins biquad_filter_5/b0_i] [get_bd_pins multi_GPIO_1/data5_o2]
   connect_bd_net -net multi_GPIO_1_data5_o3 [get_bd_pins multi_GPIO_1/data5_o3] [get_bd_pins xlslice_0/Din] [get_bd_pins xlslice_1/Din] [get_bd_pins xlslice_2/Din] [get_bd_pins xlslice_3/Din] [get_bd_pins xlslice_4/Din]
   connect_bd_net -net multi_GPIO_1_data6_o [get_bd_pins biquad_filter_0/b0_i] [get_bd_pins multi_GPIO_1/data6_o]
-  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins multi_GPIO_1/data6_o1]
-  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins multi_GPIO_1/data6_o2]
+  connect_bd_net -net multi_GPIO_1_data6_o1 [get_bd_pins biquad_filter_2/a1_i] [get_bd_pins biquad_filter_4/a1_i] [get_bd_pins multi_GPIO_1/data6_o1]
+  connect_bd_net -net multi_GPIO_1_data6_o2 [get_bd_pins biquad_filter_3/b1_i] [get_bd_pins biquad_filter_5/b1_i] [get_bd_pins multi_GPIO_1/data6_o2]
   connect_bd_net -net multi_GPIO_1_data6_o3 [get_bd_pins multi_GPIO_1/data6_o3] [get_bd_pins xlconcat_2/In1]
   connect_bd_net -net multi_GPIO_1_data7_o [get_bd_pins biquad_filter_0/b1_i] [get_bd_pins multi_GPIO_1/data7_o]
-  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins multi_GPIO_1/data7_o1]
-  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins multi_GPIO_1/data7_o2]
+  connect_bd_net -net multi_GPIO_1_data7_o1 [get_bd_pins biquad_filter_2/a2_i] [get_bd_pins biquad_filter_4/a2_i] [get_bd_pins multi_GPIO_1/data7_o1]
+  connect_bd_net -net multi_GPIO_1_data7_o2 [get_bd_pins biquad_filter_3/b2_i] [get_bd_pins biquad_filter_5/b2_i] [get_bd_pins multi_GPIO_1/data7_o2]
   connect_bd_net -net mux_2x1_with_valid_0_data_valid_o [get_bd_pins fine_delay_line_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_0/data_valid_o]
   connect_bd_net -net mux_2x1_with_valid_0_out_o [get_bd_pins fine_delay_line_0/data_i] [get_bd_pins mux_2x1_with_valid_0/out_o]
   connect_bd_net -net mux_2x1_with_valid_1_data_valid_o [get_bd_pins biquad_filter_0/data_valid_i] [get_bd_pins mux_2x1_with_valid_1/data_valid_o]
   connect_bd_net -net mux_8x1_0_out_o [get_bd_pins fine_gain_0/data_i] [get_bd_pins mux_8x1_0/out_o]
   connect_bd_net -net plus_0p99_dout [get_bd_pins DC_Block_IIR/b0_i] [get_bd_pins plus_0p99/dout]
   connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins s_axi_aclk] [get_bd_pins multi_GPIO_1/s_axi_aclk]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_1/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins DC_Block_IIR/rst_ni] [get_bd_pins biquad_filter_0/rst_ni] [get_bd_pins biquad_filter_1/rst_ni] [get_bd_pins biquad_filter_2/rst_ni] [get_bd_pins biquad_filter_3/rst_ni] [get_bd_pins biquad_filter_4/rst_ni] [get_bd_pins biquad_filter_5/rst_ni] [get_bd_pins coarse_gain_and_limi_0/rst_ni] [get_bd_pins coarse_gain_and_limi_1/rst_ni] [get_bd_pins fine_delay_line_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni] [get_bd_pins multi_GPIO_1/s_axi_aresetn] [get_bd_pins mux_2x1_with_valid_0/rst_ni] [get_bd_pins mux_2x1_with_valid_1/rst_ni] [get_bd_pins mux_8x1_0/rst_ni] [get_bd_pins triggered_gate_0/rst_ni]
   connect_bd_net -net triggered_gate_0_data_o [get_bd_pins data_o] [get_bd_pins triggered_gate_0/data_o]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins mux_2x1_with_valid_1/in0_i] [get_bd_pins xlconcat_0/dout]
   connect_bd_net -net xlconcat_2_dout [get_bd_pins mux_8x1_0/in7_i] [get_bd_pins xlconcat_2/dout]
   connect_bd_net -net xlconstant_2_dout [get_bd_pins xlconcat_0/In0] [get_bd_pins xlconstant_2/dout]
   connect_bd_net -net xlconstant_3_dout [get_bd_pins xlconcat_2/In0] [get_bd_pins xlconstant_3/dout]
-  connect_bd_net -net xlconstant_4_dout [get_bd_pins mux_8x1_0/in5_i] [get_bd_pins mux_8x1_0/in6_i] [get_bd_pins xlconstant_4/dout]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins biquad_filter_0/reinit_i] [get_bd_pins xlslice_0/Dout]
   connect_bd_net -net xlslice_1_Dout [get_bd_pins biquad_filter_1/reinit_i] [get_bd_pins xlslice_1/Dout]
-  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins xlslice_2/Dout]
-  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins xlslice_3/Dout]
+  connect_bd_net -net xlslice_2_Dout [get_bd_pins biquad_filter_2/reinit_i] [get_bd_pins biquad_filter_4/reinit_i] [get_bd_pins xlslice_2/Dout]
+  connect_bd_net -net xlslice_3_Dout1 [get_bd_pins biquad_filter_3/reinit_i] [get_bd_pins biquad_filter_5/reinit_i] [get_bd_pins xlslice_3/Dout]
   connect_bd_net -net xlslice_4_Dout [get_bd_pins DC_Block_IIR/reinit_i] [get_bd_pins xlslice_4/Dout]
   connect_bd_net -net zero_dout [get_bd_pins DC_Block_IIR/a2_i] [get_bd_pins DC_Block_IIR/b2_i] [get_bd_pins zero/dout]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+# Hierarchical cell: fgen
+proc create_hier_cell_fgen { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_fgen() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+
+  # Create pins
+  create_bd_pin -dir I -from 25 -to 0 In0
+  create_bd_pin -dir I -type clk aclk
+  create_bd_pin -dir O -from 13 -to 0 data_o
+  create_bd_pin -dir I -from 24 -to 0 gain_i
+  create_bd_pin -dir I -from 1 -to 0 log2_gain_i
+  create_bd_pin -dir I rst_ni
+
+  # Create instance: coarse_gain_and_limi_0, and set properties
+  set block_name coarse_gain_and_limiter
+  set block_cell_name coarse_gain_and_limi_0
+  if { [catch {set coarse_gain_and_limi_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $coarse_gain_and_limi_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.INPUT_WIDTH {16} \
+ ] $coarse_gain_and_limi_0
+
+  # Create instance: dds_compiler_0, and set properties
+  set dds_compiler_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:dds_compiler:6.0 dds_compiler_0 ]
+  set_property -dict [ list \
+   CONFIG.Amplitude_Mode {Unit_Circle} \
+   CONFIG.DATA_Has_TLAST {Not_Required} \
+   CONFIG.DDS_Clock_Rate {125} \
+   CONFIG.Frequency_Resolution {0.4} \
+   CONFIG.Has_Phase_Out {false} \
+   CONFIG.Latency {7} \
+   CONFIG.M_DATA_Has_TUSER {Not_Required} \
+   CONFIG.Mode_of_Operation {Standard} \
+   CONFIG.Noise_Shaping {None} \
+   CONFIG.Output_Frequency1 {0} \
+   CONFIG.Output_Selection {Sine} \
+   CONFIG.Output_Width {16} \
+   CONFIG.PINC1 {0} \
+   CONFIG.Parameter_Entry {Hardware_Parameters} \
+   CONFIG.Phase_Increment {Programmable} \
+   CONFIG.Phase_Width {26} \
+   CONFIG.S_PHASE_Has_TUSER {Not_Required} \
+   CONFIG.Spurious_Free_Dynamic_Range {45} \
+ ] $dds_compiler_0
+
+  # Create instance: fine_gain_0, and set properties
+  set block_name fine_gain
+  set block_cell_name fine_gain_0
+  if { [catch {set fine_gain_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $fine_gain_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.DATA_WIDTH {16} \
+   CONFIG.GAIN_WIDTH {25} \
+ ] $fine_gain_0
+
+  # Create instance: xlconcat_0, and set properties
+  set xlconcat_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0 ]
+  set_property -dict [ list \
+   CONFIG.IN0_WIDTH {26} \
+   CONFIG.IN1_WIDTH {6} \
+ ] $xlconcat_0
+
+  # Create instance: xlconstant_0, and set properties
+  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
+
+  # Create instance: xlconstant_1, and set properties
+  set xlconstant_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_1 ]
+  set_property -dict [ list \
+   CONFIG.CONST_VAL {0} \
+   CONFIG.CONST_WIDTH {6} \
+ ] $xlconstant_1
+
+  # Create port connections
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins aclk] [get_bd_pins coarse_gain_and_limi_0/clk_i] [get_bd_pins dds_compiler_0/aclk] [get_bd_pins fine_gain_0/clk_i]
+  connect_bd_net -net coarse_gain_and_limi_0_data_o [get_bd_pins data_o] [get_bd_pins coarse_gain_and_limi_0/data_o]
+  connect_bd_net -net dds_compiler_0_m_axis_data_tdata [get_bd_pins dds_compiler_0/m_axis_data_tdata] [get_bd_pins fine_gain_0/data_i]
+  connect_bd_net -net fine_gain_0_data_o [get_bd_pins coarse_gain_and_limi_0/data_i] [get_bd_pins fine_gain_0/data_o]
+  connect_bd_net -net multi_GPIO_0_data0_o [get_bd_pins In0] [get_bd_pins xlconcat_0/In0]
+  connect_bd_net -net multi_GPIO_0_data1_o2 [get_bd_pins gain_i] [get_bd_pins fine_gain_0/gain_i]
+  connect_bd_net -net multi_GPIO_0_data2_o2 [get_bd_pins log2_gain_i] [get_bd_pins coarse_gain_and_limi_0/log2_gain_i]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins rst_ni] [get_bd_pins coarse_gain_and_limi_0/rst_ni] [get_bd_pins fine_gain_0/rst_ni]
+  connect_bd_net -net xlconcat_0_dout [get_bd_pins dds_compiler_0/s_axis_config_tdata] [get_bd_pins xlconcat_0/dout]
+  connect_bd_net -net xlconstant_0_dout [get_bd_pins dds_compiler_0/s_axis_config_tvalid] [get_bd_pins xlconstant_0/dout]
+  connect_bd_net -net xlconstant_1_dout [get_bd_pins xlconcat_0/In1] [get_bd_pins xlconstant_1/dout]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -4218,7 +4571,9 @@ proc create_root_design { parentCell } {
   set daisy_p_i [ create_bd_port -dir I -from 1 -to 0 daisy_p_i ]
   set daisy_p_o [ create_bd_port -dir O -from 1 -to 0 daisy_p_o ]
   set exp_n_tri_io [ create_bd_port -dir IO -from 7 -to 0 exp_n_tri_io ]
-  set exp_p_tri_io [ create_bd_port -dir O -from 7 -to 0 exp_p_tri_io ]
+  set exp_p_tri_io [ create_bd_port -dir IO -from 5 -to 0 exp_p_tri_io ]
+  set gpio6_o [ create_bd_port -dir O gpio6_o ]
+  set gpio7_i [ create_bd_port -dir I gpio7_i ]
   set led_o [ create_bd_port -dir O -from 7 -to 0 led_o ]
 
   # Create instance: GPIO_trigger_pulse_0, and set properties
@@ -4271,7 +4626,7 @@ proc create_root_design { parentCell } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.INPUT_WIDTH {16} \
+   CONFIG.INPUT_WIDTH {17} \
    CONFIG.MAX_LOG2_GAIN {3} \
    CONFIG.WIDTH_LOG2_GAIN {2} \
  ] $coarse_gain_and_limi_2
@@ -4287,18 +4642,18 @@ proc create_root_design { parentCell } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.INPUT_WIDTH {16} \
+   CONFIG.INPUT_WIDTH {17} \
    CONFIG.MAX_LOG2_GAIN {3} \
    CONFIG.WIDTH_LOG2_GAIN {2} \
  ] $coarse_gain_and_limi_3
 
-  # Create instance: conditional_adder_4x2_0, and set properties
-  set block_name conditional_adder_4x2
-  set block_cell_name conditional_adder_4x2_0
-  if { [catch {set conditional_adder_4x2_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  # Create instance: conditional_adder_8x2_0, and set properties
+  set block_name conditional_adder_8x2
+  set block_cell_name conditional_adder_8x2_0
+  if { [catch {set conditional_adder_8x2_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $conditional_adder_4x2_0 eq "" } {
+   } elseif { $conditional_adder_8x2_0 eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
@@ -4345,6 +4700,9 @@ proc create_root_design { parentCell } {
      return 1
    }
   
+  # Create instance: fgen
+  create_hier_cell_fgen [current_bd_instance .] fgen
+
   # Create instance: filter_block_0
   create_hier_cell_filter_block_0 [current_bd_instance .] filter_block_0
 
@@ -4357,8 +4715,50 @@ proc create_root_design { parentCell } {
   # Create instance: filter_block_3
   create_hier_cell_filter_block_3 [current_bd_instance .] filter_block_3
 
+  # Create instance: flip_flop_0, and set properties
+  set block_name flip_flop
+  set block_cell_name flip_flop_0
+  if { [catch {set flip_flop_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $flip_flop_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.WIDTH {14} \
+ ] $flip_flop_0
+
+  # Create instance: flip_flop_1, and set properties
+  set block_name flip_flop
+  set block_cell_name flip_flop_1
+  if { [catch {set flip_flop_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $flip_flop_1 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.WIDTH {14} \
+ ] $flip_flop_1
+
   # Create instance: multi_GPIO_0
   create_hier_cell_multi_GPIO_0 [current_bd_instance .] multi_GPIO_0
+
+  # Create instance: mux_2x1_0, and set properties
+  set block_name mux_2x1
+  set block_cell_name mux_2x1_0
+  if { [catch {set mux_2x1_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $mux_2x1_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.WIDTH {1} \
+ ] $mux_2x1_0
 
   # Create instance: red_pitaya_adc_0, and set properties
   set block_name red_pitaya_adc
@@ -4384,20 +4784,6 @@ proc create_root_design { parentCell } {
    CONFIG.C_SIZE {2} \
  ] $util_ds_buf_2
 
-  # Create instance: xlconcat_0, and set properties
-  set xlconcat_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0 ]
-  set_property -dict [ list \
-   CONFIG.IN0_WIDTH {1} \
-   CONFIG.IN1_WIDTH {7} \
- ] $xlconcat_0
-
-  # Create instance: xlconstant_1, and set properties
-  set xlconstant_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_1 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {7} \
- ] $xlconstant_1
-
   # Create instance: xlconstant_8, and set properties
   set xlconstant_8 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_8 ]
   set_property -dict [ list \
@@ -4408,24 +4794,23 @@ proc create_root_design { parentCell } {
   # Create interface connections
   connect_bd_intf_net -intf_net PS7_M01_AXI [get_bd_intf_pins PS7/M01_AXI] [get_bd_intf_pins filter_block_0/S_AXI]
   connect_bd_intf_net -intf_net PS7_M02_AXI [get_bd_intf_pins PS7/M02_AXI] [get_bd_intf_pins filter_block_1/S_AXI]
-  connect_bd_intf_net -intf_net S_AXI_2 [get_bd_intf_pins PS7/M03_AXI] [get_bd_intf_pins filter_block_2/S_AXI]
-  connect_bd_intf_net -intf_net S_AXI_3 [get_bd_intf_pins PS7/M04_AXI] [get_bd_intf_pins filter_block_3/S_AXI]
+  connect_bd_intf_net -intf_net PS7_M03_AXI [get_bd_intf_pins PS7/M03_AXI] [get_bd_intf_pins filter_block_2/S_AXI]
+  connect_bd_intf_net -intf_net PS7_M04_AXI [get_bd_intf_pins PS7/M04_AXI] [get_bd_intf_pins filter_block_3/S_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins PS7/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins PS7/FIXED_IO]
   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_pins PS7/M00_AXI] [get_bd_intf_pins multi_GPIO_0/S_AXI]
 
   # Create port connections
   connect_bd_net -net GPIO_trigger_pulse_0_data_trig_o [get_bd_pins GPIO_trigger_pulse_0/data_trig_o] [get_bd_pins dac_mux/in6_i]
-  connect_bd_net -net GPIO_trigger_pulse_0_trig_o [get_bd_pins GPIO_trigger_pulse_0/trig_o] [get_bd_pins xlconcat_0/In0]
+  connect_bd_net -net GPIO_trigger_pulse_0_trig_o [get_bd_ports gpio6_o] [get_bd_pins GPIO_trigger_pulse_0/trig_o]
   connect_bd_net -net adc_clk_n_i_1 [get_bd_ports adc_clk_n_i] [get_bd_pins red_pitaya_adc_0/adc_clk_n]
   connect_bd_net -net adc_clk_p_i_1 [get_bd_ports adc_clk_p_i] [get_bd_pins red_pitaya_adc_0/adc_clk_p]
   connect_bd_net -net adc_dat_a_i_1 [get_bd_ports adc_dat_a_i] [get_bd_pins red_pitaya_adc_0/adc_dat_a_i]
   connect_bd_net -net adc_dat_b_i_1 [get_bd_ports adc_dat_b_i] [get_bd_pins red_pitaya_adc_0/adc_dat_b_i]
-  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins GPIO_trigger_pulse_0/clk_i] [get_bd_pins aom_control/CLK] [get_bd_pins bram_delay_line_0/clk_i] [get_bd_pins bram_delay_line_1/clk_i] [get_bd_pins coarse_gain_and_limi_2/clk_i] [get_bd_pins coarse_gain_and_limi_3/clk_i] [get_bd_pins conditional_adder_4x2_0/clk_i] [get_bd_pins dac_mux/clk_in1] [get_bd_pins decimate_0/clk_i] [get_bd_pins decimate_1/clk_i] [get_bd_pins edge_detector_0/clk_i] [get_bd_pins filter_block_0/clk_i] [get_bd_pins filter_block_1/clk_i] [get_bd_pins filter_block_2/clk_i] [get_bd_pins filter_block_3/clk_i] [get_bd_pins multi_GPIO_0/clk_i] [get_bd_pins red_pitaya_adc_0/adc_clk]
+  connect_bd_net -net axis_red_pitaya_adc_0_adc_clk [get_bd_pins GPIO_trigger_pulse_0/clk_i] [get_bd_pins aom_control/CLK] [get_bd_pins bram_delay_line_0/clk_i] [get_bd_pins bram_delay_line_1/clk_i] [get_bd_pins coarse_gain_and_limi_2/clk_i] [get_bd_pins coarse_gain_and_limi_3/clk_i] [get_bd_pins conditional_adder_8x2_0/clk_i] [get_bd_pins dac_mux/clk_in1] [get_bd_pins decimate_0/clk_i] [get_bd_pins decimate_1/clk_i] [get_bd_pins edge_detector_0/clk_i] [get_bd_pins fgen/aclk] [get_bd_pins filter_block_0/clk_i] [get_bd_pins filter_block_1/clk_i] [get_bd_pins filter_block_2/clk_i] [get_bd_pins filter_block_3/clk_i] [get_bd_pins flip_flop_0/clk_i] [get_bd_pins flip_flop_1/clk_i] [get_bd_pins multi_GPIO_0/clk_i] [get_bd_pins mux_2x1_0/clk_i] [get_bd_pins red_pitaya_adc_0/adc_clk]
   connect_bd_net -net bram_delay_line_0_data0_o [get_bd_pins bram_delay_line_0/data0_o] [get_bd_pins filter_block_0/in0_i]
   connect_bd_net -net bram_delay_line_0_data1_o [get_bd_pins bram_delay_line_0/data1_o] [get_bd_pins filter_block_1/in0_i]
   connect_bd_net -net bram_delay_line_0_data2_o [get_bd_pins bram_delay_line_0/data2_o] [get_bd_pins filter_block_2/in0_i]
-  connect_bd_net -net bram_delay_line_0_data3_o [get_bd_pins bram_delay_line_0/data3_o] [get_bd_pins filter_block_3/in0_i]
   connect_bd_net -net bram_delay_line_0_data_valid0_o [get_bd_pins bram_delay_line_0/data_valid0_o] [get_bd_pins filter_block_0/data_valid0_i]
   connect_bd_net -net bram_delay_line_0_data_valid1_o [get_bd_pins bram_delay_line_0/data_valid1_o] [get_bd_pins filter_block_1/data_valid0_i]
   connect_bd_net -net bram_delay_line_0_data_valid2_o [get_bd_pins bram_delay_line_0/data_valid2_o] [get_bd_pins filter_block_2/data_valid0_i]
@@ -4437,67 +4822,75 @@ proc create_root_design { parentCell } {
   connect_bd_net -net bram_delay_line_1_data_valid0_o [get_bd_pins bram_delay_line_1/data_valid0_o] [get_bd_pins filter_block_0/data_valid1_i]
   connect_bd_net -net bram_delay_line_1_data_valid1_o [get_bd_pins bram_delay_line_1/data_valid1_o] [get_bd_pins filter_block_1/data_valid1_i]
   connect_bd_net -net bram_delay_line_1_data_valid2_o [get_bd_pins bram_delay_line_1/data_valid2_o] [get_bd_pins filter_block_2/data_valid1_i]
-  connect_bd_net -net bram_delay_line_1_data_valid3_o [get_bd_pins bram_delay_line_1/data_valid3_o] [get_bd_pins filter_block_3/data_valid1_i]
   connect_bd_net -net coarse_gain_and_limi_2_data_o [get_bd_pins coarse_gain_and_limi_2/data_o] [get_bd_pins dac_mux/in3_i]
   connect_bd_net -net coarse_gain_and_limi_3_data_o [get_bd_pins coarse_gain_and_limi_3/data_o] [get_bd_pins dac_mux/in4_i]
-  connect_bd_net -net conditional_adder_4x2_0_data0_o [get_bd_pins coarse_gain_and_limi_2/data_i] [get_bd_pins conditional_adder_4x2_0/data0_o]
-  connect_bd_net -net conditional_adder_4x2_0_data1_o [get_bd_pins coarse_gain_and_limi_3/data_i] [get_bd_pins conditional_adder_4x2_0/data1_o]
+  connect_bd_net -net conditional_adder_8x2_0_data0_o [get_bd_pins coarse_gain_and_limi_2/data_i] [get_bd_pins conditional_adder_8x2_0/data0_o]
+  connect_bd_net -net conditional_adder_8x2_0_data1_o [get_bd_pins coarse_gain_and_limi_3/data_i] [get_bd_pins conditional_adder_8x2_0/data1_o]
   connect_bd_net -net daisy_n_i_1 [get_bd_ports daisy_n_i] [get_bd_pins util_ds_buf_1/IBUF_DS_N]
   connect_bd_net -net daisy_p_i_1 [get_bd_ports daisy_p_i] [get_bd_pins util_ds_buf_1/IBUF_DS_P]
+  connect_bd_net -net data_valid1_i_1 [get_bd_pins bram_delay_line_1/data_valid3_o] [get_bd_pins filter_block_3/data_valid1_i]
   connect_bd_net -net decimate_0_ce_o [get_bd_pins bram_delay_line_0/ce_i] [get_bd_pins decimate_0/ce_o]
   connect_bd_net -net decimate_0_data0_o [get_bd_pins bram_delay_line_0/data_i] [get_bd_pins decimate_0/data0_o]
   connect_bd_net -net decimate_1_ce_o [get_bd_pins bram_delay_line_1/ce_i] [get_bd_pins decimate_1/ce_o]
   connect_bd_net -net decimate_1_data0_o [get_bd_pins bram_delay_line_1/data_i] [get_bd_pins decimate_1/data0_o]
   connect_bd_net -net delay_MSB_Dout [get_bd_pins bram_delay_line_0/delay0_i] [get_bd_pins bram_delay_line_1/delay0_i] [get_bd_pins filter_block_0/delay_MSB]
   connect_bd_net -net edge_detector_0_pe_o [get_bd_pins GPIO_trigger_pulse_0/trig_i] [get_bd_pins aom_control/trig_i] [get_bd_pins edge_detector_0/pe_o] [get_bd_pins filter_block_0/trig_i] [get_bd_pins filter_block_1/trig_i] [get_bd_pins filter_block_2/trig_i] [get_bd_pins filter_block_3/trig_i]
-  connect_bd_net -net filter_block_1_data_o [get_bd_pins conditional_adder_4x2_0/data1_i] [get_bd_pins filter_block_1/data_o]
+  connect_bd_net -net fgen_data_o [get_bd_pins conditional_adder_8x2_0/data6_i] [get_bd_pins fgen/data_o]
+  connect_bd_net -net filter_block_1_data_o [get_bd_pins conditional_adder_8x2_0/data3_i] [get_bd_pins filter_block_1/data_o]
   connect_bd_net -net filter_block_1_delay_MSB [get_bd_pins bram_delay_line_0/delay1_i] [get_bd_pins bram_delay_line_1/delay1_i] [get_bd_pins filter_block_1/delay_MSB]
-  connect_bd_net -net filter_block_2_data_o [get_bd_pins conditional_adder_4x2_0/data2_i] [get_bd_pins filter_block_2/data_o]
+  connect_bd_net -net filter_block_2_data_o [get_bd_pins conditional_adder_8x2_0/data4_i] [get_bd_pins filter_block_2/data_o]
   connect_bd_net -net filter_block_2_delay_MSB [get_bd_pins bram_delay_line_0/delay2_i] [get_bd_pins bram_delay_line_1/delay2_i] [get_bd_pins filter_block_2/delay_MSB]
-  connect_bd_net -net filter_block_3_data_o [get_bd_pins conditional_adder_4x2_0/data3_i] [get_bd_pins filter_block_3/data_o]
+  connect_bd_net -net filter_block_3_data_o [get_bd_pins conditional_adder_8x2_0/data5_i] [get_bd_pins filter_block_3/data_o]
   connect_bd_net -net filter_block_3_delay_MSB [get_bd_pins bram_delay_line_0/delay3_i] [get_bd_pins bram_delay_line_1/delay3_i] [get_bd_pins filter_block_3/delay_MSB]
-  connect_bd_net -net in7_i_1 [get_bd_pins dac_mux/in7_i] [get_bd_pins multi_GPIO_0/data4_o1]
+  connect_bd_net -net flip_flop_0_data_o [get_bd_pins conditional_adder_8x2_0/data0_i] [get_bd_pins flip_flop_0/data_o]
+  connect_bd_net -net flip_flop_1_data_o [get_bd_pins conditional_adder_8x2_0/data1_i] [get_bd_pins flip_flop_1/data_o]
+  connect_bd_net -net gpio7_i_1 [get_bd_ports gpio7_i] [get_bd_pins mux_2x1_0/in1_i]
+  connect_bd_net -net in0_i_1 [get_bd_pins bram_delay_line_0/data3_o] [get_bd_pins filter_block_3/in0_i]
+  connect_bd_net -net in7_i_1 [get_bd_pins conditional_adder_8x2_0/data7_i] [get_bd_pins dac_mux/in7_i] [get_bd_pins multi_GPIO_0/data4_o1]
+  connect_bd_net -net multi_GPIO_0_data0_o [get_bd_pins fgen/In0] [get_bd_pins multi_GPIO_0/data0_o]
   connect_bd_net -net multi_GPIO_0_data0_o1 [get_bd_pins aom_control/gain_i] [get_bd_pins multi_GPIO_0/data0_o1]
   connect_bd_net -net multi_GPIO_0_data0_o2 [get_bd_pins coarse_gain_and_limi_3/log2_gain_i] [get_bd_pins multi_GPIO_0/data0_o2]
   connect_bd_net -net multi_GPIO_0_data1_o [get_bd_pins aom_control/sel_i] [get_bd_pins multi_GPIO_0/data1_o]
+  connect_bd_net -net multi_GPIO_0_data1_o2 [get_bd_pins fgen/gain_i] [get_bd_pins multi_GPIO_0/data1_o2]
   connect_bd_net -net multi_GPIO_0_data2_o [get_bd_pins aom_control/trap_enable_i] [get_bd_pins multi_GPIO_0/data2_o]
+  connect_bd_net -net multi_GPIO_0_data2_o2 [get_bd_pins fgen/log2_gain_i] [get_bd_pins multi_GPIO_0/data2_o2]
   connect_bd_net -net multi_GPIO_0_data3_o [get_bd_pins aom_control/delay_cycles_i] [get_bd_pins multi_GPIO_0/data3_o]
   connect_bd_net -net multi_GPIO_0_data3_o1 [get_bd_pins GPIO_trigger_pulse_0/delay_cycles_i] [get_bd_pins multi_GPIO_0/data3_o1]
   connect_bd_net -net multi_GPIO_0_data4_o [get_bd_pins aom_control/toggle_cycles_i] [get_bd_pins multi_GPIO_0/data4_o]
-  connect_bd_net -net multi_GPIO_0_data4_o2 [get_bd_pins edge_detector_0/sig_i] [get_bd_pins multi_GPIO_0/data4_o2]
+  connect_bd_net -net multi_GPIO_0_data4_o2 [get_bd_pins multi_GPIO_0/data4_o2] [get_bd_pins mux_2x1_0/in0_i]
   connect_bd_net -net multi_GPIO_0_data5_o [get_bd_pins aom_control/feedback_enable_i] [get_bd_pins multi_GPIO_0/data5_o]
-  connect_bd_net -net multi_GPIO_0_data5_o1 [get_bd_pins conditional_adder_4x2_0/add_select0_i] [get_bd_pins multi_GPIO_0/data5_o1]
+  connect_bd_net -net multi_GPIO_0_data5_o1 [get_bd_pins conditional_adder_8x2_0/add_select0_i] [get_bd_pins multi_GPIO_0/data5_o1]
+  connect_bd_net -net multi_GPIO_0_data5_o2 [get_bd_pins multi_GPIO_0/data5_o2] [get_bd_pins mux_2x1_0/sel_i]
   connect_bd_net -net multi_GPIO_0_data6_o [get_bd_pins aom_control/delay_cycles_i1] [get_bd_pins multi_GPIO_0/data6_o]
-  connect_bd_net -net multi_GPIO_0_data6_o1 [get_bd_pins conditional_adder_4x2_0/add_select1_i] [get_bd_pins multi_GPIO_0/data6_o1]
+  connect_bd_net -net multi_GPIO_0_data6_o1 [get_bd_pins conditional_adder_8x2_0/add_select1_i] [get_bd_pins multi_GPIO_0/data6_o1]
   connect_bd_net -net multi_GPIO_0_data7_o [get_bd_pins aom_control/toggle_cycles_i1] [get_bd_pins multi_GPIO_0/data7_o]
   connect_bd_net -net multi_GPIO_0_data7_o1 [get_bd_pins coarse_gain_and_limi_2/log2_gain_i] [get_bd_pins multi_GPIO_0/data7_o1]
+  connect_bd_net -net mux_2x1_0_out_o [get_bd_pins edge_detector_0/sig_i] [get_bd_pins mux_2x1_0/out_o]
   connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins PS7/FCLK_CLK0] [get_bd_pins filter_block_0/s_axi_aclk] [get_bd_pins filter_block_1/s_axi_aclk] [get_bd_pins filter_block_2/s_axi_aclk] [get_bd_pins filter_block_3/s_axi_aclk] [get_bd_pins multi_GPIO_0/s_axi_aclk]
   connect_bd_net -net red_pitaya_adc_0_adc_csn [get_bd_ports adc_csn_o] [get_bd_pins red_pitaya_adc_0/adc_csn]
-  connect_bd_net -net red_pitaya_adc_0_adc_dat_a_o [get_bd_pins aom_control/in0_i] [get_bd_pins dac_mux/in0_1] [get_bd_pins decimate_0/data0_i] [get_bd_pins red_pitaya_adc_0/adc_dat_a_o]
-  connect_bd_net -net red_pitaya_adc_0_adc_dat_b_o [get_bd_pins aom_control/in1_i] [get_bd_pins dac_mux/in1_i] [get_bd_pins decimate_1/data0_i] [get_bd_pins red_pitaya_adc_0/adc_dat_b_o]
+  connect_bd_net -net red_pitaya_adc_0_adc_dat_a_o [get_bd_pins aom_control/in0_i] [get_bd_pins dac_mux/in0_1] [get_bd_pins decimate_0/data0_i] [get_bd_pins flip_flop_0/data_i] [get_bd_pins red_pitaya_adc_0/adc_dat_a_o]
+  connect_bd_net -net red_pitaya_adc_0_adc_dat_b_o [get_bd_pins aom_control/in1_i] [get_bd_pins dac_mux/in1_i] [get_bd_pins decimate_1/data0_i] [get_bd_pins flip_flop_1/data_i] [get_bd_pins red_pitaya_adc_0/adc_dat_b_o]
   connect_bd_net -net red_pitaya_dac_0_dac_clk [get_bd_ports dac_clk_o] [get_bd_pins dac_mux/dac_clk_o]
   connect_bd_net -net red_pitaya_dac_0_dac_dat [get_bd_ports dac_dat_o] [get_bd_pins dac_mux/dac_dat_o]
   connect_bd_net -net red_pitaya_dac_0_dac_rst [get_bd_ports dac_rst_o] [get_bd_pins dac_mux/dac_rst_o]
   connect_bd_net -net red_pitaya_dac_0_dac_sel [get_bd_ports dac_sel_o] [get_bd_pins dac_mux/dac_sel_o]
   connect_bd_net -net red_pitaya_dac_0_dac_wrt [get_bd_ports dac_wrt_o] [get_bd_pins dac_mux/dac_wrt_o]
-  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins GPIO_trigger_pulse_0/rst_ni] [get_bd_pins PS7/S00_ARESETN] [get_bd_pins aom_control/rst_ni] [get_bd_pins bram_delay_line_0/rst_ni] [get_bd_pins bram_delay_line_1/rst_ni] [get_bd_pins coarse_gain_and_limi_2/rst_ni] [get_bd_pins coarse_gain_and_limi_3/rst_ni] [get_bd_pins conditional_adder_4x2_0/rst_ni] [get_bd_pins dac_mux/rst_ni] [get_bd_pins decimate_0/rst_ni] [get_bd_pins decimate_1/rst_ni] [get_bd_pins edge_detector_0/rst_ni] [get_bd_pins filter_block_0/rst_ni] [get_bd_pins filter_block_1/rst_ni] [get_bd_pins filter_block_2/rst_ni] [get_bd_pins filter_block_3/rst_ni] [get_bd_pins multi_GPIO_0/s_axi_aresetn]
+  connect_bd_net -net rst_ps7_0_125M_peripheral_aresetn [get_bd_pins GPIO_trigger_pulse_0/rst_ni] [get_bd_pins PS7/S00_ARESETN] [get_bd_pins aom_control/rst_ni] [get_bd_pins bram_delay_line_0/rst_ni] [get_bd_pins bram_delay_line_1/rst_ni] [get_bd_pins coarse_gain_and_limi_2/rst_ni] [get_bd_pins coarse_gain_and_limi_3/rst_ni] [get_bd_pins conditional_adder_8x2_0/rst_ni] [get_bd_pins dac_mux/rst_ni] [get_bd_pins decimate_0/rst_ni] [get_bd_pins decimate_1/rst_ni] [get_bd_pins edge_detector_0/rst_ni] [get_bd_pins fgen/rst_ni] [get_bd_pins filter_block_0/rst_ni] [get_bd_pins filter_block_1/rst_ni] [get_bd_pins filter_block_2/rst_ni] [get_bd_pins filter_block_3/rst_ni] [get_bd_pins flip_flop_0/rst_ni] [get_bd_pins flip_flop_1/rst_ni] [get_bd_pins multi_GPIO_0/s_axi_aresetn] [get_bd_pins mux_2x1_0/rst_ni]
   connect_bd_net -net select0_i_1 [get_bd_pins dac_mux/select0_i] [get_bd_pins multi_GPIO_0/data1_o1]
   connect_bd_net -net select1_i_1 [get_bd_pins dac_mux/select1_i] [get_bd_pins multi_GPIO_0/data2_o1]
-  connect_bd_net -net triggered_gate_0_data_o [get_bd_pins conditional_adder_4x2_0/data0_i] [get_bd_pins dac_mux/in5_i] [get_bd_pins filter_block_0/data_o]
+  connect_bd_net -net triggered_gate_0_data_o [get_bd_pins conditional_adder_8x2_0/data2_i] [get_bd_pins dac_mux/in5_i] [get_bd_pins filter_block_0/data_o]
   connect_bd_net -net util_ds_buf_1_IBUF_OUT [get_bd_pins util_ds_buf_1/IBUF_OUT] [get_bd_pins util_ds_buf_2/OBUF_IN]
   connect_bd_net -net util_ds_buf_2_OBUF_DS_N [get_bd_ports daisy_n_o] [get_bd_pins util_ds_buf_2/OBUF_DS_N]
   connect_bd_net -net util_ds_buf_2_OBUF_DS_P [get_bd_ports daisy_p_o] [get_bd_pins util_ds_buf_2/OBUF_DS_P]
-  connect_bd_net -net xlconcat_0_dout [get_bd_ports exp_p_tri_io] [get_bd_pins xlconcat_0/dout]
-  connect_bd_net -net xlconstant_1_dout [get_bd_pins xlconcat_0/In1] [get_bd_pins xlconstant_1/dout]
   connect_bd_net -net xlconstant_8_dout [get_bd_pins bram_delay_line_0/delay4_i] [get_bd_pins bram_delay_line_0/delay5_i] [get_bd_pins bram_delay_line_0/delay6_i] [get_bd_pins bram_delay_line_0/delay7_i] [get_bd_pins bram_delay_line_1/delay4_i] [get_bd_pins bram_delay_line_1/delay5_i] [get_bd_pins bram_delay_line_1/delay6_i] [get_bd_pins bram_delay_line_1/delay7_i] [get_bd_pins xlconstant_8/dout]
   connect_bd_net -net xlslice_3_Dout [get_bd_pins aom_control/Dout] [get_bd_pins dac_mux/in2_i]
 
   # Create address segments
   assign_bd_address -offset 0x41200000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs multi_GPIO_0/axi_gpio_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x41210000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_0/multi_GPIO_1/axi_gpio_1/S_AXI/Reg] -force
-  assign_bd_address -offset 0x41220000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_1/multi_GPIO_2/axi_gpio_2/S_AXI/Reg] -force
-  assign_bd_address -offset 0x41230000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_2/multi_GPIO_3/axi_gpio_3/S_AXI/Reg] -force
-  assign_bd_address -offset 0x41240000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_3/multi_GPIO_4/axi_gpio_4/S_AXI/Reg] -force
+  assign_bd_address -offset 0x41220000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_1/multi_GPIO_1/axi_gpio_1/S_AXI/Reg] -force
+  assign_bd_address -offset 0x41230000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_2/multi_GPIO_1/axi_gpio_1/S_AXI/Reg] -force
+  assign_bd_address -offset 0x41240000 -range 0x00010000 -target_address_space [get_bd_addr_spaces PS7/processing_system7_0/Data] [get_bd_addr_segs filter_block_3/multi_GPIO_1/axi_gpio_1/S_AXI/Reg] -force
 
 
   # Restore current instance
