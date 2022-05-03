@@ -229,6 +229,7 @@ class ExampleController(RedPitayaTopLevelModule):
 
 
 if __name__ == "__main__":
+    pass
     # example = ExampleController(
     #     'red-pitaya-26.ee.ethz.ch',
     #     load_bitfile=True,
