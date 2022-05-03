@@ -179,6 +179,7 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
         self.win.activateWindow()
 
+
     def _make_gui(self):
         '''
         Reads in a gui config file (that should be generated via _generate_rp_module_gui_config_file and modified
@@ -218,4 +219,6 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         self.win.setLayout(layout)
 
         layout.addWidget(self.t, 0, 0, 1, 1)
+
+        self.win.show()
 
