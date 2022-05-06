@@ -175,9 +175,9 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         if not hasattr(self, 'win'):
             raise RuntimeError("GUI hasn't been created, call self._make_gui() first")
         self.win.show()
-        pg.exec()
-        # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
         self.win.activateWindow()
+        # pg.exec()
+        # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
 
 
     def _make_gui(self):
@@ -221,4 +221,13 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         layout.addWidget(self.t, 0, 0, 1, 1)
 
         self.win.show()
+
+        # enable ipython QtGui in python if available
+        try:
+            from IPython import get_ipython
+            IPYTHON = get_ipython()
+            IPYTHON.magic("gui qt")
+            GUI_INITIALIZED = True
+        except BaseException as e:
+            log.warning('Could not enable IPython gui support: %s.' % e)
 
