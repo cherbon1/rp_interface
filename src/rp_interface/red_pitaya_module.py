@@ -213,10 +213,9 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
 
         def refresh_children(param: Parameter):
             for child in config_dict['children']:
-                child_type = child.type()
-                if child_type == 'group':
+                if child.children():
                     child.refresh_children()
-                elif child_type == 'action':
+                elif child.type() == 'action':
                     pass  # a button needs no refreshing
                 else:
                     child.refresh_value()
