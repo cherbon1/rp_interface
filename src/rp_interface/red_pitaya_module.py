@@ -175,10 +175,9 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         if not hasattr(self, 'win'):
             raise RuntimeError("GUI hasn't been created, call self._make_gui() first")
         self.win.show()
-        pg.exec()
-        # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
         self.win.activateWindow()
-
+        # pg.exec()
+        # self.win.setWindowState(window.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
 
     def _make_gui(self):
         '''
@@ -208,17 +207,42 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
             raise ValueError('Top level item must be a group')
         config_dict['children'] = [gui_utils.make_gui_item(self, subdict) for subdict in config_dict['children']]
 
-        my_params = Parameter.create(**config_dict)
+        # Add a button to refresh the values of every element
+        refresh_button = Parameter.create(name='Refresh buttons', type='action')
+        config_dict['children'].insert(0, refresh_button)
 
-        self.t = ParameterTree()
-        self.t.setParameters(my_params, showTop=True)
-        self.t.setWindowTitle(config_dict['name'])
+        def refresh_children(param: Parameter):
+            for child in config_dict['children']:
+                child_type = child.type()
+                if child_type == 'group':
+                    child.refresh_children()
+                elif child_type == 'action':
+                    pass  # a button needs no refreshing
+                else:
+                    child.refresh_value()
+
+        refresh_button.sigActivated.connect(refresh_children)
+
+        self.params = Parameter.create(**config_dict)
+
+        self.param_tree = ParameterTree()
+        self.param_tree.setParameters(self.params, showTop=True)
+        self.param_tree.setWindowTitle(config_dict['name'])
 
         self.win = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout()
         self.win.setLayout(layout)
 
-        layout.addWidget(self.t, 0, 0, 1, 1)
+        layout.addWidget(self.param_tree, 0, 0, 1, 1)
 
         self.win.show()
+
+        # enable ipython QtGui in python if available
+        try:
+            from IPython import get_ipython
+            IPYTHON = get_ipython()
+            IPYTHON.magic("gui qt")
+            GUI_INITIALIZED = True
+        except BaseException as e:
+            log.warning('Could not enable IPython gui support: %s.' % e)
 
