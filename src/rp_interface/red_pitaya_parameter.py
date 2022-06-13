@@ -61,10 +61,6 @@ class RedPitayaParameter:
         log.debug(f'Writing {reg_val} to {self.register}')
         self.rp.write_register(register=self.register, data=reg_val, dtype=self.dtype)
 
-
-
-
-
     # def print_val_change(param: Parameter, val):
     #     print(val)
     #     print(param.setValue(value=param.value() + '1', blockSignal=print_val_change))

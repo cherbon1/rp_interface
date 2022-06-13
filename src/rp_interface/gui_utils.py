@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Dict, Any
+import types
 
 import yaml
 from pyqtgraph.parametertree import Parameter
@@ -15,38 +16,63 @@ log = logging.getLogger(__name__)
 
 def make_gui_item(parent_object, config_dict):
     '''
-    Makes a parameter object (works both on groups and single parameters
+    Makes a parameter object (works both on groups and single parameters)
     '''
     # Most options from config dict can be passed on to Parameter.create() as is, but
     # some need special attention. Treat those here.
-    if 'children' in config_dict:  # Object is a group
+    refresh_children = None
+    if 'children' in config_dict:  # Object has children
         this_object = getattr(parent_object, config_dict['name'])
         config_dict['children'] = [make_gui_item(this_object, subdict) for subdict in config_dict['children']]
         config_dict['expanded'] = False  # Collapse groups by default
 
+        # make the object into a string, so that the GUI elements can be given a name
+        # This is only for convenience at runtime, the text value appears nowhere else
+        config_dict['type'] = 'str'
+        config_dict['value'] = config_dict['name']
+
     # If there's a path, compute a value and store path separately from dict
     # because the callback needs to be handled separately after param creation
+    # and Parameter.create won't recognize the 'path' keyword
     path = None
     if 'path' in config_dict:  # Object is a parameter
         path = config_dict['path']
         del config_dict['path']
         config_dict['value'] = utils.rgetattr(parent_object, path)
 
+    # Create the parameter object
     param = Parameter.create(**config_dict)
 
+    if 'children' in config_dict:
+        def refresh_children(self):
+            for child in config_dict['children']:
+                if child.children():
+                    child.refresh_children()
+                elif child.type() == 'action':
+                    pass  # a button needs no refreshing
+                else:
+                    child.refresh_value()
+
+        param.refresh_children = types.MethodType(refresh_children, param)
+
     if path:
+        # Connect button change to value change
         def callback(param: Parameter, value: Any):
             # print('set {} to {} (from {})'.format(path, value,  parent_object.__class__))
             utils.rsetattr(parent_object, path, value)
+            param.refresh_value()
+
+        def refresh_value(self):
             value = utils.rgetattr(parent_object, path)
-            param.setValue(value=value, blockSignal=callback)
+            param.setValue(value=value, blockSignal=callback)  # Coerces the value if necessary
+        param.refresh_value = types.MethodType(refresh_value, param)
 
         param.sigValueChanged.connect(callback)
 
     return param
 
 
-# rp_module should be RedPitayaModule but it causes circular import
+# rp_module type should be RedPitayaModule, but it causes circular import
 def generate_rp_module_gui_config_dict(name: str, rp_module: Any) -> Dict:
     '''
     Outputs a dict with options for defining a pyqtgraph.Parameter for the given RedPitayaModule.

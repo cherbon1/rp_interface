@@ -169,6 +169,16 @@ class AOMControlModule(RedPitayaModule):
             read_data=lambda reg: reg / self.fs,
         )
 
+        self._trap_on_value_parameter = RedPitayaParameter(
+            red_pitaya=self.rp,
+            register=self._trap_on_value_register,
+            name='Trap on value',
+            dtype=DataType.SIGNED_INT,
+            in_range=lambda val: (0 <= val <= 1),  # This parameter could  go to -1, but the AOM driver can't
+            write_data=lambda val: int(val * 2 ** (self._trap_on_value_register.n_bits-1) - 1e-9),
+            read_data=lambda reg: reg / 2 ** (self._trap_on_value_register.n_bits-1),
+        )
+
         self._feedback_enable_parameter = RedPitayaParameter(
             red_pitaya=self.rp,
             register=self._feedback_enable_register,
