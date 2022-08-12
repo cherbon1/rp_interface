@@ -64,11 +64,6 @@ def make_gui_item(parent_object, config_dict):
 
         def refresh_value(self):
             value = utils.rgetattr(parent_object, path)
-
-            # for filter_type, the value is a FilterType. FilterType.value returns the string we need
-            if path.endswith('filter_type'):
-                value = value.value
-
             param.setValue(value=value, blockSignal=callback)  # Coerces the value if necessary
         param.refresh_value = types.MethodType(refresh_value, param)
 

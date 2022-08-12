@@ -156,7 +156,7 @@ class RedPitayaTopLevelModule(RedPitayaModule, ABC):
         self.rp.load_bitfile(self.bitfile.full_path)
 
     def apply_defaults(self):
-        # defaults live in bitfile directory
+        # defaults live in config directory
         self.defaults_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config')
         if not hasattr(self, 'defaults_file'):
             raise RuntimeError("Can't apply defaults, no defaults_file defined")

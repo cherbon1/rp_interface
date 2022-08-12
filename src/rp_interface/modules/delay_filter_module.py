@@ -62,16 +62,6 @@ class DelayFilterModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-            'preamp_gain': 1.,
-            'gain': 1.,
-            'ac_coupling': True,
-            'delay': 0,
-            'output_select': 1,  # default to output of 1st filter
-            'toggle_delay': 1e-3,
-            'toggle_time': 0
-        }
-
         self._gpio_write_address = gpio_write_address
         self._gpio_read_address = gpio_read_address
 

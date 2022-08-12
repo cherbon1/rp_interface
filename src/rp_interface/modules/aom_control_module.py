@@ -42,12 +42,6 @@ class AOMControlModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-                'feedback_gain': 0.01,
-                'trap_enable': False,
-                'feedback_enable': False
-            }
-
         self._gpio_write_address = gpio_write_address
         self._gpio_read_address = gpio_read_address
 

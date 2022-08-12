@@ -27,11 +27,6 @@ class WavegenModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-            'frequency': 100e3,
-            'amplitude': 0.1
-        }
-
         self.fs = fs
         self._frequency_register = frequency_register
         self._fine_gain_register = fine_gain_register

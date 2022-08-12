@@ -40,11 +40,6 @@ class SumModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-            # 'add0': True,  # The rest of the adder should in principle start out false
-            'divide_by': 1.
-        }
-
         self._add_select_register = add_select_register
         self._divide_by_register = divide_by_register
 

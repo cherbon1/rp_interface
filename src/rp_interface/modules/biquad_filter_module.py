@@ -169,10 +169,6 @@ class BiquadFilterModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-            'filter_type': FilterType.ALLPASS
-        }
-
         if biquad_registers is None:
             raise KeyError('Need to define addresses to communicate with biquad filter')
         self.biquad_registers = biquad_registers
@@ -473,6 +469,9 @@ class BiquadFilterModule(RedPitayaModule):
                 properties.get('frequency', None),
                 properties.get('q_factor', None),
             )
+            self._filter_type = properties['filter_type']
+            self._frequency = properties.get('frequency', 100e3)
+            self._q_factor = properties.get('q_factor', 10)
         else:
             # if defined by biquad_coeffs, apply coeffs directly
             biquad_coeffs = BiquadFilterCoefficients(

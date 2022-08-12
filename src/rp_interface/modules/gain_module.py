@@ -25,8 +25,6 @@ class GainModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {'gain': 1.}
-
         self._fine_gain_register = fine_gain_register
         self._coarse_gain_register = coarse_gain_register
 

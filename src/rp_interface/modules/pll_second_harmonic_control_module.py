@@ -27,12 +27,6 @@ class PLLSecondHarmonicControlModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-            'second_harmonic': True,
-            'frequency': 10e3,
-            'demodulator_bandwidth': 1e3
-        }
-
         self.fs = fs
         self._second_harmonic_register = second_harmonic_register
         self._alpha_register = alpha_register

@@ -63,21 +63,6 @@ class PLLModule(RedPitayaModule):
                  ):
         super().__init__(red_pitaya=red_pitaya)
 
-        self.default_values = {
-                'input_select': 0,
-                'second_harmonic': True,
-                'frequency': 10e3,
-                'pid_enable': False,
-                'kp': -100.,
-                'ki': -1.,
-                'a': 1,
-                'phi': 0,
-                'order': 1,
-                'gain': 1.,
-                'demodulator_bandwidth': 1e3,
-                'pid_bandwidth': 5e3
-            }
-
         self._gpio_write_address = gpio_write_address
         self._gpio_read_address = gpio_read_address
 
