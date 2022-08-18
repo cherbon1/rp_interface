@@ -122,6 +122,14 @@ class AOMControlModule(RedPitayaModule):
             is_shared=False
         )
 
+        self._trap_on_value_register = MuxedRegister(
+            gpio_write_address=self._gpio_write_address,
+            gpio_read_address=self._gpio_read_address,
+            register_address=9,
+            n_bits=14,
+            is_shared=False
+        )
+
     def _define_parameters(self):
         '''
         A method that defines all controls of an aom block

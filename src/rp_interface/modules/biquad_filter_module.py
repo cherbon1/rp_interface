@@ -464,14 +464,13 @@ class BiquadFilterModule(RedPitayaModule):
         properties = input_dict['properties']
         # if defined by filter type, apply settings
         if 'filter_type' in properties:
-            self.apply_filter_settings(
-                properties['filter_type'],
-                properties.get('frequency', None),
-                properties.get('q_factor', None),
-            )
-            self._filter_type = properties['filter_type']
+            # set frequency and q_factor without applying settings
             self._frequency = properties.get('frequency', 100e3)
             self._q_factor = properties.get('q_factor', 10)
+
+            # set filter type with regular setter
+            # (convert string to enum type, and apply filter settings)
+            self.filter_type = properties['filter_type']
         else:
             # if defined by biquad_coeffs, apply coeffs directly
             biquad_coeffs = BiquadFilterCoefficients(
