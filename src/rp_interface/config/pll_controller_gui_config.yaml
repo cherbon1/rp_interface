@@ -226,11 +226,11 @@ children:
   - name: kp
     path: _kp_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: ki
     path: _ki_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: output_select
     path: _output_select_parameter.value
     type: list
@@ -302,11 +302,11 @@ children:
   - name: kp
     path: _kp_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: ki
     path: _ki_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: output_select
     path: _output_select_parameter.value
     type: list
@@ -378,11 +378,11 @@ children:
   - name: kp
     path: _kp_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: ki
     path: _ki_parameter.value
     type: float
-    limits: [0, 32767]
+    limits: [-32768, 32767]
   - name: output_select
     path: _output_select_parameter.value
     type: list
