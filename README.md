@@ -1,5 +1,15 @@
 # Red Pitaya Interface 
 
+
+## Disclaimer
+This software was developed to perform a few specific tasks in the lab. The software has a fair amount of quirks, that are known but we don't have the patience to solve. Here's a non-exhaustive list:
+- Communication to the red pitaya is slow
+- The GUI was added as an afterthought and not planned from the start, and therefore doesn't update when API calls change a parameter
+- On the FPGA side: communication via these self-made GPIO multiplexers is clunky. I've since learned how to make proper interfaces between PS and PL, but this works for now
+- The Vivado projects are large and the block diagrams are full of RTL blocks. Because of this, the interface is slow and building takes longer than it should. Again, I've since learned that there's a better way, but this'll do for now.
+
+## Red Pitaya Interface 
+
 A central repository for containing red pitaya bitfiles and python interfaces commonly used by our lab.
 
 List of bitfiles and interfaces:
@@ -10,7 +20,7 @@ List of bitfiles and interfaces:
 ### Installation
 Install repository with
 ```shell
-pip install git+https://gitlab.ethz.ch/ebonvin/rp_interface.git
+pip install git+https://github.com/cherbon1/rp_interface.git
 ```
 
 For upgrading, use the following options `--force-reinstall --no-deps`. Simply using `--upgrade` won't work because this option only compares the version number, and version numbers aren't automatically bumped here.
