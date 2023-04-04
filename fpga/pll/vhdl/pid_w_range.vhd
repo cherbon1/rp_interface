@@ -44,7 +44,7 @@ architecture Behavioral of pid_w_range is
   signal Prop_DN, Prop_DP     : std_logic_vector(N_OUT - 1 downto 0);
   signal IntSum_DN, IntSum_DP : std_logic_vector(N_OUT - 1 downto 0);
   
-  signal Total_DP, Total_DN : std_logic_vector(N_OUT-1 downto 0);
+  signal Total_DP, Total_DN : std_logic_vector(N_OUT - 1 downto 0);
   signal PIValid_SP, PIValid_SN : std_logic;
 begin
 
@@ -52,6 +52,7 @@ begin
   process(Din_DI, Kp, IntSum_DP, Ki, Prop_DP, Valid_SI)
   variable product_long : std_logic_vector(N_IN + N_FACTORS - 1 downto 0);
   variable int_sum_next : std_logic_vector(N_OUT - 1 downto 0);
+  variable total_sum_long : std_logic_vector(N_OUT downto 0);
   begin
     Prop_DN <= Prop_DP;
     IntSum_DN <= IntSum_DP;
@@ -78,7 +79,8 @@ begin
         PIValid_SN <= '1';
     end if;
     
-    Total_DN <= std_logic_vector(signed(Prop_DP) + signed(IntSum_DP));
+    total_sum_long := std_logic_vector(signed(Prop_DP) + signed(IntSum_DP));
+    Total_DN <= total_sum_long(N_OUT downto 1);
     Dout_DO <= Total_DP;
   end process;
 

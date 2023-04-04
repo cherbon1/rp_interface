@@ -28,6 +28,7 @@ class AOMControlModule(RedPitayaModule):
             'trap_enable': '_trap_enable_parameter.value',
             'trap_toggle_delay': '_trap_toggle_delay_parameter.value',
             'trap_toggle_time': '_trap_toggle_time_parameter.value',
+            'trap_on_value': '_trap_on_value_parameter.value',
             'feedback_enable': '_feedback_enable_parameter.value',
             'feedback_toggle_delay': '_feedback_toggle_delay_parameter.value',
             'feedback_toggle_time': '_feedback_toggle_time_parameter.value',

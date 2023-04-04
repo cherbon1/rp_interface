@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 class RedPitaya:
     '''
     Connects to a Red Pitaya using paramiko
-    e.g. RedPitaya(host='red-pitaya-01.ee.ethz.ch')
+    e.g. RedPitaya(host='red-pitaya-00.ee.ethz.ch')
 
     Handles communication with the red pitaya via ssh and reading and writing to registers
     '''
